@@ -98,12 +98,13 @@ fun Application.configureSecurity() {
 
     routing {
         authenticate("auth-oauth-google") {
-            get("/login") {
+            get("/logingoogle") {
                 // Redirects to `authorizeUrl` automatically
-//                call.respondRedirect("/callback")
             }
 
+            // Handle callback from resource server
             get("/callback") {
+                println("URL: /callback")
                 val currentPrincipal: OAuthAccessTokenResponse.OAuth2? = call.principal()
                 // redirects home if the url is not found before authorization
                 currentPrincipal?.let { principal ->
@@ -120,17 +121,19 @@ fun Application.configureSecurity() {
             }
         }
 
-        get("/") {
+        get("""/(login)?""".toRegex()) {
+            println("URL: /")
             call.respondHtml {
                 body {
                     p {
-                        a("/login") { +"Login with Google" }
+                        a("/logingoogle") { +"Login with Google" }
                     }
                 }
             }
         }
 
         get("/home") {
+            println("URL: /home")
             val userSession: UserSession? = getSession(call)
             if (userSession != null) {
                 val userInfo: UserInfo = getGoogleUserInfo(httpClient, userSession)
@@ -140,6 +143,7 @@ fun Application.configureSecurity() {
 
         get("/{path}") {
             val path = call.parameters["path"]
+            println("URL: /$path")
             val userSession: UserSession? = getSession(call)
             if (userSession != null) {
                 val userInfo: UserInfo = getGoogleUserInfo(httpClient, userSession)
@@ -152,6 +156,7 @@ fun Application.configureSecurity() {
 private suspend fun getSession(call: ApplicationCall): UserSession? = call.sessions.get() ?: redirectToLogin(call)
 
 private suspend fun redirectToLogin(call: ApplicationCall): Nothing? {
+    println("URL: Redirect to login")
     val redirectUrl =
         URLBuilder("http://0.0.0.0:8080/login").run {
             parameters.append(QUERY_PARAM_REDIRECT_URL, call.request.uri)
@@ -170,21 +175,41 @@ private suspend fun getGoogleUserInfo(
             headers {
                 append(HttpHeaders.Authorization, "Bearer ${userSession.accessToken}")
             }
-        }.body()
+        }.body<GoogleUserInfo>()
+        .toUserInfo()
 
 @Serializable
-data class UserSession(
+private data class UserSession(
     val state: String,
     val accessToken: String? = null,
     val count: Int = 0,
 )
 
 @Serializable
-data class UserInfo(
+private data class GoogleUserInfo(
     val id: String,
     val name: String,
     @SerialName("given_name") val givenName: String,
     @SerialName("family_name") val familyName: String,
-    val picture: String? = null,
+    @SerialName("picture") val pictureURL: String? = null,
+    val locale: String? = null,
+) {
+    fun toUserInfo(): UserInfo =
+        UserInfo(
+            id = id,
+            name = name,
+            givenName = givenName,
+            familyName = familyName,
+            pictureURL = pictureURL,
+            locale = locale,
+        )
+}
+
+private data class UserInfo(
+    val id: String,
+    val name: String,
+    val givenName: String,
+    val familyName: String,
+    val pictureURL: String? = null,
     val locale: String? = null,
 )

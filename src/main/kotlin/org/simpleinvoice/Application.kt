@@ -1,8 +1,8 @@
 package org.simpleinvoice
 
+import com.example.org.simpleinvoice.server.config.configureErrorHandling
 import io.ktor.server.application.Application
 import org.simpleinvoice.server.config.configureAdministration
-import org.simpleinvoice.server.config.configureErrorHandling
 import org.simpleinvoice.server.config.configureFrameworks
 import org.simpleinvoice.server.config.configureHTTP
 import org.simpleinvoice.server.config.configureRouting

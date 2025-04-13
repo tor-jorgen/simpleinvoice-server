@@ -14,7 +14,7 @@ Here are some useful links to get you started:
 Here's a list of features included in this project:
 
 | Name                                                                   | Description                                                                        |
-| ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
+|------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
 | [Authentication](https://start.ktor.io/p/auth)                         | Provides extension point for handling the Authorization header                     |
 | [Authentication OAuth](https://start.ktor.io/p/auth-oauth)             | Handles OAuth Bearer authentication scheme                                         |
@@ -39,7 +39,7 @@ Here's a list of features included in this project:
 To build or run the project, use one of the following tasks:
 
 | Task                          | Description                                                          |
-| -------------------------------|---------------------------------------------------------------------- |
+|-------------------------------|----------------------------------------------------------------------|
 | `./gradlew test`              | Run the tests                                                        |
 | `./gradlew build`             | Build everything                                                     |
 | `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
@@ -55,3 +55,7 @@ If the server starts successfully, you'll see the following output:
 2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
 ```
 
+## Credits
+
+Thanks to [Robin Selmer](https://github.com/robinselmer) for
+the [Retro Error Page](https://codepen.io/robinselmer/pen/vJjbOZ)

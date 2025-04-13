@@ -19,21 +19,21 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.oauth
 import io.ktor.server.auth.principal
-import io.ktor.server.html.respondHtml
+import io.ktor.server.http.content.LocalFileContent
+import io.ktor.server.http.content.resolveResource
 import io.ktor.server.plugins.csrf.CSRF
 import io.ktor.server.request.uri
+import io.ktor.server.response.respondFile
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
+import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
-import kotlinx.html.a
-import kotlinx.html.body
-import kotlinx.html.p
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -46,10 +46,13 @@ private const val SCOPE_OPEN_ID = "openid"
 
 private const val QUERY_PARAM_REDIRECT_URL = "redirectUrl"
 
+private const val HOME = "home"
+
 private const val URL_LOGIN = "/login"
 private const val URL_LOGIN_GOOGLE = "/logingoogle"
 private const val URL_CALLBACK = "/callback"
-private const val URL_HOME = "/home"
+private const val URL_HOME = "/$HOME"
+private const val URL_LOGOUT = "/logout"
 
 private const val AUTH_OAUTH_GOOGLE = "auth-oauth-google"
 
@@ -140,19 +143,20 @@ fun Application.configureSecurity() {
             println("URL: /(login)?")
             val userSession: UserSession? = call.sessions.get()
             if (userSession == null) {
-                call.respondHtml {
-                    body {
-                        p {
-                            a(URL_LOGIN_GOOGLE) { +"Login with Google" }
-                        }
-                    }
-                }
+                val resource = call.resolveResource("login.html")
+                val file = (resource as LocalFileContent).file
+                call.respondFile(file)
             } else {
                 call.respondRedirect(URL_HOME)
             }
         }
 
-        get(URL_HOME) {
+        get(URL_LOGOUT) {
+            call.sessions.clear<UserSession>()
+            call.respondRedirect(URL_LOGIN)
+        }
+
+        get(Regex("/($HOME)?")) {
             println("URL: /home")
             val userSession: UserSession? = getSessionOrLogin(call)
             if (userSession != null) {

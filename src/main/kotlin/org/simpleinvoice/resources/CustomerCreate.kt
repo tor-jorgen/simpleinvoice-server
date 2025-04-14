@@ -1,10 +1,10 @@
-package com.example.org.simpleinvoice.model
+package com.example.org.simpleinvoice.resources
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Customer(
+data class CustomerCreate(
     val id: String,
     @SerialName("first_name") val firstName: String,
     @SerialName("last_name") val lastName: String,

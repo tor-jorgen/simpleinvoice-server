@@ -35,7 +35,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
-import java.awt.Event.HOME
 import kotlin.collections.set
 
 private const val SCOPE_PUBLIC_PERSONAL_INFO = "https://www.googleapis.com/auth/userinfo.profile"
@@ -121,7 +120,7 @@ fun Application.configureSecurity() {
         originMatchesHost()
 
         // custom header checks
-        checkHeader("X-CSRF-Token")
+//        checkHeader("X-CSRF-Token")
     }
 
     configurePublicRouting()

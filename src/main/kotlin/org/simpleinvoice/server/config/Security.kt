@@ -8,10 +8,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.URLBuilder
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
 import io.ktor.server.auth.OAuthAccessTokenResponse
 import io.ktor.server.auth.OAuthServerSettings
@@ -19,13 +17,12 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.oauth
 import io.ktor.server.auth.principal
+import io.ktor.server.auth.session
 import io.ktor.server.http.content.LocalFileContent
 import io.ktor.server.http.content.resolveResource
 import io.ktor.server.plugins.csrf.CSRF
-import io.ktor.server.request.uri
 import io.ktor.server.response.respondFile
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
@@ -38,6 +35,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import java.awt.Event.HOME
 import kotlin.collections.set
 
 private const val SCOPE_PUBLIC_PERSONAL_INFO = "https://www.googleapis.com/auth/userinfo.profile"
@@ -46,7 +44,7 @@ private const val SCOPE_OPEN_ID = "openid"
 
 private const val QUERY_PARAM_REDIRECT_URL = "redirectUrl"
 
-private const val HOME = "home"
+const val HOME = "home"
 
 private const val URL_LOGIN = "/login"
 private const val URL_LOGIN_GOOGLE = "/logingoogle"
@@ -54,6 +52,7 @@ private const val URL_CALLBACK = "/callback"
 private const val URL_HOME = "/$HOME"
 private const val URL_LOGOUT = "/logout"
 
+const val AUTH_SESSION = "auth-session"
 private const val AUTH_OAUTH_GOOGLE = "auth-oauth-google"
 
 val httpClient =
@@ -76,6 +75,7 @@ fun Application.configureSecurity() {
 
     val redirects = mutableMapOf<String, String>()
     authentication {
+        // OAuth 2.0 (OIDC) based authentication
         oauth(AUTH_OAUTH_GOOGLE) {
             urlProvider = { "http://localhost:8080$URL_CALLBACK" }
             providerLookup = {
@@ -99,6 +99,18 @@ fun Application.configureSecurity() {
             }
             client = httpClient
         }
+
+        // Session based authentication
+        session<UserSession>(AUTH_SESSION) {
+            validate { session ->
+                // For now only check that session exists
+                session
+            }
+            // Log in if session is invalid
+            challenge {
+                call.respondRedirect(URL_LOGIN)
+            }
+        }
     }
 
     install(CSRF) {
@@ -112,35 +124,16 @@ fun Application.configureSecurity() {
         checkHeader("X-CSRF-Token")
     }
 
+    configurePublicRouting()
+    configureOidcProtectedRouting(redirects.toMap())
+}
+
+/**
+ * WARNING! These routes are open to anyone
+ */
+private fun Application.configurePublicRouting() {
     routing {
-        authenticate(AUTH_OAUTH_GOOGLE) {
-            get(URL_LOGIN_GOOGLE) {
-                // Redirects to `authorizeUrl` automatically
-            }
-
-            // Handle callback from resource server
-            get(URL_CALLBACK) {
-                println("URL: $URL_CALLBACK")
-                val currentPrincipal: OAuthAccessTokenResponse.OAuth2? = call.principal()
-                // redirects home if the url is not found before authorization
-                currentPrincipal?.let { principal ->
-                    principal.state?.let { state ->
-                        call.sessions.set(UserSession.fromGoogle(principal, state))
-                        println("Principal: $principal")
-                        redirects[state]?.let { redirect ->
-                            // Redirect to the page the use originally asked for
-                            call.respondRedirect(redirect)
-                            return@get
-                        }
-                    }
-                }
-                call.respondRedirect(URL_HOME)
-            }
-        }
-
-//        get("""/(login)?""".toRegex()) {
         get(URL_LOGIN) {
-            println("URL: /(login)?")
             val userSession: UserSession? = call.sessions.get()
             if (userSession == null) {
                 val resource = call.resolveResource("login.html")
@@ -156,30 +149,47 @@ fun Application.configureSecurity() {
             call.respondRedirect(URL_LOGIN)
         }
 
-        get(Regex("/($HOME)?")) {
-            println("URL: /home")
-            val userSession: UserSession? = getSessionOrLogin(call)
-            if (userSession != null) {
+//        get(Regex("/($HOME)?")) {
+//            val userSession: UserSession? = getSessionOrLogin(call)
+//            if (userSession != null) {
 //                val userInfo: String = getGoogleUserInfo(httpClient, userSession)
 //                call.respondText("Hello, $userInfo! Welcome home!")
 //                throw RuntimeException()
-                call.respondText("Hello, ${userSession.toJson()}! Welcome home!")
-            }
-        }
+//                call.respondText("Hello, ${userSession.toJson()}! Welcome home!")
+//            }
+//        }
     }
 }
 
-private suspend fun getSessionOrLogin(call: ApplicationCall): UserSession? = call.sessions.get() ?: redirectToLogin(call)
+/**
+ * These routes require a valid access token, otherwise you have to log in
+ */
+private fun Application.configureOidcProtectedRouting(redirects: Map<String, String>) {
+    routing {
+        authenticate(AUTH_OAUTH_GOOGLE) {
+            get(URL_LOGIN_GOOGLE) {
+                // Redirects to `authorizeUrl` automatically
+            }
 
-private suspend fun redirectToLogin(call: ApplicationCall): Nothing? {
-    println("URL: Redirect to login")
-    val redirectUrl =
-        URLBuilder("http://0.0.0.0:8080/login").run {
-            parameters.append(QUERY_PARAM_REDIRECT_URL, call.request.uri)
-            build()
+            // Handle callback from resource server
+            get(URL_CALLBACK) {
+                val currentPrincipal: OAuthAccessTokenResponse.OAuth2? = call.principal()
+                currentPrincipal?.let { principal ->
+                    principal.state?.let { state ->
+                        call.sessions.set(UserSession.fromGoogle(principal, state))
+                        println("Principal: $principal")
+                        redirects[state]?.let { redirect ->
+                            // Redirect to the page the use originally asked for
+                            call.respondRedirect(redirect)
+                            return@get
+                        }
+                    }
+                }
+                //  A redirect URL could not be found, navigate home
+                call.respondRedirect(URL_HOME)
+            }
         }
-    call.respondRedirect(redirectUrl)
-    return null
+    }
 }
 
 private suspend fun getGoogleUserInfo(
@@ -202,7 +212,6 @@ private data class UserSession(
     val refreshToken: String? = null,
     val idToken: String? = null,
     val scope: String? = null,
-    val count: Int = 0,
 ) {
     fun toJson() = Json.encodeToJsonElement(this).toString()
 

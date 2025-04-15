@@ -1,7 +1,6 @@
 package org.simpleinvoice.server.config
 
-import com.example.org.simpleinvoice.resources.CustomerCreate
-import com.example.org.simpleinvoice.resources.CustomerUpdate
+import com.example.org.simpleinvoice.resources.CustomerRequest
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -16,7 +15,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import org.simpleinvoice.repository.CustomerRepository
 import org.simpleinvoice.resources.Customers
+import java.util.UUID
 
 fun Application.configureRouting() {
 //    install(RequestValidation) {
@@ -63,6 +64,8 @@ private fun Application.configurePublicRouting() {
  * These routes require a valid session, otherwise you have to log in
  */
 private fun Application.configureSessionProtectedRouting() {
+    val customerRepository = CustomerRepository() // TODO: Inject
+
     routing {
 //        authenticate(AUTH_SESSION) {
         // The home page (/ or /home)
@@ -73,18 +76,20 @@ private fun Application.configureSessionProtectedRouting() {
             )
         }
 
-        get<Customers> { customer ->
+        get<Customers> {
             // Get all customers
-            call.respond("All customers are fetched: $customer")
+            call.respond(customerRepository.all())
         }
 //        get<Customers.New> { customer ->
 //            // Show a page with fields for creating a new customer
 //            call.respond("List of articles sorted starting from $customer")
 //        }
         post<Customers> {
-            // Save a customer
-            val customer = call.receive<CustomerCreate>()
-            call.respondText("$customer is saved", status = HttpStatusCode.Created)
+            // Add a new customer
+            val customerRequest = call.receive<CustomerRequest>()
+            val customer = customerRequest.toCustomer(UUID.randomUUID())
+            customerRepository.add(customer)
+            call.respond(status = HttpStatusCode.Created, message = customer)
         }
         get<Customers.Id> { request ->
             // Show a customer with id ${customer.id}
@@ -96,7 +101,7 @@ private fun Application.configureSessionProtectedRouting() {
 //        }
         put<Customers.Id> { request ->
             // Update a customer
-            val customer = call.receive<CustomerUpdate>()
+            val customer = call.receive<CustomerRequest>()
             call.respondText("$customer with id ${request.id} updated", status = HttpStatusCode.OK)
         }
         delete<Customers.Id> { request ->

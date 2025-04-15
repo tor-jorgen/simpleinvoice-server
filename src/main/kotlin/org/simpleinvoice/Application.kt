@@ -1,6 +1,8 @@
 package org.simpleinvoice
 
+import com.example.org.simpleinvoice.server.config.configureDatabases
 import com.example.org.simpleinvoice.server.config.configureErrorHandling
+import com.example.org.simpleinvoice.server.config.runFlyway
 import io.ktor.server.application.Application
 import org.simpleinvoice.server.config.configureAdministration
 import org.simpleinvoice.server.config.configureFrameworks
@@ -15,6 +17,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    runFlyway()
+    configureDatabases()
     configureFrameworks()
     configureSecurity()
     configureSerialization()

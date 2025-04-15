@@ -8,6 +8,7 @@ plugins {
     kotlin("jvm") version "2.1.20"
     id("io.ktor.plugin") version "3.1.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    id("org.flywaydb.flyway") version "10.0.0"
 }
 
 group = "org.simpleinvoice"
@@ -26,13 +27,12 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core")
-    implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-client-core")
-//    implementation("io.ktor:ktor-client-apache")
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-client-content-negotiation")
-
+    implementation("io.ktor:ktor-server-core")
+    implementation("io.ktor:ktor-server-auth")
+    implementation("io.ktor:ktor-server-cio")
     implementation("io.ktor:ktor-server-csrf")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-server-sessions")
@@ -44,17 +44,41 @@ dependencies {
     implementation("io.ktor:ktor-server-cors")
     implementation("io.ktor:ktor-server-http-redirect")
     implementation("io.ktor:ktor-server-html-builder")
-
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-serialization-jackson")
-    implementation("io.github.flaxoos:ktor-server-kafka:2.1.2")
-    implementation("org.postgresql:postgresql:$postgres_version")
+//    implementation("io.ktor:ktor-serialization-jackson")
+    implementation("io.ktor:ktor-server-config-yaml")
+
+    val exposedVersion = "0.61.0"
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+
+    val kafkaVersion = "2.1.2"
+    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
+//    implementation("org.postgresql:postgresql:$postgres_version")
     implementation("com.h2database:h2:$h2_version")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
-    implementation("io.ktor:ktor-server-cio")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-server-config-yaml")
+
+    // Database migration
+    val postgresVersion = "42.7.5"
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    val flywayVersion = "11.7.0"
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+ktor {
+    docker {
+        localImageName.set("simple_invoice")
+    }
+}
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/simple_invoice"
+    user = "admin"
 }

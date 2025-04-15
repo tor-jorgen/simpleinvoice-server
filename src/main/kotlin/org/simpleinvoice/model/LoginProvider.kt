@@ -1,4 +1,4 @@
-package com.example.org.simpleinvoice.model
+package org.simpleinvoice.model
 
 import kotlinx.serialization.Serializable
 

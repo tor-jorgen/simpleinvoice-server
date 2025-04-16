@@ -1,4 +1,4 @@
-package org.simpleinvoice.resources
+package com.example.org.simpleinvoice.resources.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -8,6 +8,7 @@ import io.ktor.server.http.content.resolveResource
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 
 fun Application.configureErrorHandling() {
     install(StatusPages) {
@@ -30,7 +31,6 @@ fun Application.configureErrorHandling() {
                 "Oh oh. Se application failed! Please retry. If that doesn't help, please contact the " +
                     "administrator, or if you are the administrator, report a bug",
         )
-    }
 
 //        status(HttpStatusCode.NotFound) { call, status ->
 //            call.application.log.info("${status.value}/${status.description}: ${call.request.local}")
@@ -51,16 +51,16 @@ fun Application.configureErrorHandling() {
 //            )
 //        }
 
-//        exception<Throwable> { call, cause ->
-//            call.application.log.error("Internal Server error!", cause)
-//            call.respondText(
-//                text =
-//                    "Oh oh. Se application failed! Please retry. If that doesn't help, please contact the " +
-//                        "administrator, or if you are the administrator, report a bug",
-//                status = HttpStatusCode.InternalServerError,
-//            )
-//        }
-//    }
+        exception<Throwable> { call, cause ->
+            call.application.log.error("Internal Server error!", cause)
+            call.respondText(
+                text =
+                    "Oh oh. Se application failed! Please retry. If that doesn't help, please contact the " +
+                        "administrator, or if you are the administrator, report a bug",
+                status = HttpStatusCode.InternalServerError,
+            )
+        }
+    }
 }
 
 private fun StatusPagesConfig.statusFileWithLogging(

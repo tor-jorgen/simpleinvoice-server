@@ -29,7 +29,7 @@ CREATE TABLE household
 CREATE TABLE person
 (
     id            UUID    NOT NULL PRIMARY KEY,
-    household_id  UUID NOT NULL REFERENCES household (id),
+    household_id  UUID    NOT NULL REFERENCES household (id),
     first_name    VARCHAR NOT NULL,
     last_name     VARCHAR NOT NULL,
     email_address VARCHAR NOT NULL,
@@ -53,16 +53,19 @@ CREATE TABLE invoice
     status         VARCHAR NOT NULL,
     generated_date VARCHAR NOT NULL,
     due_date       VARCHAR NOT NULL,
-    finalized_date VARCHAR NOT NULL,
-    household_id   UUID NOT NULL REFERENCES household (id)
+    finalized_date VARCHAR,
+    household_id   UUID    NOT NULL REFERENCES household (id),
+    total_price    DECIMAL NOT NULL,
+    currency       VARCHAR NOT NULL
 );
 
 CREATE TABLE invoice_line
 (
     id          UUID    NOT NULL PRIMARY KEY,
-    invoice_id  UUID NOT NULL REFERENCES invoice (id),
+    invoice_id  UUID    NOT NULL REFERENCES invoice (id),
     line_number INT     NOT NULL,
-    product_id  UUID NOT NULL REFERENCES product (id),
+    product_id  UUID    NOT NULL REFERENCES product (id),
     quantity    INT     NOT NULL,
-    total_price DECIMAL NOT NULL
+    total_price DECIMAL NOT NULL,
+    currency    VARCHAR NOT NULL
 );

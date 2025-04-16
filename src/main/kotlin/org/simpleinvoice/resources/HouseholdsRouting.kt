@@ -1,18 +1,29 @@
-package org.simpleinvoice.server.routing
+package com.example.org.simpleinvoice.resources
 
 import com.example.org.simpleinvoice.repository.HouseholdRepository
-import com.example.org.simpleinvoice.resources.Households
+import com.example.org.simpleinvoice.resources.model.HouseholdRequest
 import io.ktor.http.HttpStatusCode
+import io.ktor.resources.Resource
 import io.ktor.server.application.Application
 import io.ktor.server.request.receive
+import io.ktor.server.resources.delete
 import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
-import org.simpleinvoice.resources.HouseholdRequest
+import kotlinx.serialization.Serializable
+import org.simpleinvoice.common.UUIDSerializer
 import java.util.UUID
+
+@Resource("/households")
+class Households {
+    @Resource("{id}")
+    class Id(
+        val parent: Households = Households(),
+        @Serializable(with = UUIDSerializer::class) val id: UUID,
+    )
+}
 
 /**
  * These routes require a valid session, otherwise you have to log in
@@ -24,7 +35,7 @@ fun Application.configureHouseholdsRouting() {
 //        authenticate(AUTH_SESSION) {
         get<Households> {
             // Get all Households
-            call.respond(repository.all())
+            call.respond(status = HttpStatusCode.OK, message = repository.all())
         }
 
         post<Households> {
@@ -47,13 +58,14 @@ fun Application.configureHouseholdsRouting() {
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(request.id)
             repository.upsert(household)
-            call.respondText("$householdRequest with id ${request.id} updated", status = HttpStatusCode.OK)
+            call.respond(status = HttpStatusCode.OK, message = household)
         }
 
-//        delete<Household.Id> { request ->
-//            // Delete a customer
-//            call.respondText("A customer with id ${request.id} deleted", status = HttpStatusCode.OK)
-//        }
+        delete<Households.Id> { request ->
+            // Delete a household
+            repository.delete(request.id)
+            call.respond(HttpStatusCode.NoContent)
+        }
     }
 //    }
 }

@@ -1,11 +1,20 @@
-package org.simpleinvoice.server.routing
+package com.example.org.simpleinvoice.resources
 
+import io.ktor.resources.Resource
 import io.ktor.server.application.Application
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import org.simpleinvoice.repository.PersonRepository
-import org.simpleinvoice.resources.Persons
+
+@Resource("/persons")
+class Persons {
+    @Resource("{id}")
+    class Id(
+        val parent: Persons = Persons(),
+        val id: Long,
+    )
+}
 
 /**
  * These routes require a valid session, otherwise you have to log in

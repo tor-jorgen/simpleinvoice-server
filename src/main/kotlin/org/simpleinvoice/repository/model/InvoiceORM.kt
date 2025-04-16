@@ -14,11 +14,11 @@ import java.util.UUID
 
 object InvoiceTable : UUIDTable("invoice") {
     val invoiceNumber = integer("invoice_number")
-    val status = varchar("status", 50)
-    val generatedDate = varchar("generated_date", 50)
-    val dueDate = varchar("due_date", 50)
-    val finalizedDate = varchar("finalized_date", 50)
-    val household = reference("household_id", HouseholdTable)
+    val status = varchar("status", 10)
+    val generatedDate = varchar("generated_date", 30)
+    val dueDate = varchar("due_date", 30)
+    val finalizedDate = varchar("finalized_date", 30).nullable()
+    val householdId = reference(name = "household_id", foreign = HouseholdTable)
     val totalPrice = double("total_price")
     val currency = varchar("currency", 255)
 }
@@ -33,21 +33,21 @@ class InvoiceDAO(
     var generatedDate by InvoiceTable.generatedDate
     var dueDate by InvoiceTable.dueDate
     var finalizedDate by InvoiceTable.finalizedDate
-    var household by HouseholdDAO referencedOn InvoiceTable.household
-    val invoiceLines by InvoiceLineDAO referrersOn InvoiceLineTable.invoice
+    var household by HouseholdDAO referencedOn InvoiceTable.householdId
+    val invoiceLines by InvoiceLineDAO referrersOn InvoiceLineTable.invoiceId
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
 
     fun toInvoice(): Invoice =
         Invoice(
             id = id.value,
-            number = invoiceNumber,
+            invoiceNumber = invoiceNumber,
             status = InvoiceStatus.valueOf(status),
             generatedDate = Instant.parse(generatedDate),
             dueDate = Instant.parse(dueDate),
-            finalizedDate = Instant.parse(finalizedDate),
+            finalizedDate = finalizedDate?.let { Instant.parse(it) },
             household = household.toHousehold(),
-            invoicelines = invoiceLines.map { it.toInvoiceLine() },
+            invoiceLines = invoiceLines.map { it.toInvoiceLine() },
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
         )

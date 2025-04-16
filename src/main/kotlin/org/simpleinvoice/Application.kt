@@ -1,7 +1,13 @@
 package org.simpleinvoice
 
+import com.example.org.simpleinvoice.resources.configureHouseholdsRouting
+import com.example.org.simpleinvoice.resources.configureInvoiceLineRouting
+import com.example.org.simpleinvoice.resources.configureInvoicesRouting
+import com.example.org.simpleinvoice.resources.configurePersonsRouting
+import com.example.org.simpleinvoice.resources.configureProductsRouting
 import io.ktor.server.application.Application
 import org.simpleinvoice.server.config.configureAdministration
+import org.simpleinvoice.server.config.configureCallLogging
 import org.simpleinvoice.server.config.configureDatabases
 import org.simpleinvoice.server.config.configureErrorHandling
 import org.simpleinvoice.server.config.configureFrameworks
@@ -10,8 +16,6 @@ import org.simpleinvoice.server.config.configureRouting
 import org.simpleinvoice.server.config.configureSecurity
 import org.simpleinvoice.server.config.configureSerialization
 import org.simpleinvoice.server.config.runFlyway
-import org.simpleinvoice.server.routing.configureHouseholdsRouting
-import org.simpleinvoice.server.routing.configurePersonsRouting
 
 fun main(args: Array<String>) {
     io.ktor.server.cio.EngineMain
@@ -19,6 +23,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureCallLogging()
     runFlyway()
     configureDatabases()
     configureFrameworks()
@@ -27,9 +32,11 @@ fun Application.module() {
     configureHTTP()
     configureErrorHandling()
 //    configureKafka()
-//    configureDatabases()
     configureAdministration()
     configureRouting()
-    configurePersonsRouting()
     configureHouseholdsRouting()
+    configurePersonsRouting()
+    configureInvoicesRouting()
+    configureInvoiceLineRouting()
+    configureProductsRouting()
 }

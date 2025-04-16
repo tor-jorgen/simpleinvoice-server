@@ -20,24 +20,6 @@ class HouseholdRepository : HouseholdRepositoryInterface {
             HouseholdDAO.all().map { it.toHousehold() }
         }
 
-//    override suspend fun create(household: Household): Unit =
-//        suspendTransaction {
-//            HouseholdDAO.new {
-//                address = household.address
-//                zipCode = household.zipCode
-//                city = household.city
-//            }
-//        }
-
-//    override suspend fun update(household: Household): Unit =
-//        suspendTransaction {
-//            HouseholdDAO.findByIdAndUpdate(id = household.id) {
-//                it.address = household.address
-//                it.zipCode = household.zipCode
-//                it.city = household.city
-//            }
-//        }
-
     override suspend fun upsert(household: Household): UpsertStatement<Long> =
         suspendTransaction {
             val upsert =
@@ -61,11 +43,3 @@ class HouseholdRepository : HouseholdRepositoryInterface {
             rowsDeleted == 1
         }
 }
-
-// onUpdate =
-// UpdateStatement()
-// mutableListOf(
-// HouseholdTable.address to stringLiteral(household.address),
-// HouseholdTable.zipCode to stringLiteral(household.zipCode),
-// HouseholdTable.city to stringLiteral(household.city),
-// ),

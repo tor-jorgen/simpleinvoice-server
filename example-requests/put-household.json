@@ -1,0 +1,22 @@
+{
+  "address": "address",
+  "zip_code": "3430",
+  "city": "SPIKKESTAD",
+  "country": "NORWAY",
+  "persons": [
+    {
+      "id": "cacac4da-fb8e-4057-b2be-1b596d3f9d8d",
+      "first_name": "first 1",
+      "last_name": "last 1",
+      "email_address": "email 1",
+      "phone_number": "phone 1"
+    },
+    {
+      "id": "db3485c3-b80c-44de-9efe-409dbb8877e7",
+      "first_name": "first 2",
+      "last_name": "last 2",
+      "email_address": "email 2",
+      "phone_number": "phone 2"
+    }
+  ]
+}

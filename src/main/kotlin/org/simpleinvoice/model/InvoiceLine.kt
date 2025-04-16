@@ -1,5 +1,6 @@
 package org.simpleinvoice.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.common.UUIDSerializer
 import java.util.UUID
@@ -7,9 +8,19 @@ import java.util.UUID
 @Serializable
 class InvoiceLine(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
-    val lineNumber: Int,
+    @SerialName("line_number") val lineNumber: Int,
     val product: Product,
     val quantity: Int,
-    val totalPrice: Double,
+    @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
-)
+) {
+    fun toInvoiceLine(): InvoiceLine =
+        InvoiceLine(
+            id = id,
+            lineNumber = lineNumber,
+            product = product,
+            quantity = quantity,
+            totalPrice = totalPrice,
+            currency = currency,
+        )
+}

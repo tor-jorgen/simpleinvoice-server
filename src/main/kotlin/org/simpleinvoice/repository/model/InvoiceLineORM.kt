@@ -10,9 +10,9 @@ import org.simpleinvoice.model.InvoiceLine
 import java.util.UUID
 
 object InvoiceLineTable : UUIDTable("invoice_line") {
-    val invoice = reference("invoice_id", InvoiceTable)
+    val invoiceId = reference(name = "invoice_id", foreign = InvoiceTable)
     val lineNumber = integer("line_number")
-    val product = reference("product_id", ProductTable)
+    val productId = reference("product_id", ProductTable)
     val quantity = integer("quantity")
     val totalPrice = double("total_price")
     val currency = varchar("currency", 50)
@@ -23,9 +23,9 @@ class InvoiceLineDAO(
 ) : UUIDEntity(id) {
     companion object : UUIDEntityClass<InvoiceLineDAO>(InvoiceLineTable)
 
-    var invoice by InvoiceLineTable.invoice
+    var invoiceId by InvoiceLineTable.invoiceId
     var lineNumber by InvoiceLineTable.lineNumber
-    var product by ProductDAO referencedOn InvoiceLineTable.product
+    var product by ProductDAO referencedOn InvoiceLineTable.productId
     var quantity by InvoiceLineTable.quantity
     var totalPrice by InvoiceLineTable.totalPrice
     var currency by InvoiceLineTable.currency

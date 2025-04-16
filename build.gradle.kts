@@ -44,9 +44,11 @@ dependencies {
     implementation("io.ktor:ktor-server-cors")
     implementation("io.ktor:ktor-server-http-redirect")
     implementation("io.ktor:ktor-server-html-builder")
+    implementation("io.ktor:ktor-server-call-logging")
+    implementation("io.ktor:ktor-server-config-yaml")
+
     implementation("io.ktor:ktor-serialization-kotlinx-json")
 //    implementation("io.ktor:ktor-serialization-jackson")
-    implementation("io.ktor:ktor-server-config-yaml")
 
     val exposedVersion = "0.61.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

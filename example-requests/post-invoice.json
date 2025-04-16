@@ -1,0 +1,61 @@
+{
+  "invoice_number": "1",
+  "status": "UNPAID",
+  "generated_date": "2025-04-16T20:59:00Z",
+  "due_date": "2025-04-16T20:59:00Z",
+  "household": {
+    "id": "5aca4e4f-6566-4ec0-a1ea-9bd692be02bc",
+    "address": "address",
+    "zip_code": "3430",
+    "city": "SPIKKESTAD",
+    "country": "NORWAY",
+    "persons": [
+      {
+        "id": "ea15d808-b930-4cd2-8e6a-25a13594c82b",
+        "first_name": "first 1",
+        "last_name": "last 1",
+        "email_address": "email 1",
+        "phone_number": "phone 1"
+      },
+      {
+        "id": "7a8b0dd9-9f0c-440d-9265-b83e0a400514",
+        "first_name": "first 2",
+        "last_name": "last 2",
+        "email_address": "email 2",
+        "phone_number": "phone 2"
+      }
+    ]
+  },
+  "total_price": 250.00,
+  "currency": "NOK",
+  "invoice_lines": [
+    {
+      "line_number": 1,
+      "product": {
+        "id": "70ad5c11-e452-4468-bb21-c06e5ee2f69c",
+        "code": "code1",
+        "name": "name 1",
+        "quantity": 1,
+        "price": 150.0,
+        "currency": "NOK"
+      },
+      "quantity": 1,
+      "total_price": 100.00,
+      "currency": "NOK"
+    },
+    {
+      "line_number": 2,
+      "product": {
+        "id": "52e075a7-043f-4897-9d75-2925ca8d61a9",
+        "code": "code2",
+        "name": "name 2",
+        "quantity": 1,
+        "price": 100.0,
+        "currency": "NOK"
+      },
+      "quantity": 1,
+      "total_price": 150.00,
+      "currency": "NOK"
+    }
+  ]
+}

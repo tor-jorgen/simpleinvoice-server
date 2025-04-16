@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.simpleinvoice.model.Currency
 import org.simpleinvoice.model.Product
 import java.util.UUID
 
@@ -33,6 +34,6 @@ class ProductDAO(
             name = productName,
             quantity = quantity,
             price = price,
-            currency = currency,
+            currency = Currency.valueOf(currency),
         )
 }

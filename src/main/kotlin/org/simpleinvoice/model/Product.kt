@@ -1,7 +1,7 @@
 package org.simpleinvoice.model
 
-import com.example.org.simpleinvoice.common.UUIDSerializer
 import kotlinx.serialization.Serializable
+import org.simpleinvoice.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
@@ -11,5 +11,5 @@ class Product(
     val name: String,
     val quantity: Int,
     val price: Double,
-    val currency: String,
+    val currency: Currency,
 )

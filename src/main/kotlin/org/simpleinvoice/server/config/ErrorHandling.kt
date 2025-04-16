@@ -1,4 +1,4 @@
-package com.example.org.simpleinvoice.server.config
+package org.simpleinvoice.server.config
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application

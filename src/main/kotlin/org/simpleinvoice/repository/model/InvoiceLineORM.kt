@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.simpleinvoice.model.Currency
 import org.simpleinvoice.model.InvoiceLine
 import java.util.UUID
 
@@ -14,6 +15,7 @@ object InvoiceLineTable : UUIDTable("invoice_line") {
     val product = reference("product_id", ProductTable)
     val quantity = integer("quantity")
     val totalPrice = double("total_price")
+    val currency = varchar("currency", 50)
 }
 
 class InvoiceLineDAO(
@@ -26,6 +28,7 @@ class InvoiceLineDAO(
     var product by ProductDAO referencedOn InvoiceLineTable.product
     var quantity by InvoiceLineTable.quantity
     var totalPrice by InvoiceLineTable.totalPrice
+    var currency by InvoiceLineTable.currency
 
     fun toInvoiceLine(): InvoiceLine =
         InvoiceLine(
@@ -34,5 +37,6 @@ class InvoiceLineDAO(
             product = product.toProduct(),
             quantity = quantity,
             totalPrice = totalPrice,
+            currency = Currency.valueOf(currency),
         )
 }

@@ -6,9 +6,11 @@ import org.simpleinvoice.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
-class Config(
+data class Household(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
-    @SerialName("default_due_days") val defaultDueDays: Int,
-    @SerialName("last_invoice_number") val lastInvoiceNumber: Int,
-    @SerialName("default_currency") val defaultCurrency: Currency,
+    val address: String,
+    @SerialName("zip_code") val zipCode: String,
+    val city: String,
+    val country: String?,
+    val persons: List<Person>,
 )

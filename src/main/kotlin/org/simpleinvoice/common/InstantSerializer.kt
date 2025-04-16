@@ -5,16 +5,16 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.util.UUID
+import java.time.Instant
 
-class UUIDSerializer : KSerializer<UUID> {
-    override val descriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
+class InstantSerializer : KSerializer<Instant> {
+    override val descriptor = PrimitiveSerialDescriptor("Instant", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): UUID = UUID.fromString(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): Instant = Instant.parse(decoder.decodeString())
 
     override fun serialize(
         encoder: Encoder,
-        value: UUID,
+        value: Instant,
     ) {
         encoder.encodeString(value.toString())
     }

@@ -1,9 +1,7 @@
-package com.example.org.simpleinvoice.resources
+package org.simpleinvoice.resources
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.simpleinvoice.model.Customer
-import java.util.UUID
 
 @Serializable
 data class CustomerRequest(
@@ -15,15 +13,15 @@ data class CustomerRequest(
     @SerialName("zip_code") val zipCode: String,
     val city: String,
 ) {
-    fun toCustomer(id: UUID): Customer =
-        Customer(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            emailAddress = emailAddress,
-            phoneNumber = phoneNumber,
-            address = address,
-            zipCode = zipCode,
-            city = city,
-        )
+//    fun toCustomer(id: UUID): Person =
+//        Person(
+//            id = id,
+//            firstName = firstName,
+//            lastName = lastName,
+//            emailAddress = emailAddress,
+//            phoneNumber = phoneNumber,
+//            address = address,
+//            zipCode = zipCode,
+//            city = city,
+//        )
 }

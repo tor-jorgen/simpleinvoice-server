@@ -1,23 +1,14 @@
 package org.simpleinvoice.server.config
 
-import com.example.org.simpleinvoice.resources.CustomerRequest
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.http.content.staticResources
-import io.ktor.server.request.receive
 import io.ktor.server.resources.Resources
-import io.ktor.server.resources.delete
-import io.ktor.server.resources.get
-import io.ktor.server.resources.post
-import io.ktor.server.resources.put
-import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import org.simpleinvoice.repository.CustomerRepository
-import org.simpleinvoice.resources.Customers
-import java.util.UUID
+import org.simpleinvoice.repository.PersonRepository
 
 fun Application.configureRouting() {
 //    install(RequestValidation) {
@@ -64,7 +55,7 @@ private fun Application.configurePublicRouting() {
  * These routes require a valid session, otherwise you have to log in
  */
 private fun Application.configureSessionProtectedRouting() {
-    val customerRepository = CustomerRepository() // TODO: Inject
+    val personRepository = PersonRepository() // TODO: Inject
 
     routing {
 //        authenticate(AUTH_SESSION) {
@@ -74,39 +65,6 @@ private fun Application.configureSessionProtectedRouting() {
                 "Welcome home :-)",
                 status = HttpStatusCode.OK,
             )
-        }
-
-        get<Customers> {
-            // Get all customers
-            call.respond(customerRepository.all())
-        }
-//        get<Customers.New> { customer ->
-//            // Show a page with fields for creating a new customer
-//            call.respond("List of articles sorted starting from $customer")
-//        }
-        post<Customers> {
-            // Add a new customer
-            val customerRequest = call.receive<CustomerRequest>()
-            val customer = customerRequest.toCustomer(UUID.randomUUID())
-            customerRepository.add(customer)
-            call.respond(status = HttpStatusCode.Created, message = customer)
-        }
-        get<Customers.Id> { request ->
-            // Show a customer with id ${customer.id}
-            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
-        }
-//        get<Customers.Id.Edit> { customer ->
-//            // Show a page with fields for editing a customer
-//            call.respondText("Edit an article with id ${customer.parent.id}", status = HttpStatusCode.OK)
-//        }
-        put<Customers.Id> { request ->
-            // Update a customer
-            val customer = call.receive<CustomerRequest>()
-            call.respondText("$customer with id ${request.id} updated", status = HttpStatusCode.OK)
-        }
-        delete<Customers.Id> { request ->
-            // Delete a customer
-            call.respondText("A customer with id ${request.id} deleted", status = HttpStatusCode.OK)
         }
     }
 //    }

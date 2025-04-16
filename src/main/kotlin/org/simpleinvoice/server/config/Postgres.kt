@@ -15,7 +15,7 @@ import org.simpleinvoice.repository.CityService
 import java.sql.Connection
 import java.sql.DriverManager
 
-fun Application.configureDatabases() {
+fun Application.configurePostgresDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = true)
     val cityService = CityService(dbConnection)
 

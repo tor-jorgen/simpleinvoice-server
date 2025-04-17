@@ -10,8 +10,8 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
-import org.simpleinvoice.repository.City
-import org.simpleinvoice.repository.CityService
+import org.simpleinvoice.server.repository.City
+import org.simpleinvoice.server.repository.CityService
 import java.sql.Connection
 import java.sql.DriverManager
 

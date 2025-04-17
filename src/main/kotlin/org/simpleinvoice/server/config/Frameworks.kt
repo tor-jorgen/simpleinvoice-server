@@ -1,11 +1,11 @@
 package org.simpleinvoice.server.config
 
-import com.example.HelloService
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import org.simpleinvoice.server.HelloService
 
 fun Application.configureFrameworks() {
     install(Koin) {

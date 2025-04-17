@@ -1,0 +1,57 @@
+package org.simpleinvoice.server.resources
+
+import io.ktor.resources.Resource
+import io.ktor.server.application.Application
+import io.ktor.server.resources.get
+import io.ktor.server.response.respond
+import io.ktor.server.routing.routing
+import org.simpleinvoice.repository.PersonRepository
+
+@Resource("/persons")
+class Persons {
+    @Resource("{id}")
+    class Id(
+        val parent: Persons = Persons(),
+        val id: Long,
+    )
+}
+
+/**
+ * These routes require a valid session, otherwise you have to log in
+ */
+fun Application.configurePersonsRouting() {
+    val personRepository = PersonRepository() // TODO: Inject
+
+    routing {
+        //        authenticate(AUTH_SESSION) {
+        get<Persons> {
+            // Get all persons
+            call.respond(personRepository.all())
+        }
+
+//        post<Persons> {
+//            // Add a new customer
+//            val customerRequest = call.receive<CustomerRequest>()
+//            val customer = customerRequest.toCustomer(UUID.randomUUID())
+//            personRepository.add(customer)
+//            call.respond(status = HttpStatusCode.Created, message = customer)
+//        }
+//
+//        get<Persons.Id> { request ->
+//            // Show a customer with id ${customer.id}
+//            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
+//        }
+//
+//        put<Persons.Id> { request ->
+//            // Update a customer
+//            val customer = call.receive<CustomerRequest>()
+//            call.respondText("$customer with id ${request.id} updated", status = HttpStatusCode.OK)
+//        }
+//
+//        delete<Persons.Id> { request ->
+//            // Delete a customer
+//            call.respondText("A customer with id ${request.id} deleted", status = HttpStatusCode.OK)
+//        }
+    }
+    //    }
+}

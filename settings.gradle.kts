@@ -1,1 +1,1 @@
-rootProject.name = "simpleinvoice"
+rootProject.name = "simpleinvoice-server"

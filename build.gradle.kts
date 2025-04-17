@@ -11,7 +11,7 @@ plugins {
     id("org.flywaydb.flyway") version "10.0.0"
 }
 
-group = "org.simpleinvoice"
+group = "org.simpleinvoice.server"
 version = "0.0.1"
 
 application {
@@ -76,7 +76,7 @@ dependencies {
 
 ktor {
     docker {
-        localImageName.set("simple_invoice")
+        localImageName.set("simpleinvoice-server")
     }
 }
 

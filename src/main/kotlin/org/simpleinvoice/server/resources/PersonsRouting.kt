@@ -5,14 +5,17 @@ import io.ktor.server.application.Application
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.serialization.Serializable
 import org.simpleinvoice.repository.PersonRepository
+import org.simpleinvoice.server.common.UUIDSerializer
+import java.util.UUID
 
 @Resource("/persons")
 class Persons {
     @Resource("{id}")
     class Id(
         val parent: Persons = Persons(),
-        val id: Long,
+        @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
 }
 

@@ -6,7 +6,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
-class InvoiceLine(
+data class InvoiceLine(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     @SerialName("line_number") val lineNumber: Int,
     val product: Product,

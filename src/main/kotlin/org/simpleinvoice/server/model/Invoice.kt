@@ -7,7 +7,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Serializable
-class Invoice(
+data class Invoice(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     val invoiceNumber: Int,
     val status: InvoiceStatus,

@@ -7,7 +7,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Serializable
-class InvoiceReminder(
+data class InvoiceReminder(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     val number: Int,
     @Serializable(with = InstantSerializer::class) val generatedDate: Instant,

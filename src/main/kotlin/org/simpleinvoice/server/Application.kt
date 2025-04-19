@@ -11,6 +11,7 @@ import org.simpleinvoice.server.config.configureRouting
 import org.simpleinvoice.server.config.configureSecurity
 import org.simpleinvoice.server.config.configureSerialization
 import org.simpleinvoice.server.config.runFlyway
+import org.simpleinvoice.server.resources.configureConfigsRouting
 import org.simpleinvoice.server.resources.configureHouseholdsRouting
 import org.simpleinvoice.server.resources.configureInvoiceLineRouting
 import org.simpleinvoice.server.resources.configureInvoicesRouting
@@ -34,6 +35,7 @@ fun Application.module() {
 //    configureKafka()
     configureAdministration()
     configureRouting()
+    configureConfigsRouting()
     configureHouseholdsRouting()
     configurePersonsRouting()
     configureInvoicesRouting()

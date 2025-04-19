@@ -6,7 +6,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
-class User(
+data class User(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     @SerialName("principal_id") val principalId: String,
     @SerialName("login_provider") val loginProvider: LoginProvider,

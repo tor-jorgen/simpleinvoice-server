@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
+import org.koin.ktor.ext.get as getK
 
 @Resource("/persons")
 class Persons {
@@ -22,14 +23,12 @@ class Persons {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configurePersonsRouting() {
-    val personRepository = PersonRepository() // TODO: Inject
-
+fun Application.configurePersonsRouting(repository: PersonRepository = getK<PersonRepository>()) {
     routing {
         //        authenticate(AUTH_SESSION) {
         get<Persons> {
             // Get all persons
-            call.respond(personRepository.all())
+            call.respond(repository.all())
         }
 
 //        post<Persons> {

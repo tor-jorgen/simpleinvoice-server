@@ -8,7 +8,6 @@ import io.ktor.server.resources.Resources
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import org.simpleinvoice.repository.PersonRepository
 
 fun Application.configureRouting() {
 //    install(RequestValidation) {
@@ -44,7 +43,7 @@ private fun Application.configurePublicRouting() {
         get("/about") {
             call.respondText(
                 "This is a simple application for handling invoices. Please ask the administrator to be " +
-                    "registered as a user if you want to use the application :-)",
+                        "registered as a user if you want to use the application :-)",
                 status = HttpStatusCode.OK,
             )
         }
@@ -55,7 +54,6 @@ private fun Application.configurePublicRouting() {
  * These routes require a valid session, otherwise you have to log in
  */
 private fun Application.configureSessionProtectedRouting() {
-    val personRepository = PersonRepository() // TODO: Inject
 
     routing {
 //        authenticate(AUTH_SESSION) {

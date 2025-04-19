@@ -13,6 +13,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.ConfigRepository
 import org.simpleinvoice.server.resources.model.ConfigRequest
 import java.util.UUID
+import org.koin.ktor.ext.get as getK
 
 @Resource("/config")
 class Configs {
@@ -26,8 +27,7 @@ class Configs {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureConfigsRouting() {
-    val repository = ConfigRepository() // TODO: Inject
+fun Application.configureConfigsRouting(repository: ConfigRepository = getK<ConfigRepository>()) {
 
     routing {
 //        authenticate(AUTH_SESSION) {

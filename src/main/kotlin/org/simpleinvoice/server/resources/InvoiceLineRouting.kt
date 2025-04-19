@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.InvoiceLineRepository
 import java.util.UUID
+import org.koin.ktor.ext.get as getK
 
 @Resource("/invoicelines")
 class InvoiceLines {
@@ -23,9 +24,7 @@ class InvoiceLines {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureInvoiceLineRouting() {
-    val repository = InvoiceLineRepository() // TODO: Inject
-
+fun Application.configureInvoiceLineRouting(repository: InvoiceLineRepository = getK<InvoiceLineRepository>()) {
     routing {
         //        authenticate(AUTH_SESSION) {
         get<InvoiceLines> {

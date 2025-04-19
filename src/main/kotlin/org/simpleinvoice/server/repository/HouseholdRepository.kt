@@ -11,8 +11,8 @@ import org.simpleinvoice.server.repository.model.HouseholdTable
 import org.simpleinvoice.server.repository.model.PersonTable
 import java.util.UUID
 
-class HouseholdRepository : HouseholdRepositoryInterface {
-    private val personRepository = PersonRepository() // TODO: Inject
+class HouseholdRepository(private val personRepository: PersonRepository) :
+    HouseholdRepositoryInterface {
 
     override suspend fun all(): List<Household> =
         suspendTransaction {

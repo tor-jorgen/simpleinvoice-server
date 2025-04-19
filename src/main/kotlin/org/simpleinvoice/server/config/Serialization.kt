@@ -9,8 +9,5 @@ fun Application.configureSerialization() {
     install(ContentNegotiation) {
         // JSON with Jackson
         json()
-//        jackson {
-//            enable(SerializationFeature.INDENT_OUTPUT)
-//        }
     }
 }

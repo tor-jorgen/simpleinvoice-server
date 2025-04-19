@@ -10,8 +10,7 @@ import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
 import java.util.UUID
 
-class InvoiceRepository : InvoiceRepositoryInterface {
-    private val invoiceLineRepository = InvoiceLineRepository() // TODO: Inject
+class InvoiceRepository(private val invoiceLineRepository: InvoiceLineRepository) : InvoiceRepositoryInterface {
 
     override suspend fun all(): List<Invoice> =
         suspendTransaction {

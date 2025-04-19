@@ -5,7 +5,7 @@ import org.simpleinvoice.server.config.configureAdministration
 import org.simpleinvoice.server.config.configureCallLogging
 import org.simpleinvoice.server.config.configureDatabases
 import org.simpleinvoice.server.config.configureErrorHandling
-import org.simpleinvoice.server.config.configureFrameworks
+import org.simpleinvoice.server.config.configureDependencyInjection
 import org.simpleinvoice.server.config.configureHTTP
 import org.simpleinvoice.server.config.configureRouting
 import org.simpleinvoice.server.config.configureSecurity
@@ -27,7 +27,7 @@ fun Application.module() {
     configureCallLogging()
     runFlyway()
     configureDatabases()
-    configureFrameworks()
+    configureDependencyInjection()
     configureSecurity()
     configureSerialization()
     configureHTTP()

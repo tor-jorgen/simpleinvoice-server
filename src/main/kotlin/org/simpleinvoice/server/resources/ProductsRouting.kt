@@ -15,6 +15,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.resources.model.ProductRequest
 import java.util.UUID
+import org.koin.ktor.ext.get as getK
 
 @Resource("/products")
 class Products {
@@ -28,8 +29,7 @@ class Products {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureProductsRouting() {
-    val repository = ProductRepository() // TODO: Inject
+fun Application.configureProductsRouting(repository: ProductRepository = getK<ProductRepository>()) {
 
     routing {
 //        authenticate(AUTH_SESSION) {

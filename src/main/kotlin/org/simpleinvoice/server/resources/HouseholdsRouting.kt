@@ -15,6 +15,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.HouseholdRequest
 import java.util.UUID
+import org.koin.ktor.ext.get as getK
 
 @Resource("/households")
 class Households {
@@ -28,8 +29,7 @@ class Households {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureHouseholdsRouting() {
-    val repository = HouseholdRepository() // TODO: Inject
+fun Application.configureHouseholdsRouting(repository: HouseholdRepository = getK<HouseholdRepository>()) {
 
     routing {
 //        authenticate(AUTH_SESSION) {

@@ -2,63 +2,49 @@ package org.simpleinvoice.server.config
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
 import io.ktor.server.application.log
 import io.ktor.server.http.content.resolveResource
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 
 fun Application.configureErrorHandling() {
     install(StatusPages) {
         statusFileWithLogging(
             code = HttpStatusCode.NotFound,
             filePath = "template404.html",
-            logMessage = "Oh oh. This page does not exist!",
+            logMessage = "The page does not exist!",
         )
 
         statusFileWithLogging(
             code = HttpStatusCode.Unauthorized,
             filePath = "template401.html",
-            logMessage = "Oh oh. You don't have access to this page! Ask the administrator if you need access to this page",
+            logMessage = "The user is not authorized to access this resource!",
         )
 
         statusFileWithLogging(
             code = HttpStatusCode.InternalServerError,
             filePath = "template500.html",
-            logMessage =
-                "Oh oh. Se application failed! Please retry. If that doesn't help, please contact the " +
-                    "administrator, or if you are the administrator, report a bug",
+            logMessage = "Internal server error!",
         )
 
-//        status(HttpStatusCode.NotFound) { call, status ->
-//            call.application.log.info("${status.value}/${status.description}: ${call.request.local}")
-//            call.respondText(text = "Oh oh. This page does not exist!", status = status)
-//        }
-//        statusFile(
-//            HttpStatusCode.NotFound,
-//            HttpStatusCode.Unauthorized,
-//            HttpStatusCode.InternalServerError,
-//            filePattern = "template#.html",
-//        )
-
-//        status(HttpStatusCode.Unauthorized) { call, status ->
-//            call.application.log.info("${status.value}/${status.description}: ${call.request.local}")
-//            call.respondText(
-//                text = "Oh oh. You don't have access to this page! Ask the administrator if you need access to this page",
-//                status = status,
-//            )
-//        }
-
         exception<Throwable> { call, cause ->
-            call.application.log.error("Internal Server error!", cause)
-            call.respondText(
-                text =
-                    "Oh oh. Se application failed! Please retry. If that doesn't help, please contact the " +
-                        "administrator, or if you are the administrator, report a bug",
-                status = HttpStatusCode.InternalServerError,
-            )
+            when {
+                cause is BadRequestException -> {
+                    logAndRespondWithResourceFile(
+                        call = call,
+                        status = HttpStatusCode.BadRequest,
+                        filePath = "template400.html",
+                        cause = cause,
+                        logMessage = "The request was malformed!"
+                    )
+                }
+            }
+            call.application.log.error("Something failed @ ${call.request.local}", cause)
+            throw cause
         }
     }
 }
@@ -69,14 +55,29 @@ private fun StatusPagesConfig.statusFileWithLogging(
     logMessage: String? = null,
 ) {
     status(code) { call, status ->
-        call.application.log.info("${status.value}/${status.description}: $logMessage @ ${call.request.local}")
-        val resource = call.resolveResource(filePath)
-        if (resource == null) {
-            call.response.status(status)
-            call.respond("${status.value}/${status.description}: $logMessage")
-        } else {
-            call.response.status(status)
-            call.respond(resource)
-        }
+        logAndRespondWithResourceFile(
+            call = call,
+            status = status,
+            filePath = filePath,
+            logMessage = logMessage,
+        )
+    }
+}
+
+private suspend fun logAndRespondWithResourceFile(
+    call: ApplicationCall,
+    status: HttpStatusCode,
+    filePath: String,
+    cause: Throwable? = null,
+    logMessage: String? = null,
+) {
+    call.application.log.error("${status.value}/${status.description}: $logMessage @ ${call.request.local}", cause)
+    val resource = call.resolveResource(filePath)
+    if (resource == null) {
+        call.response.status(status)
+        call.respond("${status.value}/${status.description}: $logMessage")
+    } else {
+        call.response.status(status)
+        call.respond(resource)
     }
 }

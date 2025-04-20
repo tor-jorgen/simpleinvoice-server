@@ -33,7 +33,8 @@ fun Application.configureConfigsRouting(repository: ConfigRepository = getK<Conf
 //        authenticate(AUTH_SESSION) {
         get<Configs> {
             // Get all products
-            call.respond(status = HttpStatusCode.OK, message = repository.get())
+            throw RuntimeException("Something failed")
+//            call.respond(status = HttpStatusCode.OK, message = repository.get())
         }
 
         put<Configs.Id> { request ->

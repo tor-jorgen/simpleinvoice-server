@@ -25,12 +25,6 @@ fun Application.configureErrorHandling() {
             logMessage = "The user is not authorized to access this resource!",
         )
 
-        statusFileWithLogging(
-            code = HttpStatusCode.InternalServerError,
-            filePath = "template500.html",
-            logMessage = "Internal server error!",
-        )
-
         exception<Throwable> { call, cause ->
             when {
                 cause is BadRequestException -> {
@@ -43,8 +37,13 @@ fun Application.configureErrorHandling() {
                     )
                 }
             }
-            call.application.log.error("Something failed @ ${call.request.local}", cause)
-            throw cause
+            logAndRespondWithResourceFile(
+                call = call,
+                status = HttpStatusCode.InternalServerError,
+                filePath = "template500.html",
+                cause = cause,
+                logMessage = "Internal server error!"
+            )
         }
     }
 }

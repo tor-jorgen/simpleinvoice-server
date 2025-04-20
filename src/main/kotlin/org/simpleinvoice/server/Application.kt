@@ -2,12 +2,12 @@ package org.simpleinvoice.server
 
 import io.ktor.server.application.Application
 import org.simpleinvoice.server.config.configureAdministration
+import org.simpleinvoice.server.config.configureBasicRouting
 import org.simpleinvoice.server.config.configureCallLogging
 import org.simpleinvoice.server.config.configureDatabases
-import org.simpleinvoice.server.config.configureErrorHandling
 import org.simpleinvoice.server.config.configureDependencyInjection
+import org.simpleinvoice.server.config.configureErrorHandling
 import org.simpleinvoice.server.config.configureHTTP
-import org.simpleinvoice.server.config.configureRouting
 import org.simpleinvoice.server.config.configureSecurity
 import org.simpleinvoice.server.config.configureSerialization
 import org.simpleinvoice.server.config.runFlyway
@@ -34,7 +34,7 @@ fun Application.module() {
     configureErrorHandling()
 //    configureKafka()
     configureAdministration()
-    configureRouting()
+    configureBasicRouting()
     configureConfigsRouting()
     configureHouseholdsRouting()
     configurePersonsRouting()

@@ -19,7 +19,7 @@ import org.koin.ktor.ext.get as getK
 class Configs {
     @Resource("{id}")
     class Id(
-        val parent: Configs = Configs(),
+        @Suppress("unused") val parent: Configs = Configs(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
 }
@@ -32,9 +32,8 @@ fun Application.configureConfigsRouting(repository: ConfigRepository = getK<Conf
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Configs> {
-            // Get all products
-            throw RuntimeException("Something failed")
-//            call.respond(status = HttpStatusCode.OK, message = repository.get())
+            // Get the config
+            call.respond(status = HttpStatusCode.OK, message = repository.get())
         }
 
         put<Configs.Id> { request ->

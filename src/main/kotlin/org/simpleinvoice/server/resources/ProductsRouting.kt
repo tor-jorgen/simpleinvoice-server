@@ -21,7 +21,7 @@ import org.koin.ktor.ext.get as getK
 class Products {
     @Resource("{id}")
     class Id(
-        val parent: Products = Products(),
+        @Suppress("unused") val parent: Products = Products(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
 }

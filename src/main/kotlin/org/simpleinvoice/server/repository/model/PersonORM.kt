@@ -11,7 +11,7 @@ object PersonTable : UUIDTable("person") {
     val householdId = reference<UUID>(name = "household_id", foreign = HouseholdTable)
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
-    val emailAddress = varchar("email_address", 255)
+    val emailAddress = varchar("email_address", 255).nullable()
     val phoneNumber = varchar("phone_number", 255).nullable()
 }
 

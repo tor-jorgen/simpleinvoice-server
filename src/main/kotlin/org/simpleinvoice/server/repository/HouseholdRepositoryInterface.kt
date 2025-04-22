@@ -2,10 +2,11 @@ package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.simpleinvoice.server.model.Household
+import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
 interface HouseholdRepositoryInterface {
-    suspend fun all(): List<Household>
+    suspend fun all(): HouseholdsResponse
 
 //    suspend fun create(household: Household): Unit
 

@@ -9,21 +9,25 @@ import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.repository.model.HouseholdDAO
 import org.simpleinvoice.server.repository.model.HouseholdTable
 import org.simpleinvoice.server.repository.model.PersonTable
+import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
-class HouseholdRepository(private val personRepository: PersonRepository) :
-    HouseholdRepositoryInterface {
-
-    override suspend fun all(): List<Household> =
+class HouseholdRepository(
+    private val personRepository: PersonRepository,
+) : HouseholdRepositoryInterface {
+    override suspend fun all(): HouseholdsResponse =
         suspendTransaction {
-            HouseholdDAO.all().map { it.toHousehold() }
+            HouseholdsResponse(HouseholdDAO.all().map { it.toHousehold() })
         }
 
     override suspend fun upsert(household: Household): UpsertStatement<Long> =
         suspendTransaction {
+            // Delete all persons for the household, since we don't know if any have been removed
+            PersonTable.deleteWhere { householdId eq household.id }
             val upsert =
                 HouseholdTable.upsert {
                     it[id] = household.id
+                    it[name] = household.name
                     it[address] = household.address
                     it[zipCode] = household.zipCode
                     it[city] = household.city

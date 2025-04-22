@@ -9,7 +9,7 @@ CREATE TABLE application_user
     scopes         VARCHAR NOT NULL
 );
 
-CREATE TABLE application_config
+CREATE TABLE settings
 (
     id                  UUID    NOT NULL PRIMARY KEY,
     default_due_days    INT     NOT NULL,
@@ -20,6 +20,7 @@ CREATE TABLE application_config
 CREATE TABLE household
 (
     id       UUID    NOT NULL PRIMARY KEY,
+    name     VARCHAR,
     address  VARCHAR NOT NULL,
     zip_code VARCHAR NOT NULL,
     city     VARCHAR NOT NULL,
@@ -32,7 +33,7 @@ CREATE TABLE person
     household_id  UUID    NOT NULL REFERENCES household (id),
     first_name    VARCHAR NOT NULL,
     last_name     VARCHAR NOT NULL,
-    email_address VARCHAR NOT NULL,
+    email_address VARCHAR,
     phone_number  VARCHAR
 );
 

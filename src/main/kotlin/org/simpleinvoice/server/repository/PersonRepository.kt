@@ -51,6 +51,7 @@ class PersonRepository : PersonRepositoryInterface {
         household: Household,
     ): UpsertStatement<Long> =
         PersonTable.upsert {
+            it[id] = person.id
             it[householdId] = household.id
             it[firstName] = person.firstName
             it[lastName] = person.lastName

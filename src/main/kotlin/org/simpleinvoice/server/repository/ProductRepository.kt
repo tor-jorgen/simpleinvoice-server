@@ -7,12 +7,13 @@ import org.jetbrains.exposed.sql.upsert
 import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.repository.model.ProductDAO
 import org.simpleinvoice.server.repository.model.ProductTable
+import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 class ProductRepository : ProductRepositoryInterface {
-    override suspend fun all(): List<Product> =
+    override suspend fun all(): ProductsResponse =
         suspendTransaction {
-            ProductDAO.all().map { it.toProduct() }
+            ProductsResponse(products = ProductDAO.all().map { it.toProduct() })
         }
 
     override suspend fun upsert(product: Product): UpsertStatement<Long> =
@@ -22,6 +23,7 @@ class ProductRepository : ProductRepositoryInterface {
 
     override fun upsertWithoutTransaction(product: Product): UpsertStatement<Long> =
         ProductTable.upsert {
+            it[id] = product.id
             it[productCode] = product.code
             it[productName] = product.name
             it[quantity] = product.quantity

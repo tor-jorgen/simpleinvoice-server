@@ -6,7 +6,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
-data class Config(
+data class Settings(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     @SerialName("default_due_days") val defaultDueDays: Int,
     @SerialName("last_invoice_number") val lastInvoiceNumber: Int,

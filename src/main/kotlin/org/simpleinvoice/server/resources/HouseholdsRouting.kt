@@ -30,7 +30,6 @@ class Households {
  * These routes require a valid session, otherwise you have to log in
  */
 fun Application.configureHouseholdsRouting(repository: HouseholdRepository = getK<HouseholdRepository>()) {
-
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Households> {
@@ -42,9 +41,7 @@ fun Application.configureHouseholdsRouting(repository: HouseholdRepository = get
             // Add a new household
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(UUID.randomUUID())
-            println("doing an upsert on: $household")
-            val upsert = repository.upsert(household)
-            println(upsert)
+            repository.upsert(household)
             call.respond(status = HttpStatusCode.Created, message = household)
         }
 

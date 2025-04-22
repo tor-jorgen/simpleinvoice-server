@@ -4,27 +4,27 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.simpleinvoice.server.model.Config
 import org.simpleinvoice.server.model.Currency
+import org.simpleinvoice.server.model.Settings
 import java.util.UUID
 
-object ConfigTable : UUIDTable("application_config") {
+object SettingsTable : UUIDTable("settings") {
     val defaultDueDays = integer("default_due_days")
     val lastInvoiceNumber = integer("last_invoice_number")
     val defaultCurrency = varchar("default_currency", 5)
 }
 
-class ConfigDAO(
+class SettingsDAO(
     id: EntityID<UUID>,
 ) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<ConfigDAO>(ConfigTable)
+    companion object : UUIDEntityClass<SettingsDAO>(SettingsTable)
 
-    var defaultDueDays by ConfigTable.defaultDueDays
-    var lastInvoiceNumber by ConfigTable.lastInvoiceNumber
-    var defaultCurrency by ConfigTable.defaultCurrency
+    var defaultDueDays by SettingsTable.defaultDueDays
+    var lastInvoiceNumber by SettingsTable.lastInvoiceNumber
+    var defaultCurrency by SettingsTable.defaultCurrency
 
-    fun toConfig(): Config =
-        Config(
+    fun toSettings(): Settings =
+        Settings(
             id = id.value,
             defaultDueDays = defaultDueDays,
             lastInvoiceNumber = lastInvoiceNumber,

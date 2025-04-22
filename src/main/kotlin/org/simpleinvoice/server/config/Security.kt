@@ -20,7 +20,6 @@ import io.ktor.server.auth.principal
 import io.ktor.server.auth.session
 import io.ktor.server.http.content.LocalFileContent
 import io.ktor.server.http.content.resolveResource
-import io.ktor.server.plugins.csrf.CSRF
 import io.ktor.server.response.respondFile
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
@@ -35,7 +34,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlin.collections.set
 
 private const val SCOPE_PUBLIC_PERSONAL_INFO = "https://www.googleapis.com/auth/userinfo.profile"
 private const val SCOPE_EMAIL = "https://www.googleapis.com/auth/userinfo.email"
@@ -110,17 +108,6 @@ fun Application.configureSecurity() {
                 call.respondRedirect(URL_LOGIN)
             }
         }
-    }
-
-    install(CSRF) {
-        // tests Origin is an expected value
-        allowOrigin("http://localhost:8080")
-
-        // tests Origin matches Host header
-        originMatchesHost()
-
-        // custom header checks
-//        checkHeader("X-CSRF-Token")
     }
 
     configurePublicRouting()

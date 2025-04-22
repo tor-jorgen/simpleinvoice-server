@@ -9,14 +9,15 @@ import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.repository.model.HouseholdDAO
 import org.simpleinvoice.server.repository.model.HouseholdTable
 import org.simpleinvoice.server.repository.model.PersonTable
+import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
-class HouseholdRepository(private val personRepository: PersonRepository) :
-    HouseholdRepositoryInterface {
-
-    override suspend fun all(): List<Household> =
+class HouseholdRepository(
+    private val personRepository: PersonRepository,
+) : HouseholdRepositoryInterface {
+    override suspend fun all(): HouseholdsResponse =
         suspendTransaction {
-            HouseholdDAO.all().map { it.toHousehold() }
+            HouseholdsResponse(HouseholdDAO.all().map { it.toHousehold() })
         }
 
     override suspend fun upsert(household: Household): UpsertStatement<Long> =

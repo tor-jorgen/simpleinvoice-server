@@ -8,6 +8,7 @@ import java.util.UUID
 @Serializable
 data class Household(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
+    val name: String?,
     val address: String,
     @SerialName("zip_code") val zipCode: String,
     val city: String,

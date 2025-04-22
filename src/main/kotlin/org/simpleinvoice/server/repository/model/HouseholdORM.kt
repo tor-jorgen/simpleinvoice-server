@@ -8,6 +8,7 @@ import org.simpleinvoice.server.model.Household
 import java.util.UUID
 
 object HouseholdTable : UUIDTable("household") {
+    val name = varchar("name", 255).nullable()
     val address = varchar("address", 255)
     val zipCode = varchar("zip_code", 50)
     val city = varchar("city", 255)
@@ -19,6 +20,7 @@ class HouseholdDAO(
 ) : UUIDEntity(id) {
     companion object : UUIDEntityClass<HouseholdDAO>(HouseholdTable)
 
+    var name by HouseholdTable.name
     var address by HouseholdTable.address
     var zipCode by HouseholdTable.zipCode
     var city by HouseholdTable.city
@@ -28,6 +30,7 @@ class HouseholdDAO(
     fun toHousehold(): Household =
         Household(
             id = id.value,
+            name = name,
             address = address,
             zipCode = zipCode,
             city = city,

@@ -9,6 +9,7 @@ import java.util.UUID
 
 @Serializable
 data class HouseholdRequest(
+    val name: String?,
     val address: String,
     @SerialName("zip_code") val zipCode: String,
     val city: String,
@@ -18,6 +19,7 @@ data class HouseholdRequest(
     fun toHousehold(id: UUID): Household =
         Household(
             id = id,
+            name = name,
             address = address,
             zipCode = zipCode,
             city = city,

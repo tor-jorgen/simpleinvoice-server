@@ -10,16 +10,16 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
-import org.simpleinvoice.server.repository.ConfigRepository
-import org.simpleinvoice.server.resources.model.ConfigRequest
+import org.simpleinvoice.server.repository.SettingsRepository
+import org.simpleinvoice.server.resources.model.SettingsRequest
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
-@Resource("/config")
-class Configs {
+@Resource("/settings")
+class Settings {
     @Resource("{id}")
     class Id(
-        @Suppress("unused") val parent: Configs = Configs(),
+        @Suppress("unused") val parent: Settings = Settings(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
 }
@@ -27,19 +27,18 @@ class Configs {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureConfigsRouting(repository: ConfigRepository = getK<ConfigRepository>()) {
-
+fun Application.configureSettingsRouting(repository: SettingsRepository = getK<SettingsRepository>()) {
     routing {
 //        authenticate(AUTH_SESSION) {
-        get<Configs> {
+        get<Settings> {
             // Get the config
             call.respond(status = HttpStatusCode.OK, message = repository.get())
         }
 
-        put<Configs.Id> { request ->
+        put<Settings.Id> { request ->
             // Update a product
-            val configRequest = call.receive<ConfigRequest>()
-            val config = configRequest.toConfig(request.id)
+            val settingsRequest = call.receive<SettingsRequest>()
+            val config = settingsRequest.toSettings(request.id)
             repository.update(config)
             call.respond(status = HttpStatusCode.OK, message = config)
         }

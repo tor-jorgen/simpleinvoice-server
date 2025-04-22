@@ -70,6 +70,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
+    val ktorOpenApiVersion = "5.0.2"
+    implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
+
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

@@ -25,6 +25,12 @@ fun Application.configureErrorHandling() {
             logMessage = "The user is not authorized to access this resource!",
         )
 
+        statusFileWithLogging(
+            code = HttpStatusCode.BadRequest,
+            filePath = "template400.html",
+            logMessage = "A bad request!",
+        )
+
         exception<Throwable> { call, cause ->
             when {
                 cause is BadRequestException -> {
@@ -33,7 +39,7 @@ fun Application.configureErrorHandling() {
                         status = HttpStatusCode.BadRequest,
                         filePath = "template400.html",
                         cause = cause,
-                        logMessage = "The request was malformed!"
+                        logMessage = "The request was malformed!",
                     )
                 }
             }
@@ -42,7 +48,7 @@ fun Application.configureErrorHandling() {
                 status = HttpStatusCode.InternalServerError,
                 filePath = "template500.html",
                 cause = cause,
-                logMessage = "Internal server error!"
+                logMessage = "Internal server error!",
             )
         }
     }

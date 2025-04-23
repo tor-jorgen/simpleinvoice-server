@@ -10,6 +10,7 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.HouseholdRepository
@@ -18,7 +19,9 @@ import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
 @Resource("/households")
-class Households {
+class Households(
+    @SerialName("active_only") val activeOnly: Boolean = false,
+) {
     @Resource("{id}")
     class Id(
         @Suppress("unused") val parent: Households = Households(),
@@ -34,7 +37,8 @@ fun Application.configureHouseholdsRouting(repository: HouseholdRepository = get
 //        authenticate(AUTH_SESSION) {
         get<Households> {
             // Get all Households
-            call.respond(status = HttpStatusCode.OK, message = repository.all())
+            val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
+            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
         }
 
         post<Households> {
@@ -44,11 +48,6 @@ fun Application.configureHouseholdsRouting(repository: HouseholdRepository = get
             repository.upsert(household)
             call.respond(status = HttpStatusCode.Created, message = household)
         }
-
-        //        get<Household.Id> { request ->
-//            // Show a customer with id ${customer.id}
-//            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
-//        }
 
         put<Households.Id> { request ->
             // Update a household with upserts on persons

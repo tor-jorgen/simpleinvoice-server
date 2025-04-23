@@ -14,6 +14,7 @@ object ProductTable : UUIDTable("product") {
     val quantity = integer("quantity")
     val price = double("price")
     val currency = varchar("currency", 255)
+    val inactive = bool("inactive")
 }
 
 class ProductDAO(
@@ -26,6 +27,7 @@ class ProductDAO(
     var quantity by ProductTable.quantity
     var price by ProductTable.price
     var currency by ProductTable.currency
+    var inactive by ProductTable.inactive
 
     fun toProduct(): Product =
         Product(
@@ -35,5 +37,6 @@ class ProductDAO(
             quantity = quantity,
             price = price,
             currency = Currency.valueOf(currency),
+            inactive = inactive,
         )
 }

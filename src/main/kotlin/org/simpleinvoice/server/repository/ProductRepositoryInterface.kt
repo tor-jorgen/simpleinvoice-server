@@ -6,7 +6,7 @@ import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 interface ProductRepositoryInterface {
-    suspend fun all(): ProductsResponse
+    suspend fun all(activeOnly: Boolean): ProductsResponse
 
     suspend fun upsert(product: Product): UpsertStatement<Long>
 

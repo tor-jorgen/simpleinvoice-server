@@ -12,4 +12,5 @@ data class Product(
     val quantity: Int,
     val price: Double,
     val currency: Currency,
+    val inactive: Boolean = false,
 )

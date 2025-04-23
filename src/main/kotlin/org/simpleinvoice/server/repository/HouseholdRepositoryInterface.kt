@@ -6,11 +6,7 @@ import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
 interface HouseholdRepositoryInterface {
-    suspend fun all(): HouseholdsResponse
-
-//    suspend fun create(household: Household): Unit
-
-//    suspend fun update(household: Household): Unit
+    suspend fun all(activeOnly: Boolean): HouseholdsResponse
 
     suspend fun upsert(household: Household): UpsertStatement<Long>
 

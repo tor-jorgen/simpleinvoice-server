@@ -11,9 +11,18 @@ import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 class ProductRepository : ProductRepositoryInterface {
-    override suspend fun all(): ProductsResponse =
+    override suspend fun all(activeOnly: Boolean): ProductsResponse =
         suspendTransaction {
             ProductsResponse(products = ProductDAO.all().map { it.toProduct() })
+
+            ProductsResponse(
+                products =
+                    if (activeOnly) {
+                        ProductDAO.find { ProductTable.inactive eq false }.map { it.toProduct() }
+                    } else {
+                        ProductDAO.all().map { it.toProduct() }
+                    },
+            )
         }
 
     override suspend fun upsert(product: Product): UpsertStatement<Long> =
@@ -29,6 +38,7 @@ class ProductRepository : ProductRepositoryInterface {
             it[quantity] = product.quantity
             it[price] = product.price
             it[currency] = product.currency.name
+            it[inactive] = product.inactive
         }
 
     override suspend fun delete(id: UUID): Boolean =

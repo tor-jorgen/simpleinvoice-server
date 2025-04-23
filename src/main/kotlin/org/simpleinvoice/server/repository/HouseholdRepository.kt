@@ -15,9 +15,16 @@ import java.util.UUID
 class HouseholdRepository(
     private val personRepository: PersonRepository,
 ) : HouseholdRepositoryInterface {
-    override suspend fun all(): HouseholdsResponse =
+    override suspend fun all(activeOnly: Boolean): HouseholdsResponse =
         suspendTransaction {
-            HouseholdsResponse(HouseholdDAO.all().map { it.toHousehold() })
+            HouseholdsResponse(
+                households =
+                    if (activeOnly) {
+                        HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
+                    } else {
+                        HouseholdDAO.all().map { it.toHousehold() }
+                    },
+            )
         }
 
     override suspend fun upsert(household: Household): UpsertStatement<Long> =
@@ -32,6 +39,7 @@ class HouseholdRepository(
                     it[zipCode] = household.zipCode
                     it[city] = household.city
                     it[country] = household.country
+                    it[inactive] = household.inactive
                 }
             household.persons.forEach { person ->
                 personRepository.upsertWithoutTransaction(person = person, household = household)

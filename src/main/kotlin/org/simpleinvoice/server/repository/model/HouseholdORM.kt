@@ -13,6 +13,7 @@ object HouseholdTable : UUIDTable("household") {
     val zipCode = varchar("zip_code", 50)
     val city = varchar("city", 255)
     val country = varchar("country", 255).nullable()
+    val inactive = bool("inactive")
 }
 
 class HouseholdDAO(
@@ -26,6 +27,7 @@ class HouseholdDAO(
     var city by HouseholdTable.city
     var country by HouseholdTable.country
     val persons by PersonDAO referrersOn PersonTable.householdId
+    val inactive: Boolean by HouseholdTable.inactive
 
     fun toHousehold(): Household =
         Household(
@@ -36,5 +38,6 @@ class HouseholdDAO(
             city = city,
             country = country,
             persons = persons.map { it.toPerson() },
+            inactive = inactive,
         )
 }

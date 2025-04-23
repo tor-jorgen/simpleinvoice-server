@@ -14,4 +14,5 @@ data class Household(
     val city: String,
     val country: String? = null,
     val persons: List<Person>,
+    val inactive: Boolean = false,
 )

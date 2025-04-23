@@ -12,6 +12,7 @@ class ProductRequest(
     val quantity: Int,
     val price: Double,
     val currency: Currency,
+    val inactive: Boolean,
 ) {
     fun toProduct(id: UUID): Product =
         Product(
@@ -21,5 +22,6 @@ class ProductRequest(
             quantity = quantity,
             price = price,
             currency = currency,
+            inactive = inactive,
         )
 }

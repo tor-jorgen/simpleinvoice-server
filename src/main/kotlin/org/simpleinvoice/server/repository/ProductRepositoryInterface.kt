@@ -2,10 +2,11 @@ package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.simpleinvoice.server.model.Product
+import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 interface ProductRepositoryInterface {
-    suspend fun all(): List<Product>
+    suspend fun all(): ProductsResponse
 
     suspend fun upsert(product: Product): UpsertStatement<Long>
 

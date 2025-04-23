@@ -22,9 +22,12 @@ class HouseholdRepository(
 
     override suspend fun upsert(household: Household): UpsertStatement<Long> =
         suspendTransaction {
+            // Delete all persons for the household, since we don't know if any have been removed
+            PersonTable.deleteWhere { householdId eq household.id }
             val upsert =
                 HouseholdTable.upsert {
                     it[id] = household.id
+                    it[name] = household.name
                     it[address] = household.address
                     it[zipCode] = household.zipCode
                     it[city] = household.city

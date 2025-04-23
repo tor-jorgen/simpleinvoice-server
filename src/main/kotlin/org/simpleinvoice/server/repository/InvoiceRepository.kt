@@ -8,17 +8,21 @@ import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.repository.model.InvoiceDAO
 import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
+import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.util.UUID
 
-class InvoiceRepository(private val invoiceLineRepository: InvoiceLineRepository) : InvoiceRepositoryInterface {
-
-    override suspend fun all(): List<Invoice> =
+class InvoiceRepository(
+    private val invoiceLineRepository: InvoiceLineRepository,
+) : InvoiceRepositoryInterface {
+    override suspend fun all(): InvoicesResponse =
         suspendTransaction {
-            InvoiceDAO.all().map { it.toInvoice() }
+            InvoicesResponse(invoices = InvoiceDAO.all().map { it.toInvoice() })
         }
 
     override suspend fun upsert(invoice: Invoice): UpsertStatement<Long> =
         suspendTransaction {
+            // Delete all invoice lines for the invoice, since we don't know if any have been removed
+            InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
             val upsert =
                 upsertWithoutTransaction(invoice)
             invoice.invoiceLines.forEach { invoiceLine ->

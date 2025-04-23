@@ -9,11 +9,11 @@ import java.util.UUID
 
 @Serializable
 data class HouseholdRequest(
-    val name: String?,
+    val name: String? = null,
     val address: String,
     @SerialName("zip_code") val zipCode: String,
     val city: String,
-    val country: String?,
+    val country: String? = null,
     val persons: List<PersonRequest>,
 ) {
     fun toHousehold(id: UUID): Household =

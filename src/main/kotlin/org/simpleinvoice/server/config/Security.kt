@@ -172,7 +172,8 @@ private fun Application.configureOidcProtectedRouting(redirects: Map<String, Str
                     }
                 }
                 //  A redirect URL could not be found, navigate home
-                call.respondRedirect(URL_HOME)
+//                call.respondRedirect(URL_HOME)
+                call.respondRedirect("http://localhost:3000/")
             }
         }
     }

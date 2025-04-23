@@ -11,11 +11,11 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
-@Resource("/persons")
-class Persons {
+@Resource("/users")
+class Users {
     @Resource("{id}")
     class Id(
-        @Suppress("unused") val parent: Persons = Persons(),
+        @Suppress("unused") val parent: Users = Users(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
 }
@@ -26,7 +26,7 @@ class Persons {
 fun Application.configurePersonsRouting(repository: PersonRepository = getK<PersonRepository>()) {
     routing {
         //        authenticate(AUTH_SESSION) {
-        get<Persons> {
+        get<Users> {
             // Get all persons
             call.respond(repository.all())
         }

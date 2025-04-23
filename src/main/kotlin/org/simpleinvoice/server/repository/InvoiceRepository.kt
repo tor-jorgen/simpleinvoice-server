@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
 import org.simpleinvoice.server.model.Invoice
+import org.simpleinvoice.server.model.InvoiceStatus
 import org.simpleinvoice.server.repository.model.InvoiceDAO
 import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
@@ -14,9 +15,17 @@ import java.util.UUID
 class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
 ) : InvoiceRepositoryInterface {
-    override suspend fun all(): InvoicesResponse =
+    override suspend fun all(openOnly: Boolean): InvoicesResponse =
         suspendTransaction {
             InvoicesResponse(invoices = InvoiceDAO.all().map { it.toInvoice() })
+            InvoicesResponse(
+                invoices =
+                    if (openOnly) {
+                        InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
+                    } else {
+                        InvoiceDAO.all().map { it.toInvoice() }
+                    },
+            )
         }
 
     override suspend fun upsert(invoice: Invoice): UpsertStatement<Long> =

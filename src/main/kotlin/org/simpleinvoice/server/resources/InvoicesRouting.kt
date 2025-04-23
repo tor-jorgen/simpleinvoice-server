@@ -10,6 +10,7 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.InvoiceRepository
@@ -18,7 +19,9 @@ import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
 @Resource("/invoices")
-class Invoices {
+class Invoices(
+    @SerialName("open_only") val openOnly: Boolean = false,
+) {
     @Resource("{id}")
     class Id(
         @Suppress("unused") val parent: Invoices = Invoices(),
@@ -34,7 +37,8 @@ fun Application.configureInvoicesRouting(repository: InvoiceRepository = getK<In
 //        authenticate(AUTH_SESSION) {
         get<Invoices> {
             // Get all invoices
-            call.respond(status = HttpStatusCode.OK, message = repository.all())
+            val openOnly = (call.queryParameters["open_only"] ?: "false").toBoolean()
+            call.respond(status = HttpStatusCode.OK, message = repository.all(openOnly))
         }
 
         post<Invoices> {
@@ -44,11 +48,6 @@ fun Application.configureInvoicesRouting(repository: InvoiceRepository = getK<In
             repository.upsert(invoice)
             call.respond(status = HttpStatusCode.Created, message = invoice)
         }
-
-        //        get<Household.Id> { request ->
-//            // Show a customer with id ${customer.id}
-//            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
-//        }
 
         put<Invoices.Id> { request ->
             // Update an invoice with upserts on invoice lines

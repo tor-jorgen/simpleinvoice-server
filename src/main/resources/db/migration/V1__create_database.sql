@@ -24,7 +24,8 @@ CREATE TABLE household
     address  VARCHAR NOT NULL,
     zip_code VARCHAR NOT NULL,
     city     VARCHAR NOT NULL,
-    country  VARCHAR
+    country  VARCHAR,
+    inactive BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE person
@@ -44,7 +45,8 @@ CREATE TABLE product
     product_name VARCHAR NOT NULL,
     quantity     INT     NOT NULL,
     price        DECIMAL NOT NULL,
-    currency     VARCHAR NOT NULL
+    currency     VARCHAR NOT NULL,
+    inactive     BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE invoice

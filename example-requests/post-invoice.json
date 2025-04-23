@@ -1,6 +1,6 @@
 {
   "invoice_number": "1",
-  "status": "UNPAID",
+  "status": "CREATED",
   "generated_date": "2025-04-16T20:59:00Z",
   "due_date": "2025-04-16T20:59:00Z",
   "household": {

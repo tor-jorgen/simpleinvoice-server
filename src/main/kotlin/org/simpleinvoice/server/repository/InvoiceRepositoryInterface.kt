@@ -6,7 +6,7 @@ import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.util.UUID
 
 interface InvoiceRepositoryInterface {
-    suspend fun all(): InvoicesResponse
+    suspend fun all(openOnly: Boolean): InvoicesResponse
 
     suspend fun upsert(invoice: Invoice): UpsertStatement<Long>
 

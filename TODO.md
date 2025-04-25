@@ -6,3 +6,4 @@
 4. Possible to show a localized text for constants in dropdown lists
 5. ~~Show a list of unpaid invoices on front page?~~
 6. Add users
+7. ~~Handle offline server the same way in all places~~

@@ -9,4 +9,5 @@
 7. ~~Handle offline server the same way in all places~~
 8. ~~Possible to search in dropdown lists for household and products in invoices~~
 9. Jump to "First name" when "ADD PERSON" is clicked in Register Households
+10. Should not be possible to delete invoices
 

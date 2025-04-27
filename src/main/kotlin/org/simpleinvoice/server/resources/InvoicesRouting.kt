@@ -44,17 +44,22 @@ fun Application.configureInvoicesRouting(repository: InvoiceRepository = getK<In
         post<Invoices> {
             // Create a new invoice
             val invoiceRequest = call.receive<InvoiceRequest>()
-            val invoice = invoiceRequest.toInvoice(UUID.randomUUID())
-            repository.upsert(invoice)
-            call.respond(status = HttpStatusCode.Created, message = invoice)
+            // Use a negative invoice number to indicate that this is a new invoice
+            val invoice = invoiceRequest.toInvoice(id = UUID.randomUUID(), invoiceNumber = -1)
+            val invoiceNumber = repository.upsert(invoice)
+            val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
+            call.respond(status = HttpStatusCode.Created, message = invoiceDb)
         }
 
         put<Invoices.Id> { request ->
             // Update an invoice with upserts on invoice lines
             val invoiceRequest = call.receive<InvoiceRequest>()
-            val invoice = invoiceRequest.toInvoice(request.id)
-            repository.upsert(invoice)
-            call.respond(status = HttpStatusCode.OK, message = invoice)
+            // Set invoice number to a non-negative value to indicate that this is an existing invoice
+            // The invoice number will anyway not be updated in the database
+            val invoice = invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0)
+            val invoiceNumber = repository.upsert(invoice)
+            val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
+            call.respond(status = HttpStatusCode.OK, message = invoiceDb)
         }
 
         delete<Invoices.Id> { request ->

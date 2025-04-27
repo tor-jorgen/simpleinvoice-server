@@ -6,8 +6,10 @@ import org.simpleinvoice.server.repository.model.SettingsDAO
 class SettingsRepository : SettingsRepositoryInterface {
     override suspend fun get(): Settings =
         suspendTransaction {
-            SettingsDAO.all().map { it.toSettings() }[0]
+            getWithoutTransaction()
         }
+
+    override fun getWithoutTransaction(): Settings = SettingsDAO.all().map { it.toSettings() }[0]
 
     override suspend fun update(settings: Settings): Unit =
         suspendTransaction {

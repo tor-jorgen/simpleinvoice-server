@@ -14,6 +14,7 @@ import java.util.UUID
 
 class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
+    private val settingsRepository: SettingsRepository,
 ) : InvoiceRepositoryInterface {
     override suspend fun all(openOnly: Boolean): InvoicesResponse =
         suspendTransaction {
@@ -28,20 +29,30 @@ class InvoiceRepository(
             )
         }
 
-    override suspend fun upsert(invoice: Invoice): UpsertStatement<Long> =
+    override suspend fun upsert(invoice: Invoice): Int =
         suspendTransaction {
             // Delete all invoice lines for the invoice, since we don't know if any have been removed
             InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
-            val upsert =
-                upsertWithoutTransaction(invoice)
+            val dbInvoice =
+                if (invoice.invoiceNumber < 0) {
+                    // Generate a new invoice number
+                    invoice.copy(
+                        invoiceNumber =
+                            nextInvoiceNumber()
+                                ?: (settingsRepository.getWithoutTransaction().lastInvoiceNumber + 1),
+                    )
+                } else {
+                    invoice
+                }
+            val upsert = upsertWithoutTransaction(dbInvoice)
             invoice.invoiceLines.forEach { invoiceLine ->
-                invoiceLineRepository.upsertWithoutTransaction(invoiceLine, invoice)
+                invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
             }
-            upsert
+            upsert.resultedValues!!.first().fieldIndex[InvoiceTable.invoiceNumber]!!
         }
 
     private fun upsertWithoutTransaction(invoice: Invoice): UpsertStatement<Long> =
-        InvoiceTable.upsert {
+        InvoiceTable.upsert(onUpdateExclude = listOf(InvoiceTable.invoiceNumber, InvoiceTable.generatedDate)) {
             it[id] = invoice.id
             it[invoiceNumber] = invoice.invoiceNumber
             it[status] = invoice.status.name
@@ -59,4 +70,6 @@ class InvoiceRepository(
             val rowsDeleted = InvoiceTable.deleteWhere { InvoiceTable.id eq id }
             rowsDeleted == 1
         }
+
+    override fun nextInvoiceNumber(): Int? = InvoiceDAO.all().maxOfOrNull { it.invoiceNumber }?.plus(1)
 }

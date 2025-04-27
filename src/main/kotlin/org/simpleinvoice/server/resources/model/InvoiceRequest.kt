@@ -15,7 +15,6 @@ import java.util.UUID
 
 @Serializable
 data class InvoiceRequest(
-    @SerialName("invoice_number") val invoiceNumber: Int,
     val status: InvoiceStatus,
     @SerialName("generated_date") @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
     @SerialName("due_date") @Serializable(with = InstantSerializer::class) val dueDate: Instant,
@@ -25,7 +24,10 @@ data class InvoiceRequest(
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
 ) {
-    fun toInvoice(id: UUID): Invoice =
+    fun toInvoice(
+        id: UUID,
+        invoiceNumber: Int,
+    ): Invoice =
         Invoice(
             id = id,
             invoiceNumber = invoiceNumber,

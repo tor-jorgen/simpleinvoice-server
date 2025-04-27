@@ -51,15 +51,15 @@ CREATE TABLE product
 
 CREATE TABLE invoice
 (
-    id             UUID    NOT NULL PRIMARY KEY,
-    invoice_number INT     NOT NULL,
-    status         VARCHAR NOT NULL,
-    generated_date VARCHAR NOT NULL,
-    due_date       VARCHAR NOT NULL,
+    id             UUID       NOT NULL PRIMARY KEY,
+    invoice_number INT UNIQUE NOT NULL,
+    status         VARCHAR    NOT NULL,
+    generated_date VARCHAR    NOT NULL,
+    due_date       VARCHAR    NOT NULL,
     finalized_date VARCHAR,
-    household_id   UUID    NOT NULL REFERENCES household (id),
-    total_price    DECIMAL NOT NULL,
-    currency       VARCHAR NOT NULL
+    household_id   UUID       NOT NULL REFERENCES household (id),
+    total_price    DECIMAL    NOT NULL,
+    currency       VARCHAR    NOT NULL
 );
 
 CREATE TABLE invoice_line

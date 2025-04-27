@@ -7,3 +7,6 @@
 5. ~~Show a list of unpaid invoices on front page?~~
 6. Add users
 7. ~~Handle offline server the same way in all places~~
+8. ~~Possible to search in dropdown lists for household and products in invoices~~
+9. Jump to "First name" when "ADD PERSON" is clicked in Register Households
+

@@ -1,0 +1,26 @@
+{
+  "status": "CREATED",
+  "due_date": "2025-04-16T20:59:00Z",
+  "total_price": 250.00,
+  "currency": "NOK",
+  "invoice_lines": [
+    {
+      "line_number": 1,
+      "product_id": "70ad5c11-e452-4468-bb21-c06e5ee2f69c",
+      "quantity": 1,
+      "total_price": 100.00,
+      "currency": "NOK"
+    },
+    {
+      "line_number": 2,
+      "product_id": "52e075a7-043f-4897-9d75-2925ca8d61a9",
+      "quantity": 1,
+      "total_price": 150.00,
+      "currency": "NOK"
+    }
+  ],
+  "households_ids": [
+    "5aca4e4f-6566-4ec0-a1ea-9bd692be02bc",
+    "e7c3404f-67ce-43ae-b762-fb1edcf2a217"
+  ]
+}

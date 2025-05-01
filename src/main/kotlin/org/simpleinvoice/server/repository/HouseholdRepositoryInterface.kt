@@ -8,6 +8,8 @@ import java.util.UUID
 interface HouseholdRepositoryInterface {
     suspend fun all(activeOnly: Boolean): HouseholdsResponse
 
+    suspend fun get(id: UUID): Household
+
     suspend fun upsert(household: Household): UpsertStatement<Long>
 
     /**

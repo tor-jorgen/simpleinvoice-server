@@ -14,6 +14,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.InvoiceRepository
+import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.InvoiceRequest
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
@@ -27,12 +28,20 @@ class Invoices(
         @Suppress("unused") val parent: Invoices = Invoices(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
+
+    @Resource("/generate")
+    class Generate(
+        @Suppress("unused") val parent: Invoices = Invoices(),
+    )
 }
 
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureInvoicesRouting(repository: InvoiceRepository = getK<InvoiceRepository>()) {
+fun Application.configureInvoicesRouting(
+    repository: InvoiceRepository = getK<InvoiceRepository>(),
+    invoiceGenerator: InvoiceGenerator = getK<InvoiceGenerator>(),
+) {
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Invoices> {
@@ -44,20 +53,26 @@ fun Application.configureInvoicesRouting(repository: InvoiceRepository = getK<In
         post<Invoices> {
             // Create a new invoice
             val invoiceRequest = call.receive<InvoiceRequest>()
-            // Use a negative invoice number to indicate that this is a new invoice
-            val invoice = invoiceRequest.toInvoice(id = UUID.randomUUID(), invoiceNumber = -1)
-            val invoiceNumber = repository.upsert(invoice)
+            // Invoice number can be set to anything, as it wil be generated for a new invoice
+            val invoice = invoiceRequest.toInvoice(id = UUID.randomUUID(), invoiceNumber = 0)
+            val invoiceNumber = repository.upsert(invoice = invoice, new = true)
             val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
             call.respond(status = HttpStatusCode.Created, message = invoiceDb)
+        }
+
+        post<Invoices.Generate> {
+            // Create a new invoice
+            val request = call.receive<GenerateInvoicesRequest>()
+            invoiceGenerator.generate(request = request)
+            call.respond(HttpStatusCode.NoContent)
         }
 
         put<Invoices.Id> { request ->
             // Update an invoice with upserts on invoice lines
             val invoiceRequest = call.receive<InvoiceRequest>()
-            // Set invoice number to a non-negative value to indicate that this is an existing invoice
-            // The invoice number will anyway not be updated in the database
+            // Invoice number can be set to anything, as it wil not be updated for an existing invoice
             val invoice = invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0)
-            val invoiceNumber = repository.upsert(invoice)
+            val invoiceNumber = repository.upsert(invoice = invoice, new = false)
             val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
             call.respond(status = HttpStatusCode.OK, message = invoiceDb)
         }

@@ -29,12 +29,15 @@ class InvoiceRepository(
             )
         }
 
-    override suspend fun upsert(invoice: Invoice): Int =
+    override suspend fun upsert(
+        invoice: Invoice,
+        new: Boolean,
+    ): Int =
         suspendTransaction {
             // Delete all invoice lines for the invoice, since we don't know if any have been removed
             InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
             val dbInvoice =
-                if (invoice.invoiceNumber < 0) {
+                if (new) {
                     // Generate a new invoice number
                     invoice.copy(
                         invoiceNumber =

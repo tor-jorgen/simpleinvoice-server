@@ -7,7 +7,15 @@ import java.util.UUID
 interface InvoiceRepositoryInterface {
     suspend fun all(openOnly: Boolean): InvoicesResponse
 
-    suspend fun upsert(invoice: Invoice): Int
+    /**
+     * Insert or update an invoice [invoice]. Set [new] to true if this is a new invoice.
+     *
+     * Return the invoice number of the inserted or updated invoice.
+     */
+    suspend fun upsert(
+        invoice: Invoice,
+        new: Boolean,
+    ): Int
 
     /**
      * Delete an invoice with id [id]. All invoice lines will also be deleted

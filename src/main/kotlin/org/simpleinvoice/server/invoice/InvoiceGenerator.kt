@@ -2,6 +2,7 @@ package org.simpleinvoice.server.invoice
 
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
+import org.simpleinvoice.server.model.InvoiceStatus
 import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
@@ -16,6 +17,7 @@ class InvoiceGenerator(
     val householdRepository: HouseholdRepository,
     val invoiceRepository: InvoiceRepository,
     val documentGenerator: DocumentGenerator,
+    val emailGenerator: EmailGenerator,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend fun generate(request: GenerateInvoicesRequest): List<UUID> {
@@ -70,7 +72,25 @@ class InvoiceGenerator(
         ).let { invoice ->
             val invoiceNumber = invoiceRepository.upsert(invoice = invoice, new = true)
             val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
-            documentGenerator.createDocuments(invoiceDb)
+            val (invoiceName, odtPath, pdfPath) = documentGenerator.createDocuments(invoiceDb)
+            emailGenerator
+                .sendEmail(
+                    invoice = invoice,
+                    invoiceName = invoiceName,
+                    odtPath = odtPath,
+                    pdfPath = pdfPath,
+                ).let { emailSent ->
+                    if (emailSent) {
+                        updateStatus(invoice = invoice, status = InvoiceStatus.DELIVERED)
+                    }
+                }
             invoice.id
         }
+
+    private suspend fun updateStatus(
+        invoice: Invoice,
+        status: InvoiceStatus,
+    ) = invoice.copy(status = status).let { copy ->
+        invoiceRepository.upsert(copy, new = false)
+    }
 }

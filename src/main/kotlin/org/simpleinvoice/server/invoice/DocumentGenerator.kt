@@ -24,7 +24,7 @@ class DocumentGenerator(
     private val config: InvoiceConfig,
     private val invoiceConfig: InvoiceBatchConfig,
 ) {
-    fun createDocuments(invoice: Invoice) {
+    fun createDocuments(invoice: Invoice): Triple<String, String, String> {
         File(config.invoiceDirectory).mkdirs()
         val pdfConverter = initPdfConverter()
         TextDocument.loadDocument(File(invoiceConfig.template)).use { document ->
@@ -33,11 +33,12 @@ class DocumentGenerator(
             traverse(node = document.header.odfElement, invoice = invoice, recipients = recipients)
             traverse(node = document.footer.odfElement, invoice = invoice, recipients = recipients)
             val invoiceName = getInvoiceName(invoice = invoice, recipients = recipients)
-            val invoicePath = "${config.invoiceDirectory}/$invoiceName.odt"
-            val outPath = invoicePath.replace("odt", "pdf")
-            generateOdf(document, invoicePath)
-            generatePdf(document, outPath, pdfConverter)
+            val odtPath = "${config.invoiceDirectory}/$invoiceName.odt"
+            val pdfPath = odtPath.replace("odt", "pdf")
+            generateOdf(document, odtPath)
+            generatePdf(document, pdfPath, pdfConverter)
             println("Invoice generated for ${recipients[0].addressLine1}")
+            return Triple(invoiceName, odtPath, pdfPath)
         }
     }
 

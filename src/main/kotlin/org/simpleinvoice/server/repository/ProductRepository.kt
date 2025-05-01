@@ -13,8 +13,6 @@ import java.util.UUID
 class ProductRepository : ProductRepositoryInterface {
     override suspend fun all(activeOnly: Boolean): ProductsResponse =
         suspendTransaction {
-            ProductsResponse(products = ProductDAO.all().map { it.toProduct() })
-
             ProductsResponse(
                 products =
                     if (activeOnly) {
@@ -22,6 +20,13 @@ class ProductRepository : ProductRepositoryInterface {
                     } else {
                         ProductDAO.all().map { it.toProduct() }
                     },
+            )
+        }
+
+    override suspend fun byIds(ids: List<UUID>): ProductsResponse =
+        suspendTransaction {
+            ProductsResponse(
+                products = ProductDAO.find { ProductTable.id inList ids }.map { it.toProduct() },
             )
         }
 

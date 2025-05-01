@@ -16,25 +16,33 @@ class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
     private val settingsRepository: SettingsRepository,
 ) : InvoiceRepositoryInterface {
-    override suspend fun all(openOnly: Boolean): InvoicesResponse =
+    override suspend fun all(
+        openOnly: Boolean,
+        ids: List<UUID>,
+    ): InvoicesResponse =
         suspendTransaction {
             InvoicesResponse(invoices = InvoiceDAO.all().map { it.toInvoice() })
             InvoicesResponse(
                 invoices =
                     if (openOnly) {
                         InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
+                    } else if (ids.isNotEmpty()) {
+                        InvoiceDAO.find { InvoiceTable.id inList ids }.map { it.toInvoice() }
                     } else {
                         InvoiceDAO.all().map { it.toInvoice() }
                     },
             )
         }
 
-    override suspend fun upsert(invoice: Invoice): Int =
+    override suspend fun upsert(
+        invoice: Invoice,
+        new: Boolean,
+    ): Int =
         suspendTransaction {
             // Delete all invoice lines for the invoice, since we don't know if any have been removed
             InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
             val dbInvoice =
-                if (invoice.invoiceNumber < 0) {
+                if (new) {
                     // Generate a new invoice number
                     invoice.copy(
                         invoiceNumber =

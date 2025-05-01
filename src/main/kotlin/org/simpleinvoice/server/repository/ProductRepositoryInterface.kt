@@ -8,6 +8,8 @@ import java.util.UUID
 interface ProductRepositoryInterface {
     suspend fun all(activeOnly: Boolean): ProductsResponse
 
+    suspend fun byIds(ids: List<UUID>): ProductsResponse
+
     suspend fun upsert(product: Product): UpsertStatement<Long>
 
     fun upsertWithoutTransaction(product: Product): UpsertStatement<Long>

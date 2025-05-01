@@ -13,6 +13,7 @@ import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.repository.SettingsRepository
 import org.simpleinvoice.server.repository.UserRepository
+import org.simpleinvoice.server.resources.InvoiceGenerator
 
 fun Application.configureDependencyInjection() {
     install(Koin) {
@@ -26,6 +27,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::ProductRepository)
                 singleOf(::InvoiceRepository)
                 singleOf(::InvoiceLineRepository)
+                singleOf(::InvoiceGenerator)
             },
         )
     }

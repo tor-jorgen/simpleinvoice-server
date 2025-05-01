@@ -27,6 +27,8 @@ class HouseholdRepository(
             )
         }
 
+    override suspend fun get(id: UUID): Household = suspendTransaction { HouseholdDAO[id].toHousehold() }
+
     override suspend fun upsert(household: Household): UpsertStatement<Long> =
         suspendTransaction {
             // Delete all persons for the household, since we don't know if any have been removed

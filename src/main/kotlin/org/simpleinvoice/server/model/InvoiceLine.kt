@@ -13,14 +13,4 @@ data class InvoiceLine(
     val quantity: Int,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
-) {
-    fun toInvoiceLine(): InvoiceLine =
-        InvoiceLine(
-            id = id,
-            lineNumber = lineNumber,
-            product = product,
-            quantity = quantity,
-            totalPrice = totalPrice,
-            currency = currency,
-        )
-}
+)

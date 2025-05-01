@@ -7,7 +7,7 @@ val postgres_version: String by project
 plugins {
     kotlin("jvm") version "2.1.20"
     id("io.ktor.plugin") version "3.1.2"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    kotlin("plugin.serialization") version "2.1.20"
     id("org.flywaydb.flyway") version "10.0.0"
 }
 

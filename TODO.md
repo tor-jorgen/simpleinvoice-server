@@ -10,4 +10,5 @@
 8. ~~Possible to search in dropdown lists for household and products in invoices~~
 9. ~~Jump to "First name" when "ADD PERSON" is clicked in Register Households~~
 10. Should not be possible to delete invoices
-
+11. Do not use Kotlin serialization, as it does not support all types, e.g. Instant and java.util.UUID. Currently, there
+    is a mixture of Uuid and UUID, because Kotlin Serialization support Uuid, while Exposed supports UUID...

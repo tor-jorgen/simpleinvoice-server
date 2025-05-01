@@ -17,23 +17,24 @@ class InvoiceGenerator(
     val invoiceRepository: InvoiceRepository,
 ) {
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun generate(request: GenerateInvoicesRequest) {
+    suspend fun generate(request: GenerateInvoicesRequest): List<UUID> {
         val productIds = request.invoiceLines.map { UUID.fromString(it.productId.toString()) }.toList()
         val products = productRepository.byIds(productIds).products.associateBy { it.id }
-        request.householdIds.forEach { householdId ->
-            generateInvoice(
-                householdId = UUID.fromString(householdId.toString()),
-                request = request,
-                products = products,
-            )
-        }
+        return request.householdIds
+            .map { householdId ->
+                generateInvoice(
+                    householdId = UUID.fromString(householdId.toString()),
+                    request = request,
+                    products = products,
+                )
+            }.toList()
     }
 
     suspend fun generateInvoice(
         householdId: UUID,
         request: GenerateInvoicesRequest,
         products: Map<UUID, Product>,
-    ): Int =
+    ): UUID =
         Invoice(
             id = UUID.randomUUID(),
             invoiceNumber = 0, // New invoice number will be generated
@@ -67,5 +68,6 @@ class InvoiceGenerator(
                 },
         ).let { invoice ->
             invoiceRepository.upsert(invoice = invoice, new = true)
+            invoice.id
         }
 }

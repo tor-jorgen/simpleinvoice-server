@@ -5,7 +5,10 @@ import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.util.UUID
 
 interface InvoiceRepositoryInterface {
-    suspend fun all(openOnly: Boolean): InvoicesResponse
+    suspend fun all(
+        openOnly: Boolean,
+        ids: List<UUID>,
+    ): InvoicesResponse
 
     /**
      * Insert or update an invoice [invoice]. Set [new] to true if this is a new invoice.

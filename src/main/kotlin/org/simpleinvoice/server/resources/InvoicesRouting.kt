@@ -15,8 +15,10 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
+import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
 import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
 import org.koin.ktor.ext.get as getK
 
 @Resource("/invoices")
@@ -38,6 +40,7 @@ class Invoices(
 /**
  * These routes require a valid session, otherwise you have to log in
  */
+@OptIn(ExperimentalUuidApi::class)
 fun Application.configureInvoicesRouting(
     repository: InvoiceRepository = getK<InvoiceRepository>(),
     invoiceGenerator: InvoiceGenerator = getK<InvoiceGenerator>(),
@@ -47,7 +50,14 @@ fun Application.configureInvoicesRouting(
         get<Invoices> {
             // Get all invoices
             val openOnly = (call.queryParameters["open_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(openOnly))
+            val ids = call.queryParameters["ids"]
+            val idList =
+                if (ids.isNullOrEmpty()) {
+                    emptyList()
+                } else {
+                    ids.split(",").map { UUID.fromString(it.trim()) }
+                }
+            call.respond(status = HttpStatusCode.OK, message = repository.all(openOnly = openOnly, ids = idList))
         }
 
         post<Invoices> {
@@ -61,10 +71,11 @@ fun Application.configureInvoicesRouting(
         }
 
         post<Invoices.Generate> {
-            // Create a new invoice
+            // Generate new invoice(s)
             val request = call.receive<GenerateInvoicesRequest>()
-            invoiceGenerator.generate(request = request)
-            call.respond(HttpStatusCode.NoContent)
+            val invoiceIds = invoiceGenerator.generate(request = request)
+            val response = GenerateInvoicesResponse.fromUUIDs(invoiceIds)
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         put<Invoices.Id> { request ->

@@ -13,6 +13,7 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
+import org.simpleinvoice.server.invoice.InvoiceGenerator
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse

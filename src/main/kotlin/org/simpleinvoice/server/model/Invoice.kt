@@ -19,4 +19,10 @@ data class Invoice(
     val currency: Currency,
     val household: Household,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLine>,
-)
+) {
+    fun generatedDateAsString(): String = generatedDate.toString().substring(0, 10)
+
+    fun dueDateAsString(): String = dueDate.toString().substring(0, 10)
+
+    fun finalizedDateAsString(): String = finalizedDate?.toString()?.substring(0, 10) ?: ""
+}

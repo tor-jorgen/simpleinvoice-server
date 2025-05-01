@@ -1,4 +1,4 @@
-package org.simpleinvoice.server.resources
+package org.simpleinvoice.server.invoice
 
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
@@ -15,6 +15,7 @@ class InvoiceGenerator(
     val productRepository: ProductRepository,
     val householdRepository: HouseholdRepository,
     val invoiceRepository: InvoiceRepository,
+    val documentGenerator: DocumentGenerator,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend fun generate(request: GenerateInvoicesRequest): List<UUID> {
@@ -30,7 +31,7 @@ class InvoiceGenerator(
             }.toList()
     }
 
-    suspend fun generateInvoice(
+    private suspend fun generateInvoice(
         householdId: UUID,
         request: GenerateInvoicesRequest,
         products: Map<UUID, Product>,
@@ -67,7 +68,9 @@ class InvoiceGenerator(
                     )
                 },
         ).let { invoice ->
-            invoiceRepository.upsert(invoice = invoice, new = true)
+            val invoiceNumber = invoiceRepository.upsert(invoice = invoice, new = true)
+            val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
+            documentGenerator.createDocuments(invoiceDb)
             invoice.id
         }
 }

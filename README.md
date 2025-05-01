@@ -9,6 +9,15 @@ Here are some useful links to get you started:
 - The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need
   to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
 
+## Configuration
+
+| Property | Environment variable   | Default value | Description                        |
+|----------|------------------------|---------------|------------------------------------|
+|          | `BATCH_CONFIG`         |               | Path to batch configuration file   |     
+|          | `INVOICE_CONFIG`       |               | Path to invoice configuration file |     
+|          | `GOOGLE_CLIENT_ID`     |               | OAuth 2 client ID                  |     
+|          | `GOOGLE_CLIENT_SECRET` |               | OAuth 2 client secret              |     
+
 ## Features
 
 Here's a list of features included in this project:

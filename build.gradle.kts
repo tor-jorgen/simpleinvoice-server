@@ -23,6 +23,7 @@ application {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url = uri("https://packages.confluent.io/maven/") }
 }
 
@@ -72,6 +73,19 @@ dependencies {
 
     val ktorOpenApiVersion = "5.0.2"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
+
+    val jacksonVersion = "2.19.0"
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    val odfDomVersion = "0.12.0"
+    implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
+    val simpleOdfVersion = "0.9.0"
+    implementation("org.odftoolkit:simple-odf:$simpleOdfVersion")
+    implementation("org.odt2pdf", "odt2pdf", "1.0", classifier = "all")
+
+    val javaxMail = "1.6.2"
+    implementation("com.sun.mail:javax.mail:$javaxMail")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

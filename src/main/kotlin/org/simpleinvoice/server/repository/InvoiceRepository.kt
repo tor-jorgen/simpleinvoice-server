@@ -56,7 +56,8 @@ class InvoiceRepository(
             invoice.invoiceLines.forEach { invoiceLine ->
                 invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
             }
-            upsert.resultedValues!!.first().fieldIndex[InvoiceTable.invoiceNumber]!!
+            val result = upsert.resultedValues?.first() ?: throw Exception("Could not store invoice")
+            result[InvoiceTable.invoiceNumber]
         }
 
     private fun upsertWithoutTransaction(invoice: Invoice): UpsertStatement<Long> =

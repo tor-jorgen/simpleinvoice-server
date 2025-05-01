@@ -1,6 +1,7 @@
 package util.smtp
 
-import java.util.*
+import java.util.Date
+import java.util.Properties
 import javax.activation.DataHandler
 import javax.activation.DataSource
 import javax.activation.FileDataSource
@@ -17,8 +18,9 @@ import javax.mail.internet.MimeBodyPart
 import javax.mail.internet.MimeMessage
 import javax.mail.internet.MimeMultipart
 
-class SmtpClient(val config: SmtpConfig) {
-
+class SmtpClient(
+    val config: SmtpConfig,
+) {
     private var session: Session? = null
 
     fun open(): SmtpClient {
@@ -28,14 +30,14 @@ class SmtpClient(val config: SmtpConfig) {
         properties["mail.smtp.host"] = config.host
         properties["mail.smtp.port"] = config.port
         properties["mail.smtp.ssl.trust"] = config.host
-        session = Session.getInstance(
-            properties,
-            object : Authenticator() {
-                override fun getPasswordAuthentication(): PasswordAuthentication {
-                    return PasswordAuthentication(config.username, config.password)
-                }
-            }
-        )
+        session =
+            Session.getInstance(
+                properties,
+                object : Authenticator() {
+                    override fun getPasswordAuthentication(): PasswordAuthentication =
+                        PasswordAuthentication(config.username, config.password)
+                },
+            )
 
         return this
     }
@@ -46,8 +48,8 @@ class SmtpClient(val config: SmtpConfig) {
         toEmail1: String,
         toEmail2: String?,
         invoicePath: String,
-        invoiceName: String
-    ) {
+        invoiceName: String,
+    ): Boolean {
         try {
             val msg = MimeMessage(session)
             msg.addHeader("Content-type", "text/HTML; charset=${config.characterSet}")
@@ -75,9 +77,11 @@ class SmtpClient(val config: SmtpConfig) {
             msg.setContent(multipart)
             Transport.send(msg)
             println("* e-mail sent to $toEmail1 ${if (toEmail2 != null) " and $toEmail2}" else ""}")
+            return true
         } catch (e: MessagingException) {
             println("* ERROR: Could not sent e-mail to $toEmail1 ${if (toEmail2 != null) " and $toEmail2}" else ""}")
             e.printStackTrace()
+            return false
         }
     }
 }

@@ -8,6 +8,7 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.DocumentGenerator
+import org.simpleinvoice.server.invoice.EmailGenerator
 import org.simpleinvoice.server.invoice.InvoiceBatchConfig
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
@@ -35,6 +36,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::InvoiceLineRepository)
                 singleOf(::InvoiceGenerator)
                 singleOf(::DocumentGenerator)
+                singleOf(::EmailGenerator)
             },
         )
     }

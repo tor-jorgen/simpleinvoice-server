@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres
+    restart: no
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - ${DB_DATA}:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST_AUTH_METHOD: trust

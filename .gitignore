@@ -1,6 +1,8 @@
-.gradle
-.idea
-.kotlin
-build
-config
-data
+.env
+.gradle/
+.idea/
+.kotlin/
+build/
+config/
+data/
+remote-debug-profile/

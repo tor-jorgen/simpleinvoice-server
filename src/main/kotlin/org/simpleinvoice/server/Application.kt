@@ -24,10 +24,10 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureDependencyInjection()
     configureHTTP()
     runFlyway()
     configureDatabases()
-    configureDependencyInjection()
     configureSecurity()
     configureSerialization()
     configureErrorHandling()

@@ -24,6 +24,15 @@ fun Application.configureDependencyInjection() {
         slf4jLogger()
         modules(
             module {
+                single {
+                    DatabaseConfig(
+                        connectionString = "${System.getenv("DB_CONNECTION_PRE")}:${System.getenv("DB_PORT")}/${
+                            System.getenv("DB_NAME")
+                        }",
+                        user = System.getenv("DB_USER"),
+                        password = System.getenv("DB_PASSWORD"),
+                    )
+                }
                 single { InvoiceConfig.fromYaml(System.getenv("INVOICE_CONFIG")) }
                 single { InvoiceBatchConfig.fromYaml(System.getenv("BATCH_CONFIG")) }
 

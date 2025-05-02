@@ -1,68 +1,78 @@
-# simpleinvoice
+# Simple Invoice Server
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+This is the server for the Simple Invoice project. It provides an HTTP API that is used by the Simple Invoice App.
 
-Here are some useful links to get you started:
-
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need
-  to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+The server is built using [Ktor](https://ktor.io).
 
 ## Configuration
 
-| Property | Environment variable   | Default value | Description                        |
-|----------|------------------------|---------------|------------------------------------|
-|          | `BATCH_CONFIG`         |               | Path to batch configuration file   |     
-|          | `INVOICE_CONFIG`       |               | Path to invoice configuration file |     
-|          | `GOOGLE_CLIENT_ID`     |               | OAuth 2 client ID                  |     
-|          | `GOOGLE_CLIENT_SECRET` |               | OAuth 2 client secret              |     
+| Property (`allication.yaml`) | Environment variable   | Default value                 | Description                                                                                                                 |
+|------------------------------|------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `ktor.deployment.port`       | `SERVER_PORT`          | `8080`                        | The port the server runs at                                                                                                 |     
+| `db.connectionPrefix`        | `DB_CONNECTION_PRE`    | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port |     
+| `db.port`                    | `DB_PORT`              | `5432`                        | The port the database server runs at                                                                                        |     
+| `db.name`                    | `DB_NAME`              | `simple_invoice`              | The name of the database                                                                                                    |
+| `db.user`                    | `DB_USER`              |                               | The name of the user used to connect to the database                                                                        |     
+| `db.password`                | `DB_PASSWORD`          |                               | The password for the user used to connect to the database                                                                   |     
+| `cfg.batch`                  | `BATCH_CONFIG`         | `./config/batch.yml`          | Path to batch configuration file                                                                                            |     
+| `cfg.invoice`                | `INVOICE_CONFIG`       | `./config/config.yml`         | Path to invoice configuration file                                                                                          |     
+| `security.clientId`          | `GOOGLE_CLIENT_ID`     |                               | OAuth 2 client ID (not yet in use)                                                                                          |     
+| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET` |                               | OAuth 2 client secret  (not yet in use)                                                                                     |
+|                              | `CFG_PATH`             | `./config`                    | The path to the directory where the configuration files are stored                                                          |     
+|                              | `DATA_PATH`            | `./data`                      | The path to the directory where the data files are stored                                                                   |     
+|                              | `DB_DATA_PATH`         | `./data/postgres`             | The path to the directory where the database files are stored                                                               |     
 
-## Features
+Set the environment variables in the `.env` file. This file is use when running the server backend from Docker. E.g.:
 
-Here's a list of features included in this project:
+    SERVER_PORT=8080
+    CFG_PATH=./config
+    DATA_PATH=./data
+    DB_DATA_PATH=./data/postgres
+    DB_CONNECTION_PRE=jdbc:postgresql://host.docker.internal
+    DB_PORT=5432
+    DB_NAME=simple_invoice
+    DB_USER=user
+    DB_PASSWORD=password
+    BATCH_CONFIG=./config/batch.yml
+    INVOICE_CONFIG=./config/config.yml
+    GOOGLE_CLIENT_ID=XXX
+    GOOGLE_CLIENT_SECRET=YYY
 
-| Name                                                                   | Description                                                                        |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [Authentication](https://start.ktor.io/p/auth)                         | Provides extension point for handling the Authorization header                     |
-| [Authentication OAuth](https://start.ktor.io/p/auth-oauth)             | Handles OAuth Bearer authentication scheme                                         |
-| [CSRF](https://start.ktor.io/p/csrf)                                   | Cross-site request forgery mitigation                                              |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Sessions](https://start.ktor.io/p/ktor-sessions)                      | Adds support for persistent sessions through cookies or headers                    |
-| [AutoHeadResponse](https://start.ktor.io/p/auto-head-response)         | Provides automatic responses for HEAD requests                                     |
-| [Request Validation](https://start.ktor.io/p/request-validation)       | Adds validation for incoming requests                                              |
-| [Resources](https://start.ktor.io/p/resources)                         | Provides type-safe routing                                                         |
-| [Status Pages](https://start.ktor.io/p/status-pages)                   | Provides exception handling for routes                                             |
-| [CORS](https://start.ktor.io/p/cors)                                   | Enables Cross-Origin Resource Sharing (CORS)                                       |
-| [HttpsRedirect](https://start.ktor.io/p/https-redirect)                | Redirects insecure HTTP requests to the respective HTTPS endpoint                  |
-| [Jackson](https://start.ktor.io/p/ktor-jackson)                        | Handles JSON serialization using Jackson library                                   |
-| [Kafka](https://start.ktor.io/p/ktor-server-kafka)                     | Adds Kafka support to your application                                             |
-| [Postgres](https://start.ktor.io/p/postgres)                           | Adds Postgres database to your application                                         |
-| [Koin](https://start.ktor.io/p/koin)                                   | Provides dependency injection                                                      |
-| [Shutdown URL](https://start.ktor.io/p/shutdown-url)                   | Enables a URL that shuts down the server when accessed                             |
+Note that the address to localhost is `host.docker.internal` when running in Docker. This is a special DNS name that
+resolves to the internal IP address used by the host.
 
-## Building & Running
+To list the environment variables with `localhost` as the address, you can run the following command:
 
-To build or run the project, use one of the following tasks:
-
-| Task                          | Description                                                          |
-|-------------------------------|----------------------------------------------------------------------|
-| `./gradlew test`              | Run the tests                                                        |
-| `./gradlew build`             | Build everything                                                     |
-| `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the docker image locally                                     |
-| `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local docker image                                     |
-
-If the server starts successfully, you'll see the following output:
-
+```bash
+./start.sh --list-env
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+These variables can be copied and pasted into the environment variables in IntelliJ, if you are running the server from
+there.
+
+## Running locally
+
+### All in Docker
+
+To run both the server and the database in Docker, use the following command:
+
+```bash
+./start.sh
 ```
+
+Run `--help to see all options.`
+
+### Database in Docker, server in IntelliJ
+
+1. Start the Postgres database in Docker:
+    ```bash
+   docker compose -f compose-postgres.yml up
+    ```
+
+2. Create a Ktor run configuration for `EngineMain` in IntelliJ
+3. Paste the environment variables from above into the run configuration:
+    1. Select _Edit environment variables_
+    2. Click the past button
 
 ## Credits
 

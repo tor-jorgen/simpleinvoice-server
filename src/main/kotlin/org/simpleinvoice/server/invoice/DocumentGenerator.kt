@@ -37,7 +37,7 @@ class DocumentGenerator(
             val pdfPath = odtPath.replace("odt", "pdf")
             generateOdf(document, odtPath)
             generatePdf(document, pdfPath, pdfConverter)
-            println("Invoice generated for ${recipients[0].addressLine1}")
+            println("Invoice $pdfPath generated for ${recipients[0].addressLine1}")
             return Triple(invoiceName, odtPath, pdfPath)
         }
     }

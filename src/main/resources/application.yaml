@@ -3,25 +3,24 @@ ktor:
     modules:
       - org.simpleinvoice.server.ApplicationKt.module
   deployment:
-    port: $SERVER_PORT
-#  kafka:
-#    schema.registry.url:
-#      - "SCHEMA_REGISTRY_URL"
-#    common:
-#      bootstrap.servers:
-#        - "BOOTSTRAP_SERVERS"
-#      # Additional attributes
-#    admin:
-#    # Additional attributes
-#    consumer:
-#      group.id: "my-group-id"
-#      # Additional attributes
-#    producer:
-#      client.id: "my-client-id"
-#      # Additional attributes
-#    topics:
-#      - name: my-topic
-#        partitions: 1
-#        configs:
-#          message.timestamp.type: CreateTime
-#          # Additional attributes
+    port: "$SERVER_PORT:8080"
+
+db:
+  connectionPrefix: "$DB_CONNECTION_PRE:jdbc:postgresql://localhost"
+  port: "$DB_PORT:5432"
+  name: "$DB_NAME:simple_invoice"
+  user: "$DB_USER"
+  password: "$DB_PASSWORD"
+
+cfg:
+  invoice: "$INVOICE_CONFIG:./config/config.yml"
+  batch: "$BATCH_CONFIG:./config/batch.yml"
+
+security:
+  clientId: "$GOOGLE_CLIENT_ID"
+  clientSecret: "$GOOGLE_CLIENT_SECRET"
+
+smtp:
+  host: smtp.gmail.com
+  port: 587
+  tls: true

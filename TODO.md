@@ -12,3 +12,4 @@
 10. Should not be possible to delete invoices
 11. Do not use Kotlin serialization, as it does not support all types, e.g. Instant and java.util.UUID. Currently, there
     is a mixture of Uuid and UUID, because Kotlin Serialization support Uuid, while Exposed supports UUID...
+12. Fix Postgres authentication

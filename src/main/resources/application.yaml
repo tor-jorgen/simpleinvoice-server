@@ -4,7 +4,7 @@ ktor:
       - org.simpleinvoice.server.ApplicationKt.module
   deployment:
     port: 8080
-
+#    port: ${SERVER_PORT}
 #  kafka:
 #    schema.registry.url:
 #      - "SCHEMA_REGISTRY_URL"
@@ -31,3 +31,5 @@ ktor:
 #  user: username
 #  password: password
 #
+#flyway:
+#  runMigrations: false

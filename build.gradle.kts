@@ -97,7 +97,8 @@ ktor {
     }
 }
 
-flyway {
-    url = "jdbc:postgresql://localhost:5432/simple_invoice"
-    user = "admin"
-}
+// flyway {
+//    skipExecutingMigrations = true
+//    url = "jdbc:postgresql://localhost:5432/simple_invoice"
+//    user = "admin"
+// }

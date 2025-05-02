@@ -3,19 +3,21 @@ package org.simpleinvoice.server.config
 import io.ktor.server.application.Application
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
+import org.koin.ktor.ext.get as getK
 
-fun runFlyway() {
+fun Application.runFlyway(config: DatabaseConfig = getK<DatabaseConfig>()) {
+    println("Running Flyway against: ${config.connectionString}")
     Flyway
         .configure()
-        .dataSource("jdbc:postgresql://localhost:5432/simple_invoice", "admin", "hugo")
+        .dataSource(config.connectionString, config.user, config.password)
         .load()
         .migrate()
 }
 
-fun Application.configureDatabases() {
+fun Application.configureDatabases(config: DatabaseConfig = getK<DatabaseConfig>()) {
     Database.connect(
-        "jdbc:postgresql://localhost:5432/simple_invoice",
-        user = "admin",
-        password = "hugo",
+        config.connectionString,
+        user = config.user,
+        password = config.password,
     )
 }

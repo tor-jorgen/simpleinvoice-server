@@ -24,17 +24,25 @@ fun Application.configureDependencyInjection() {
         slf4jLogger()
         modules(
             module {
+                val dbConnectionPrefix = property("db.connectionPrefix")
+                val dbPort = property("db.port")
+                val dbName = property("db.name")
                 single {
                     DatabaseConfig(
-                        connectionString = "${System.getenv("DB_CONNECTION_PRE")}:${System.getenv("DB_PORT")}/${
-                            System.getenv("DB_NAME")
-                        }",
-                        user = System.getenv("DB_USER"),
-                        password = System.getenv("DB_PASSWORD"),
+                        connectionString = "$dbConnectionPrefix:$dbPort/$dbName",
+                        user = property("db.user"),
+                        password = property("db.password"),
                     )
                 }
-                single { InvoiceConfig.fromYaml(System.getenv("INVOICE_CONFIG")) }
-                single { InvoiceBatchConfig.fromYaml(System.getenv("BATCH_CONFIG")) }
+                single { InvoiceConfig.fromYaml(property("cfg.invoice")) }
+                single { InvoiceBatchConfig.fromYaml(property("cfg.batch")) }
+
+                single {
+                    SecurityConfig(
+                        clientId = property("security.clientId"),
+                        clientSecret = property("security.clientSecret"),
+                    )
+                }
 
                 singleOf(::SettingsRepository)
                 singleOf(::UserRepository)
@@ -50,3 +58,5 @@ fun Application.configureDependencyInjection() {
         )
     }
 }
+
+private fun Application.property(name: String): String = environment.config.propertyOrNull(name)?.getString()!!

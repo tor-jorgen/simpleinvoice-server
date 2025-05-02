@@ -34,6 +34,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import org.koin.ktor.ext.get as getK
 
 private const val SCOPE_PUBLIC_PERSONAL_INFO = "https://www.googleapis.com/auth/userinfo.profile"
 private const val SCOPE_EMAIL = "https://www.googleapis.com/auth/userinfo.email"
@@ -62,7 +63,7 @@ val httpClient =
 // TODO: Use discovery endpoint
 // https://accounts.google.com/.well-known/openid-configuration
 
-fun Application.configureSecurity() {
+fun Application.configureSecurity(config: SecurityConfig = getK<SecurityConfig>()) {
     install(Sessions) {
         cookie<UserSession>("user_session") {
             cookie.extensions["SameSite"] = "lax"
@@ -81,8 +82,8 @@ fun Application.configureSecurity() {
                     authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
                     accessTokenUrl = "https://accounts.google.com/o/oauth2/token",
                     requestMethod = HttpMethod.Post,
-                    clientId = System.getenv("GOOGLE_CLIENT_ID"),
-                    clientSecret = System.getenv("GOOGLE_CLIENT_SECRET"),
+                    clientId = config.clientId,
+                    clientSecret = config.clientSecret,
                     defaultScopes = listOf(SCOPE_EMAIL, SCOPE_PUBLIC_PERSONAL_INFO, SCOPE_OPEN_ID),
                     // `offline` causes Google to send back a refresh token and an access token
                     extraAuthParameters = listOf("access_type" to "offline"),

@@ -9,6 +9,7 @@ import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondFile
 import io.ktor.server.routing.routing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -30,7 +31,12 @@ class Invoices(
     class Id(
         @Suppress("unused") val parent: Invoices = Invoices(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
-    )
+    ) {
+        @Resource("document")
+        class Document(
+            val parent: Id,
+        )
+    }
 
     @Resource("/generate")
     class Generate(
@@ -59,6 +65,22 @@ fun Application.configureInvoicesRouting(
                     ids.split(",").map { UUID.fromString(it.trim()) }
                 }
             call.respond(status = HttpStatusCode.OK, message = repository.all(openOnly = openOnly, ids = idList))
+        }
+
+        get<Invoices.Id.Document> { invoice ->
+            // Get the invoice document
+            repository.get(invoice.parent.id).let { invoice ->
+                if (invoice.invoiceFilePath != null) {
+                    val pdfFile = java.io.File(invoice.invoiceFilePath)
+                    if (pdfFile.exists()) {
+                        call.respondFile(pdfFile)
+                    }
+                }
+            }
+            call.respond(
+                HttpStatusCode.NotFound,
+                "PDF file for invoice could not be found",
+            )
         }
 
         post<Invoices> {

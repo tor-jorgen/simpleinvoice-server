@@ -39,6 +39,7 @@ data class InvoiceRequest(
             invoiceLines = invoiceLines.map { it.toInvoiceLine() },
             totalPrice = totalPrice,
             currency = currency,
+            invoiceFilePath = null,
         )
 }
 

@@ -54,7 +54,8 @@ data class InvoiceLineRequest(
 ) {
     fun toInvoiceLine(): InvoiceLine =
         InvoiceLine(
-            id = id ?: UUID.randomUUID(), // Create an ID if this is a new invoice line
+            // Create an ID if this is a new invoice line
+            id = id ?: UUID.randomUUID(),
             lineNumber = lineNumber,
             product = product,
             quantity = quantity,

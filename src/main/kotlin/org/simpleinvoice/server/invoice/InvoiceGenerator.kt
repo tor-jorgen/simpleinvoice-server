@@ -40,7 +40,8 @@ class InvoiceGenerator(
     ): UUID =
         Invoice(
             id = UUID.randomUUID(),
-            invoiceNumber = 0, // New invoice number will be generated
+            // New invoice number will be generated
+            invoiceNumber = 0,
             status = request.status,
             generatedDate = Instant.now(),
             dueDate = request.dueDate,

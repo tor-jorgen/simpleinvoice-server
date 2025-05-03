@@ -54,7 +54,8 @@ fun Application.configureHTTP() {
                 call.response.headers
                     .allValues()
                     .toMap()
-            "HTTP $method $uri | Status: $status | Request Headers: $requestHeaders | QueryParams: $queryParams | Response Headers: $responseHeaders"
+            "HTTP $method $uri | Status: $status | Request Headers: $requestHeaders | QueryParams: $queryParams " +
+                "| Response Headers: $responseHeaders"
         }
     }
 

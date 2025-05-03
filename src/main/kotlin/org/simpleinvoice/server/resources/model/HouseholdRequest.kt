@@ -40,7 +40,8 @@ data class PersonRequest(
 ) {
     fun toPerson() =
         Person(
-            id = id ?: UUID.randomUUID(), // Create an ID if this is a new person
+            // Create an ID if this is a new person
+            id = id ?: UUID.randomUUID(),
             firstName = firstName,
             lastName = lastName,
             emailAddress = emailAddress,

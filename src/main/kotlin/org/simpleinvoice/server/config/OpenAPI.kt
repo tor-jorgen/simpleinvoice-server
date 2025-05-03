@@ -11,7 +11,6 @@ fun Application.configureOpenAPI() {
     install(OpenApi)
 
     routing {
-
         route("/api.json") {
             // Create a route to expose the OpenAPI specification file at `/api.json`.
             openApi()

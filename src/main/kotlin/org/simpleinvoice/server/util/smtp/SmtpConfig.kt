@@ -9,5 +9,5 @@ data class SmtpConfig(
     val senderEmail: String,
     val senderName: String,
     val characterSet: String = "UTF-8",
-    val contentTransferEncoding: String = "quoted-printable"
+    val contentTransferEncoding: String = "quoted-printable",
 )

@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
 group = "org.simpleinvoice.server"
@@ -51,8 +52,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
 
-    val kafkaVersion = "2.1.2"
-    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
+//    val kafkaVersion = "2.1.2"
+//    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
 
     val h2Version = "2.3.232"
     implementation("com.h2database:h2:$h2Version")
@@ -61,15 +62,11 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
-    val logbackVersion = "1.4.14"
+    val logbackVersion = "1.5.18"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     val postgresVersion = "42.7.5"
     implementation("org.postgresql:postgresql:$postgresVersion")
-
-    val flywayVersion = "11.7.0"
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     val ktorOpenApiVersion = "5.0.2"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
@@ -79,6 +76,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // Document conversion
+    // This is the last version
     val odfDomVersion = "0.12.0"
     implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
 
@@ -91,6 +89,10 @@ dependencies {
     // Email
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
+
+    val flywayVersion = "11.7.0"
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")

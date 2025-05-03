@@ -82,9 +82,8 @@ class InvoiceGenerator(
                     odtPath = odtPath,
                     pdfPath = pdfPath,
                 ).let { emailSent ->
-                    if (emailSent) {
-                        updateInvoice(invoice = invoice, status = InvoiceStatus.DELIVERED, invoiceFilePath = pdfPath)
-                    }
+                    val status = if (emailSent) InvoiceStatus.DELIVERED else invoice.status
+                    updateInvoice(invoice = invoice, status = status, invoiceFilePath = pdfPath)
                 }
             invoice.id
         }

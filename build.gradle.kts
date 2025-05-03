@@ -68,10 +68,6 @@ dependencies {
     val postgresVersion = "42.7.5"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val flywayVersion = "11.7.0"
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
-
     val ktorOpenApiVersion = "5.0.2"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
@@ -93,6 +89,10 @@ dependencies {
     // Email
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
+
+    val flywayVersion = "11.7.0"
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")

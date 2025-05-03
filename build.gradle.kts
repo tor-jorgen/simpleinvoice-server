@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
 group = "org.simpleinvoice.server"

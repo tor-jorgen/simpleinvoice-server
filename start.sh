@@ -1,34 +1,16 @@
 #!/bin/bash
 
 help() {
-  echo "start.sh [--list-env]"
+  echo "start.sh [--no-daemon]"
   echo "Start Simple Invoice backend"
-  echo "--list-env: List and export environment variables only"
-}
-
-list_environment_variables() {
-  while read line || [ -n "$line" ]; do
-    if [[ ! "$line" =~ ^JAVA_TOOL_OPTIONS.* ]]; then
-      # Export environment variables, but replace internal Docker addresses with external
-      EXPORT=$(echo "$line" | sed 's/host.docker.internal/localhost/')
-      echo "$EXPORT"
-      export "$EXPORT"
-    fi
-  done <.env
+  echo "--no-daemon: Do not run containers as daemons. This makes the logs visible in the console"
+  echo "Run './stop.sh' to stop the backend. If you start the backend with --no-daemon, you need to stop it with Ctrl+C"
 }
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   help
   exit 0
 fi
-
-if [[ "$1" == "--list-env" ]]; then
-  list_environment_variables
-  exit 0
-fi
-
-./gradlew clean build buildFatJar --no-daemon
-docker compose build --no-cache
 
 if [ "$1" == "--no-daemon" ]; then
   DAEMON=

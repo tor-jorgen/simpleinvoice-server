@@ -44,7 +44,7 @@ resolves to the internal IP address used by the host.
 To list the environment variables with `localhost` as the address, you can run the following command:
 
 ```bash
-./start.sh --list-env
+./build.sh --list-env
 ```
 
 These variables can be copied and pasted into the environment variables in IntelliJ, if you are running the server from
@@ -52,7 +52,19 @@ there.
 
 ## Running locally
 
-### All in Docker
+All the components of the backend will run in Docker. This includes the database and the server.
+
+### Building the backend
+
+The first time you run the backend, you need to build it. Do this by running the following command:
+
+```bash
+./build.sh
+```  
+
+Run `--help to see all options.`
+
+### Running the backend
 
 To run both the server and the database in Docker, use the following command:
 
@@ -62,7 +74,9 @@ To run both the server and the database in Docker, use the following command:
 
 Run `--help to see all options.`
 
-### Database in Docker, server in IntelliJ
+## Debugging locally
+
+The database will run in Docker, and the server will run in IntelliJ (or any other IDE).
 
 1. Start the Postgres database in Docker:
     ```bash
@@ -73,6 +87,7 @@ Run `--help to see all options.`
 3. Paste the environment variables from above into the run configuration:
     1. Select _Edit environment variables_
     2. Click the past button
+4. Run or debug the configuration
 
 ## Credits
 

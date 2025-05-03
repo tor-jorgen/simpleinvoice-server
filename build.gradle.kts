@@ -52,8 +52,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
 
-    val kafkaVersion = "2.1.2"
-    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
+//    val kafkaVersion = "2.1.2"
+//    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
 
     val h2Version = "2.3.232"
     implementation("com.h2database:h2:$h2Version")
@@ -62,7 +62,7 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
-    val logbackVersion = "1.4.14"
+    val logbackVersion = "1.5.18"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     val postgresVersion = "42.7.5"
@@ -80,6 +80,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // Document conversion
+    // This is the last version
     val odfDomVersion = "0.12.0"
     implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
 

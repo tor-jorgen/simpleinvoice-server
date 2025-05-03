@@ -4,6 +4,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
+import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceStatus
 import org.simpleinvoice.server.repository.model.InvoiceDAO
@@ -15,6 +16,7 @@ import java.util.UUID
 class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
     private val settingsRepository: SettingsRepository,
+    private val eventPublisher: EventPublisher,
 ) : InvoiceRepositoryInterface {
     override suspend fun all(
         openOnly: Boolean,
@@ -41,28 +43,36 @@ class InvoiceRepository(
     override suspend fun upsert(
         invoice: Invoice,
         new: Boolean,
-    ): Int =
-        suspendTransaction {
-            // Delete all invoice lines for the invoice, since we don't know if any have been removed
-            InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
-            val dbInvoice =
-                if (new) {
-                    // Generate a new invoice number
-                    invoice.copy(
-                        invoiceNumber =
-                            nextInvoiceNumber()
-                                ?: (settingsRepository.getWithoutTransaction().lastInvoiceNumber + 1),
-                    )
-                } else {
-                    invoice
+    ): Int {
+        val invoiceNumber =
+            suspendTransaction {
+                // Delete all invoice lines for the invoice, since we don't know if any have been removed
+                InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
+                val dbInvoice =
+                    if (new) {
+                        // Generate a new invoice number
+                        invoice.copy(
+                            invoiceNumber =
+                                nextInvoiceNumber()
+                                    ?: (settingsRepository.getWithoutTransaction().lastInvoiceNumber + 1),
+                        )
+                    } else {
+                        invoice
+                    }
+                val upsert = upsertWithoutTransaction(dbInvoice)
+                invoice.invoiceLines.forEach { invoiceLine ->
+                    invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
                 }
-            val upsert = upsertWithoutTransaction(dbInvoice)
-            invoice.invoiceLines.forEach { invoiceLine ->
-                invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
+                val result = upsert.resultedValues?.first() ?: throw Exception("Could not store invoice")
+                result[InvoiceTable.invoiceNumber]
             }
-            val result = upsert.resultedValues?.first() ?: throw Exception("Could not store invoice")
-            result[InvoiceTable.invoiceNumber]
-        }
+        eventPublisher.publishEvent(
+            id = invoice.id,
+            item = invoice,
+            message = if (new) "Invoice created" else "Invoice updated",
+        )
+        return invoiceNumber
+    }
 
     private fun upsertWithoutTransaction(invoice: Invoice): UpsertStatement<Long> =
         InvoiceTable.upsert(onUpdateExclude = listOf(InvoiceTable.invoiceNumber, InvoiceTable.generatedDate)) {

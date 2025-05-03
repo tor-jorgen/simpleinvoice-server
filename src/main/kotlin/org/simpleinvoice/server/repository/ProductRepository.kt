@@ -4,13 +4,16 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
+import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.repository.model.ProductDAO
 import org.simpleinvoice.server.repository.model.ProductTable
 import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
-class ProductRepository : ProductRepositoryInterface {
+class ProductRepository(
+    val eventPublisher: EventPublisher,
+) : ProductRepositoryInterface {
     override suspend fun all(activeOnly: Boolean): ProductsResponse =
         suspendTransaction {
             ProductsResponse(
@@ -30,10 +33,21 @@ class ProductRepository : ProductRepositoryInterface {
             )
         }
 
-    override suspend fun upsert(product: Product): UpsertStatement<Long> =
-        suspendTransaction {
-            upsertWithoutTransaction(product)
-        }
+    override suspend fun upsert(
+        product: Product,
+        new: Boolean,
+    ): UpsertStatement<Long> {
+        val response =
+            suspendTransaction {
+                upsertWithoutTransaction(product)
+            }
+        eventPublisher.publishEvent(
+            id = product.id,
+            item = product,
+            message = if (new) "Product created" else "Product updated",
+        )
+        return response
+    }
 
     override fun upsertWithoutTransaction(product: Product): UpsertStatement<Long> =
         ProductTable.upsert {

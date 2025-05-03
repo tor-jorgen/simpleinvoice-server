@@ -10,6 +10,7 @@ import org.simpleinvoice.server.config.configureHTTP
 import org.simpleinvoice.server.config.configureOpenAPI
 import org.simpleinvoice.server.config.configureSecurity
 import org.simpleinvoice.server.config.configureSerialization
+import org.simpleinvoice.server.config.handleEvents
 import org.simpleinvoice.server.config.runFlyway
 import org.simpleinvoice.server.resources.configureHouseholdsRouting
 import org.simpleinvoice.server.resources.configureInvoiceLineRouting
@@ -25,6 +26,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureDependencyInjection()
+    handleEvents()
     configureHTTP()
     runFlyway()
     configureDatabases()

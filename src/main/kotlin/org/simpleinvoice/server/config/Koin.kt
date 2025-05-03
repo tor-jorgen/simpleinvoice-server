@@ -2,6 +2,7 @@ package org.simpleinvoice.server.config
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import kotlinx.coroutines.channels.Channel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -9,9 +10,12 @@ import org.koin.logger.slf4jLogger
 import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.DocumentGenerator
 import org.simpleinvoice.server.invoice.EmailGenerator
+import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.invoice.InvoiceBatchConfig
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
+import org.simpleinvoice.server.model.AuditTrail
+import org.simpleinvoice.server.repository.AuditTrailRepository
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceLineRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
@@ -44,6 +48,11 @@ fun Application.configureDependencyInjection() {
                     )
                 }
 
+                single {
+                    Channel<AuditTrail>(capacity = 100)
+                }
+
+                singleOf(::EventPublisher)
                 singleOf(::SettingsRepository)
                 singleOf(::UserRepository)
                 singleOf(::HouseholdRepository)
@@ -51,6 +60,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::ProductRepository)
                 singleOf(::InvoiceRepository)
                 singleOf(::InvoiceLineRepository)
+                singleOf(::AuditTrailRepository)
                 singleOf(::InvoiceGenerator)
                 singleOf(::DocumentGenerator)
                 singleOf(::EmailGenerator)

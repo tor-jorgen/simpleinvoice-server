@@ -10,6 +10,8 @@ interface InvoiceRepositoryInterface {
         ids: List<UUID>,
     ): InvoicesResponse
 
+    suspend fun get(id: UUID): Invoice
+
     /**
      * Insert or update an invoice [invoice]. Set [new] to true if this is a new invoice.
      *

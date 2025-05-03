@@ -48,6 +48,7 @@ class InvoiceGenerator(
             totalPrice = request.totalPrice,
             currency = request.currency,
             household = householdRepository.get(householdId),
+            invoiceFilePath = null,
             invoiceLines =
                 request.invoiceLines.map {
                     // We know that `products` contains all the products in `invoiceLines`
@@ -81,16 +82,17 @@ class InvoiceGenerator(
                     pdfPath = pdfPath,
                 ).let { emailSent ->
                     if (emailSent) {
-                        updateStatus(invoice = invoice, status = InvoiceStatus.DELIVERED)
+                        updateInvoice(invoice = invoice, status = InvoiceStatus.DELIVERED, invoiceFilePath = pdfPath)
                     }
                 }
             invoice.id
         }
 
-    private suspend fun updateStatus(
+    private suspend fun updateInvoice(
         invoice: Invoice,
         status: InvoiceStatus,
-    ) = invoice.copy(status = status).let { copy ->
+        invoiceFilePath: String,
+    ) = invoice.copy(status = status, invoiceFilePath = invoiceFilePath).let { copy ->
         invoiceRepository.upsert(copy, new = false)
     }
 }

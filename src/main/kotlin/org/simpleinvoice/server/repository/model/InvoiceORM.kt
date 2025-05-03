@@ -19,6 +19,7 @@ object InvoiceTable : UUIDTable("invoice") {
     val householdId = reference(name = "household_id", foreign = HouseholdTable)
     val totalPrice = double("total_price")
     val currency = varchar("currency", 255)
+    val invoiceFilePath = varchar("invoice_file_path", 255).nullable()
 }
 
 class InvoiceDAO(
@@ -35,6 +36,7 @@ class InvoiceDAO(
     val invoiceLines by InvoiceLineDAO referrersOn InvoiceLineTable.invoiceId
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
+    val invoiceFilePath by InvoiceTable.invoiceFilePath
 
     fun toInvoice(): Invoice =
         Invoice(
@@ -48,5 +50,6 @@ class InvoiceDAO(
             invoiceLines = invoiceLines.map { it.toInvoiceLine() },
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
+            invoiceFilePath = invoiceFilePath,
         )
 }

@@ -21,7 +21,6 @@ class InvoiceRepository(
         ids: List<UUID>,
     ): InvoicesResponse =
         suspendTransaction {
-            InvoicesResponse(invoices = InvoiceDAO.all().map { it.toInvoice() })
             InvoicesResponse(
                 invoices =
                     if (openOnly) {
@@ -32,6 +31,11 @@ class InvoiceRepository(
                         InvoiceDAO.all().map { it.toInvoice() }
                     },
             )
+        }
+
+    override suspend fun get(id: UUID): Invoice =
+        suspendTransaction {
+            InvoiceDAO.findById(id)?.toInvoice() ?: throw Exception("Invoice with id: $id not found")
         }
 
     override suspend fun upsert(
@@ -71,6 +75,7 @@ class InvoiceRepository(
             it[householdId] = invoice.household.id
             it[totalPrice] = invoice.totalPrice
             it[currency] = invoice.currency.name
+            it[invoiceFilePath] = invoice.invoiceFilePath
         }
 
     override suspend fun delete(id: UUID): Boolean =

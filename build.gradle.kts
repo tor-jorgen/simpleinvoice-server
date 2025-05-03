@@ -62,6 +62,9 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
+    val slf4jVersion = "2.0.17"
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+
     val logbackVersion = "1.5.18"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
@@ -74,6 +77,7 @@ dependencies {
     val jacksonVersion = "2.19.0"
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     // Document conversion
     // This is the last version

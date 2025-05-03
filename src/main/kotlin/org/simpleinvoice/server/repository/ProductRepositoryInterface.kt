@@ -10,7 +10,10 @@ interface ProductRepositoryInterface {
 
     suspend fun byIds(ids: List<UUID>): ProductsResponse
 
-    suspend fun upsert(product: Product): UpsertStatement<Long>
+    suspend fun upsert(
+        product: Product,
+        new: Boolean,
+    ): UpsertStatement<Long>
 
     fun upsertWithoutTransaction(product: Product): UpsertStatement<Long>
 

@@ -10,7 +10,10 @@ interface HouseholdRepositoryInterface {
 
     suspend fun get(id: UUID): Household
 
-    suspend fun upsert(household: Household): UpsertStatement<Long>
+    suspend fun upsert(
+        household: Household,
+        new: Boolean,
+    ): UpsertStatement<Long>
 
     /**
      * Delete a household with id [id]. All persons in the household will also be deleted

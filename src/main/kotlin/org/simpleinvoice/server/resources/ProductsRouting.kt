@@ -45,7 +45,7 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
             // Create a new product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(UUID.randomUUID())
-            repository.upsert(product)
+            repository.upsert(product = product, new = true)
             call.respond(status = HttpStatusCode.Created, message = product)
         }
 
@@ -53,7 +53,7 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
             // Update a product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(request.id)
-            repository.upsert(product)
+            repository.upsert(product = product, new = false)
             call.respond(status = HttpStatusCode.OK, message = product)
         }
 

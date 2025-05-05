@@ -3,6 +3,8 @@ package org.simpleinvoice.server.invoice
 import org.odftoolkit.simple.TextDocument
 import org.odt2pdf.PDFConverter
 import org.simpleinvoice.server.model.Invoice
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.w3c.dom.Node
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -25,6 +27,8 @@ class DocumentGenerator(
     private val config: InvoiceConfig,
     private val invoiceConfig: InvoiceBatchConfig,
 ) {
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+
     fun createDocuments(invoice: Invoice): Triple<String, String, String> {
         File(config.invoiceDirectory).mkdirs()
         val pdfConverter = initPdfConverter()
@@ -38,7 +42,7 @@ class DocumentGenerator(
             val pdfPath = odtPath.replace("odt", "pdf")
             generateOdf(document, odtPath)
             generatePdf(document, pdfPath, pdfConverter)
-            println("Invoice $pdfPath generated for ${recipients[0].addressLine1}")
+            logger.info("Invoice {} generated for {}", pdfPath, recipients[0].addressLine1)
             return Triple(invoiceName, odtPath, pdfPath)
         }
     }

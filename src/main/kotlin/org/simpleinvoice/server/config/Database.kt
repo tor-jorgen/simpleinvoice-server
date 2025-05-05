@@ -1,12 +1,13 @@
 package org.simpleinvoice.server.config
 
 import io.ktor.server.application.Application
+import io.ktor.server.application.log
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import org.koin.ktor.ext.get as getK
 
 fun Application.runFlyway(config: DatabaseConfig = getK<DatabaseConfig>()) {
-    println("Running Flyway against: ${config.connectionString}")
+    log.debug("Running Flyway against: {}", config.connectionString)
     Flyway
         .configure()
         .dataSource(config.connectionString, config.user, config.password)

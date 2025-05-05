@@ -1,5 +1,7 @@
 package util.smtp
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.Date
 import java.util.Properties
 import javax.activation.DataHandler
@@ -21,6 +23,7 @@ import javax.mail.internet.MimeMultipart
 class SmtpClient(
     val config: SmtpConfig,
 ) {
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
     private var session: Session? = null
 
     fun open(): SmtpClient {
@@ -45,6 +48,7 @@ class SmtpClient(
     fun send(
         subject: String,
         text: String,
+        // TODO: Handle a list of emails
         toEmail1: String,
         toEmail2: String?,
         invoicePath: String,
@@ -76,11 +80,10 @@ class SmtpClient(
 
             msg.setContent(multipart)
             Transport.send(msg)
-            println("* e-mail sent to $toEmail1 ${if (toEmail2 != null) " and $toEmail2}" else ""}")
             return true
         } catch (e: MessagingException) {
-            println("* ERROR: Could not sent e-mail to $toEmail1 ${if (toEmail2 != null) " and $toEmail2}" else ""}")
-            e.printStackTrace()
+            val emails = listOfNotNull(toEmail1, toEmail2).joinToString(separator = ", ")
+            logger.error("Could not send e-mail to $emails", e)
             return false
         }
     }

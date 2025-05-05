@@ -13,10 +13,11 @@ private const val DUE_DATE = "_DUE_DATE_"
 private const val HOUSEHOLD_NAME = "_HOUSEHOLD_"
 private const val ADDRESS_LINE_1 = "_ADDRESS1_"
 private const val ADDRESS_LINE_2 = "_ADDRESS2_"
-private const val ADDRESS_LINE_3 = "_ADDRESS3_"
+private const val ZIP_CITY = "_ZIP_CITY_"
+private const val COUNTRY = "_COUNTRY_"
 private const val NAME_1 = "_NAME1_"
 private const val NAME_2 = "_NAME2_"
-private const val ITEM = "_ITEM_"
+private const val PRODUCT = "_PRODUCT_"
 private const val ITEM_PRICE = "_PRICE_"
 private const val TOTAL_PRICE = "_TOTAL_"
 
@@ -56,7 +57,7 @@ class DocumentGenerator(
         invoiceName = invoiceName.replace(NAME_1, if (recipients.isNotEmpty()) recipients[0].name else "")
         invoiceName =
             invoiceName.replace(
-                ITEM,
+                PRODUCT,
                 invoice.invoiceLines
                     .first()
                     .product.name,
@@ -121,12 +122,16 @@ class DocumentGenerator(
                 node.textContent =
                     if (recipients.isNotEmpty()) recipients[0].addressLine2 else ""
 
-            ADDRESS_LINE_3 ->
+            ZIP_CITY ->
                 node.textContent =
-                    if (recipients.isNotEmpty()) recipients[0].addressLine3 else ""
+                    if (recipients.isNotEmpty()) recipients[0].zipCity else ""
+
+            COUNTRY ->
+                node.textContent =
+                    if (recipients.isNotEmpty()) recipients[0].country else ""
 
             // TODO: Add support for multiple items
-            ITEM ->
+            PRODUCT ->
                 node.textContent =
                     invoice.invoiceLines
                         .first()

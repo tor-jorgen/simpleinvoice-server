@@ -4,7 +4,7 @@ This is the server for the Simple Invoice project. It provides an HTTP API that 
 
 The server is built using [Ktor](https://ktor.io).
 
-## Configuration
+## Server configuration
 
 | Property (`allication.yaml`) | Environment variable   | Default value                 | Description                                                                                                                 |
 |------------------------------|------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
@@ -49,6 +49,26 @@ To list the environment variables with `localhost` as the address, you can run t
 
 These variables can be copied and pasted into the environment variables in IntelliJ, if you are running the server from
 there.
+
+## Document template configuration
+
+The following table shows the name of the merge fields in the document template:
+
+| Merge field name | Description                                                   |
+|------------------|---------------------------------------------------------------|
+| `_NO_`           | Invoice number                                                |
+| `_DATE_`         | Generated date                                                |
+| `_DUE_DATE_`     | Due data                                                      |
+| `_HOUSEHOLD_`    | Name of household                                             |
+| `_ADDRESS1_`     | Address 1                                                     |
+| `_ADDRESS2_`     | Address 2                                                     |
+| `_ZIP_CITY_`     | Zip code and city                                             |
+| `_COUNTRY_`      | Country                                                       |
+| `_NAME1_`        | First name and lastname of the first person in the household  |
+| `_NAME2_`        | First name and lastname of the second person in the household |
+| `_PRODUCT_`      | Name of the product in the invoice line                       |
+| `_PRICE_`        | Price of the product in the invoice line                      |
+| `_TOTAL_`        | Total price for the invoice                                   |
 
 ## Running locally
 

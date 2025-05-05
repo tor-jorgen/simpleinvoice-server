@@ -88,8 +88,7 @@ fun Application.configureInvoicesRouting(
             val invoiceRequest = call.receive<InvoiceRequest>()
             // Invoice number can be set to anything, as it wil be generated for a new invoice
             val invoice = invoiceRequest.toInvoice(id = UUID.randomUUID(), invoiceNumber = 0)
-            val invoiceNumber = repository.upsert(invoice = invoice, new = true)
-            val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
+            val invoiceDb = invoiceGenerator.generate(invoice, new = true)
             call.respond(status = HttpStatusCode.Created, message = invoiceDb)
         }
 
@@ -106,8 +105,7 @@ fun Application.configureInvoicesRouting(
             val invoiceRequest = call.receive<InvoiceRequest>()
             // Invoice number can be set to anything, as it wil not be updated for an existing invoice
             val invoice = invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0)
-            val invoiceNumber = repository.upsert(invoice = invoice, new = false)
-            val invoiceDb = invoice.copy(invoiceNumber = invoiceNumber)
+            val invoiceDb = invoiceGenerator.generate(invoice, new = false)
             call.respond(status = HttpStatusCode.OK, message = invoiceDb)
         }
 

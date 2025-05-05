@@ -20,7 +20,7 @@ data class GenerateInvoicesRequest
         @SerialName("total_price") val totalPrice: Double,
         val currency: Currency,
         @SerialName("invoice_lines") val invoiceLines: List<GenerateInvoiceLineRequest>,
-        // Uses Uuid to be able to serialize a list of UUIDs
+        // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
         @SerialName("household_ids") val householdIds: List<Uuid>,
     )
 

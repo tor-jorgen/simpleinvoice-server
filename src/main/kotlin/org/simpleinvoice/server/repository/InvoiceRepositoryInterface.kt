@@ -20,7 +20,7 @@ interface InvoiceRepositoryInterface {
     suspend fun upsert(
         invoice: Invoice,
         new: Boolean,
-    ): Int
+    ): Invoice
 
     /**
      * Delete an invoice with id [id]. All invoice lines will also be deleted

@@ -4,12 +4,13 @@ import org.simpleinvoice.server.model.Invoice
 import util.smtp.SmtpClient
 
 class EmailGenerator(
-    config: InvoiceConfig,
     private val invoiceConfig: InvoiceBatchConfig,
+    private val eventPublisher: EventPublisher,
+    smtpClient: SmtpClient,
 ) {
-    private val smtpClient: SmtpClient? = if (invoiceConfig.sendEmail()) SmtpClient(config.smtp).open() else null
+    private val client: SmtpClient? = if (invoiceConfig.sendEmail()) smtpClient.open() else null
 
-    fun sendEmail(
+    suspend fun sendEmail(
         invoice: Invoice,
         invoiceName: String,
         odtPath: String,
@@ -21,22 +22,25 @@ class EmailGenerator(
         }
 
         val recipients = RecipientList.fromHouseHold(invoice.household)
-        val recipient1 = recipients[0].email
-        if (recipient1.isBlank()) {
-            println("Cannot send e-mail to ${recipients[0].name}, because e-mail address is missing.")
+        val recipientEmails = recipients.mapNotNull { it.email }.filter { it.isNotBlank() }
+        if (recipientEmails.isEmpty()) {
+            println("Cannot send e-mail to ${invoice.household.description()} because e-mail addresses are missing.")
+            eventPublisher.publishIdEvent(
+                invoice.id,
+                "Cannot send e-mail to ${invoice.household.description()}, because e-mail address is missing.",
+            )
             return false
         }
 
         val invoicePath = if (invoiceConfig.generatePdf()) pdfPath else odtPath
         val invoiceFileName = "$invoiceName.${if (invoiceConfig.generatePdf()) "pdf" else "odt"}"
-        val recipient2 = if (recipients.size > 1) recipients[1].email else null
-        return smtpClient!!.send(
-            invoiceConfig.emailSubject,
-            invoiceConfig.emailText,
-            recipient1,
-            recipient2,
-            invoicePath,
-            invoiceFileName,
+        return client!!.send(
+            subject = invoiceConfig.emailSubject,
+            text = invoiceConfig.emailText,
+            toEmail1 = recipientEmails.first(),
+            toEmail2 = if (recipientEmails.size > 1) recipientEmails[1] else null,
+            invoicePath = invoicePath,
+            invoiceName = invoiceFileName,
         )
     }
 }

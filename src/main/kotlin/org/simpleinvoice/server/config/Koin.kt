@@ -22,6 +22,7 @@ import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.repository.SettingsRepository
 import org.simpleinvoice.server.repository.UserRepository
+import util.smtp.SmtpClient
 
 fun Application.configureDependencyInjection() {
     install(Koin) {
@@ -38,7 +39,10 @@ fun Application.configureDependencyInjection() {
                         password = property("db.password"),
                     )
                 }
-                single { InvoiceConfig.fromYaml(property("cfg.invoice")) }
+
+                val invoiceConfig = InvoiceConfig.fromYaml(property("cfg.invoice"))
+                single { invoiceConfig }
+                single { invoiceConfig.smtp }
                 single { InvoiceBatchConfig.fromYaml(property("cfg.batch")) }
 
                 single {
@@ -52,6 +56,7 @@ fun Application.configureDependencyInjection() {
                     Channel<AuditTrail>(capacity = 100)
                 }
 
+                singleOf(::SmtpClient)
                 singleOf(::EventPublisher)
                 singleOf(::SettingsRepository)
                 singleOf(::UserRepository)

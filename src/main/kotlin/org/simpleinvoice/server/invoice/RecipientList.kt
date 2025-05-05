@@ -11,11 +11,10 @@ data class RecipientList(
                 Recipient(
                     name = "${person.firstName} ${person.lastName}",
                     addressLine1 = household.address,
-                    addressLine2 = "${household.zipCode} ${household.city}",
-                    // TODO: Allow null
-                    addressLine3 = household.country ?: "",
-                    // TODO: Allow null
-                    email = person.emailAddress ?: "",
+                    addressLine2 = household.address2,
+                    zipCity = "${household.zipCode} ${household.city}",
+                    country = household.country,
+                    email = person.emailAddress,
                 )
             }
     }

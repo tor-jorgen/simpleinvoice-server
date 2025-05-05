@@ -10,6 +10,7 @@ import java.util.UUID
 object HouseholdTable : UUIDTable("household") {
     val name = varchar("name", 255).nullable()
     val address = varchar("address", 255)
+    val address2 = varchar("address2", 255).nullable()
     val zipCode = varchar("zip_code", 50)
     val city = varchar("city", 255)
     val country = varchar("country", 255).nullable()
@@ -23,6 +24,7 @@ class HouseholdDAO(
 
     var name by HouseholdTable.name
     var address by HouseholdTable.address
+    var address2 by HouseholdTable.address2
     var zipCode by HouseholdTable.zipCode
     var city by HouseholdTable.city
     var country by HouseholdTable.country
@@ -34,6 +36,7 @@ class HouseholdDAO(
             id = id.value,
             name = name,
             address = address,
+            address2 = address2,
             zipCode = zipCode,
             city = city,
             country = country,

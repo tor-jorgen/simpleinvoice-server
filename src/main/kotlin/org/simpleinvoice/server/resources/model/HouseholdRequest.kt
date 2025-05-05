@@ -11,6 +11,7 @@ import java.util.UUID
 data class HouseholdRequest(
     val name: String? = null,
     val address: String,
+    val address2: String? = null,
     @SerialName("zip_code") val zipCode: String,
     val city: String,
     val country: String? = null,
@@ -22,6 +23,7 @@ data class HouseholdRequest(
             id = id,
             name = name,
             address = address,
+            address2 = address2,
             zipCode = zipCode,
             city = city,
             country = country,
@@ -35,7 +37,7 @@ data class PersonRequest(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("first_name") val firstName: String,
     @SerialName("last_name") val lastName: String,
-    @SerialName("email_address") val emailAddress: String,
+    @SerialName("email_address") val emailAddress: String? = null,
     @SerialName("phone_number") val phoneNumber: String? = null,
 ) {
     fun toPerson() =

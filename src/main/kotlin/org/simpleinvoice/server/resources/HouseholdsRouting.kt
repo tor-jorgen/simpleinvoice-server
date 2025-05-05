@@ -45,16 +45,16 @@ fun Application.configureHouseholdsRouting(repository: HouseholdRepository = get
             // Add a new household
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(UUID.randomUUID())
-            repository.upsert(household = household, new = true)
-            call.respond(status = HttpStatusCode.Created, message = household)
+            val dbHousehold = repository.upsert(household = household, new = true)
+            call.respond(status = HttpStatusCode.Created, message = dbHousehold)
         }
 
         put<Households.Id> { request ->
             // Update a household with upserts on persons
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(request.id)
-            repository.upsert(household = household, new = false)
-            call.respond(status = HttpStatusCode.OK, message = household)
+            val dbHousehold = repository.upsert(household = household, new = false)
+            call.respond(status = HttpStatusCode.OK, message = dbHousehold)
         }
 
         delete<Households.Id> { request ->

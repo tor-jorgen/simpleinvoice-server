@@ -13,8 +13,10 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
+import org.simpleinvoice.server.invoice.HouseholdImporter
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.HouseholdRequest
+import org.simpleinvoice.server.resources.model.ImportHouseholdsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -27,18 +29,33 @@ class Households(
         @Suppress("unused") val parent: Households = Households(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
     )
+
+    @Resource("import")
+    class Import(
+        @Suppress("unused") val parent: Households = Households(),
+    )
 }
 
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configureHouseholdsRouting(repository: HouseholdRepository = getK<HouseholdRepository>()) {
+fun Application.configureHouseholdsRouting(
+    repository: HouseholdRepository = getK<HouseholdRepository>(),
+    importer: HouseholdImporter = getK<HouseholdImporter>(),
+) {
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Households> {
             // Get all Households
+            val ids = call.queryParameters["ids"]
+            val idList =
+                if (ids.isNullOrEmpty()) {
+                    emptyList()
+                } else {
+                    ids.split(",").map { UUID.fromString(it.trim()) }
+                }
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
+            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly, ids = idList))
         }
 
         post<Households> {
@@ -62,6 +79,14 @@ fun Application.configureHouseholdsRouting(repository: HouseholdRepository = get
             repository.delete(request.id)
             call.respond(HttpStatusCode.NoContent)
         }
+
+        post<Households.Import> {
+            // Import households
+            val households = call.receive<String>()
+            println("Importing households: $households")
+            val householdIds = importer.importHouseholds(households)
+            val response = ImportHouseholdsResponse.fromUUIDs(householdIds)
+            call.respond(status = HttpStatusCode.OK, message = response)
+        }
     }
-//    }
 }

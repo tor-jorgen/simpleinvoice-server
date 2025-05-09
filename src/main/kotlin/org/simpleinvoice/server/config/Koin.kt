@@ -11,6 +11,7 @@ import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.DocumentGenerator
 import org.simpleinvoice.server.invoice.EmailGenerator
 import org.simpleinvoice.server.invoice.EventPublisher
+import org.simpleinvoice.server.invoice.HouseholdImporter
 import org.simpleinvoice.server.invoice.InvoiceBatchConfig
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
@@ -69,6 +70,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::InvoiceGenerator)
                 singleOf(::DocumentGenerator)
                 singleOf(::EmailGenerator)
+                singleOf(::HouseholdImporter)
             },
         )
     }

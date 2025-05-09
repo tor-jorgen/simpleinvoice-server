@@ -5,7 +5,10 @@ import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
 interface HouseholdRepositoryInterface {
-    suspend fun all(activeOnly: Boolean): HouseholdsResponse
+    suspend fun all(
+        activeOnly: Boolean,
+        ids: List<UUID>,
+    ): HouseholdsResponse
 
     suspend fun get(id: UUID): Household
 

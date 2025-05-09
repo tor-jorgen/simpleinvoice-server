@@ -18,12 +18,17 @@ class HouseholdRepository(
     private val personRepository: PersonRepository,
     private val eventPublisher: EventPublisher,
 ) : HouseholdRepositoryInterface {
-    override suspend fun all(activeOnly: Boolean): HouseholdsResponse =
+    override suspend fun all(
+        activeOnly: Boolean,
+        ids: List<UUID>,
+    ): HouseholdsResponse =
         suspendTransaction {
             HouseholdsResponse(
                 households =
                     if (activeOnly) {
                         HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
+                    } else if (ids.isNotEmpty()) {
+                        HouseholdDAO.find { HouseholdTable.id inList ids }.map { it.toHousehold() }
                     } else {
                         HouseholdDAO.all().map { it.toHousehold() }
                     },

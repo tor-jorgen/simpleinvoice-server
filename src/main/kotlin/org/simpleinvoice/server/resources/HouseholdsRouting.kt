@@ -47,8 +47,15 @@ fun Application.configureHouseholdsRouting(
 //        authenticate(AUTH_SESSION) {
         get<Households> {
             // Get all Households
+            val ids = call.queryParameters["ids"]
+            val idList =
+                if (ids.isNullOrEmpty()) {
+                    emptyList()
+                } else {
+                    ids.split(",").map { UUID.fromString(it.trim()) }
+                }
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
+            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly, ids = idList))
         }
 
         post<Households> {

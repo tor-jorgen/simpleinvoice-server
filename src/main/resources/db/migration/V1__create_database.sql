@@ -22,6 +22,7 @@ CREATE TABLE household
     id       UUID    NOT NULL PRIMARY KEY,
     name     VARCHAR,
     address  VARCHAR NOT NULL,
+    address2 VARCHAR,
     zip_code VARCHAR NOT NULL,
     city     VARCHAR NOT NULL,
     country  VARCHAR,
@@ -51,15 +52,16 @@ CREATE TABLE product
 
 CREATE TABLE invoice
 (
-    id             UUID       NOT NULL PRIMARY KEY,
-    invoice_number INT UNIQUE NOT NULL,
-    status         VARCHAR    NOT NULL,
-    generated_date VARCHAR    NOT NULL,
-    due_date       VARCHAR    NOT NULL,
-    finalized_date VARCHAR,
-    household_id   UUID       NOT NULL REFERENCES household (id),
-    total_price    DECIMAL    NOT NULL,
-    currency       VARCHAR    NOT NULL
+    id                UUID       NOT NULL PRIMARY KEY,
+    invoice_number    INT UNIQUE NOT NULL,
+    status            VARCHAR    NOT NULL,
+    generated_date    VARCHAR    NOT NULL,
+    due_date          VARCHAR    NOT NULL,
+    finalized_date    VARCHAR,
+    household_id      UUID       NOT NULL REFERENCES household (id),
+    total_price       DECIMAL    NOT NULL,
+    currency          VARCHAR    NOT NULL,
+    invoice_file_path VARCHAR
 );
 
 CREATE TABLE invoice_line
@@ -71,4 +73,14 @@ CREATE TABLE invoice_line
     quantity    INT     NOT NULL,
     total_price DECIMAL NOT NULL,
     currency    VARCHAR NOT NULL
+);
+
+CREATE TABLE audit_trail
+(
+    id        UUID    NOT NULL PRIMARY KEY,
+    timestamp VARCHAR NOT NULL,
+    item_id   VARCHAR NOT NULL,
+    item      VARCHAR,
+    message   VARCHAR,
+    user_id   VARCHAR
 );

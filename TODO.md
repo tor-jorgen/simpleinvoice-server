@@ -13,5 +13,7 @@
 11. Do not use Kotlin serialization, as it does not support all types, e.g. Instant and java.util.UUID. Currently, there
     is a mixture of Uuid and UUID, because Kotlin Serialization support Uuid, while Exposed supports UUID...
 12. Fix Postgres authentication
-13. Address 2 does not work
+13. ~~Address 2 does not work~~
 14. Update repositories to return domain objects
+15. Possible to create groups of households
+16. Possible to filter on households (including one or more groups) when generating invoices

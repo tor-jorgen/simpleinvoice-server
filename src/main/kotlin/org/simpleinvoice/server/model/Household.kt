@@ -25,4 +25,12 @@ data class Household(
             // TODO: Email should not be blank
             persons.map { it.lastName }.toSet().joinToString(", ")
         }
+
+    fun equalsIgnoreIdAndPersons(other: Household): Boolean =
+        name == other.name &&
+            address == other.address &&
+            address2 == other.address2 &&
+            zipCode == other.zipCode &&
+            city == other.city &&
+            country == other.country
 }

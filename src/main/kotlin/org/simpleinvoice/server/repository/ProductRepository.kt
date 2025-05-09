@@ -60,12 +60,16 @@ class ProductRepository(
             it[inactive] = product.inactive
         }
 
-    override suspend fun delete(id: UUID): Boolean =
-        suspendTransaction {
-            val rowsDeleted =
-                ProductTable.deleteWhere {
-                    ProductTable.id eq id
-                }
-            rowsDeleted == 1
-        }
+    override suspend fun delete(id: UUID): Boolean {
+        val response =
+            suspendTransaction {
+                val rowsDeleted =
+                    ProductTable.deleteWhere {
+                        ProductTable.id eq id
+                    }
+                rowsDeleted == 1
+            }
+        eventPublisher.publishIdEvent(id = id, message = "Product deleted")
+        return response
+    }
 }

@@ -68,7 +68,6 @@ class InvoiceRepository(
                     invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
                 }
                 upsert
-//                upsert.resultedValues?.first() ?: throw Exception("Could not store invoice")
             }
         eventPublisher.publishEvent(
             id = invoice.id,
@@ -92,12 +91,16 @@ class InvoiceRepository(
             it[invoiceFilePath] = invoice.invoiceFilePath
         }
 
-    override suspend fun delete(id: UUID): Boolean =
-        suspendTransaction {
-            InvoiceLineTable.deleteWhere { invoiceId eq id }
-            val rowsDeleted = InvoiceTable.deleteWhere { InvoiceTable.id eq id }
-            rowsDeleted == 1
-        }
+    override suspend fun delete(id: UUID): Boolean {
+        val response =
+            suspendTransaction {
+                InvoiceLineTable.deleteWhere { invoiceId eq id }
+                val rowsDeleted = InvoiceTable.deleteWhere { InvoiceTable.id eq id }
+                rowsDeleted == 1
+            }
+        eventPublisher.publishIdEvent(id = id, message = "Invoice deleted")
+        return response
+    }
 
     override fun nextInvoiceNumber(): Int? = InvoiceDAO.all().maxOfOrNull { it.invoiceNumber }?.plus(1)
 

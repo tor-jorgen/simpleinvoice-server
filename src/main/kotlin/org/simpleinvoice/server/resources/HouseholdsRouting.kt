@@ -16,6 +16,7 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.invoice.HouseholdImporter
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.HouseholdRequest
+import org.simpleinvoice.server.resources.model.ImportHouseholdsRequest
 import org.simpleinvoice.server.resources.model.ImportHouseholdsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
@@ -82,8 +83,7 @@ fun Application.configureHouseholdsRouting(
 
         post<Households.Import> {
             // Import households
-            val households = call.receive<String>()
-            println("Importing households: $households")
+            val households = call.receive<ImportHouseholdsRequest>()
             val householdIds = importer.importHouseholds(households)
             val response = ImportHouseholdsResponse.fromUUIDs(householdIds)
             call.respond(status = HttpStatusCode.OK, message = response)

@@ -3,16 +3,17 @@ package org.simpleinvoice.server.invoice
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
 import org.simpleinvoice.server.repository.HouseholdRepository
+import org.simpleinvoice.server.resources.model.ImportHouseholdsRequest
 import java.util.UUID
 
 class HouseholdImporter(
     private val householdRepository: HouseholdRepository,
 ) {
-    suspend fun importHouseholds(householdString: String): List<UUID> {
+    suspend fun importHouseholds(importHouseholds: ImportHouseholdsRequest): List<UUID> {
         val households = mutableSetOf<Household>()
         var lineNo = 0
-        householdString.split("\n").forEach { line ->
-            if (lineNo++ > 0 && line.isNotBlank()) {
+        importHouseholds.households.split("\n").forEach { line ->
+            if (lineNo++ >= importHouseholds.linesToSkip && line.isNotBlank()) {
                 line.split(";").let { columns ->
                     if (columns.size < 10) {
                         throw Exception("Invalid line: $line")

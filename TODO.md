@@ -15,5 +15,8 @@
 12. Fix Postgres authentication
 13. ~~Address 2 does not work~~
 14. Update repositories to return domain objects
-15. Possible to create groups of households
+15. ~~Possible to create groups of households~~
 16. Possible to filter on households (including one or more groups) when generating invoices
+17. Possible to select and filter on tags when registering an invoice
+18. Possible to filter on tags when looking at open invoices
+19. Generating invoice in database failed, but invoice was created in DB, as well as a document

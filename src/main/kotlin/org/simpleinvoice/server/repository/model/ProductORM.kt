@@ -19,7 +19,7 @@ object ProductTable : UUIDTable("product") {
 }
 
 object ProductTagsTable : Table("product_tags") {
-    val productId = reference("product_id", HouseholdTable)
+    val productId = reference("product_id", ProductTable)
     val tagId = reference("tag_id", TagTable)
     override val primaryKey = PrimaryKey(productId, tagId)
 }
@@ -34,7 +34,7 @@ class ProductDAO(
     var quantity by ProductTable.quantity
     var price by ProductTable.price
     var currency by ProductTable.currency
-    val tags by TagDAO via HouseholdTagsTable
+    val tags by TagDAO via ProductTagsTable
     var inactive by ProductTable.inactive
 
     fun toProduct(): Product =

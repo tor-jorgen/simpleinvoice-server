@@ -23,6 +23,7 @@ data class InvoiceRequest(
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
+    val tags: List<TagRequest>,
 ) {
     fun toInvoice(
         id: UUID,
@@ -39,6 +40,7 @@ data class InvoiceRequest(
             invoiceLines = invoiceLines.map { it.toInvoiceLine() },
             totalPrice = totalPrice,
             currency = currency,
+            tags = tags.map { it.toTag(it.id!!) },
             invoiceFilePath = null,
         )
 }

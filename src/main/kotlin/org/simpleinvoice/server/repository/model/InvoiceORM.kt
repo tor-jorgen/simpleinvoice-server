@@ -37,6 +37,7 @@ class InvoiceDAO(
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
     val invoiceFilePath by InvoiceTable.invoiceFilePath
+    val tags by TagDAO via HouseholdTagsTable
 
     fun toInvoice(): Invoice =
         Invoice(
@@ -51,5 +52,6 @@ class InvoiceDAO(
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
             invoiceFilePath = invoiceFilePath,
+            tags = tags.map { it.toTag() },
         )
 }

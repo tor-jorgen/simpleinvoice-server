@@ -20,6 +20,7 @@ data class Invoice(
     val household: Household,
     @SerialName("invoice_file_path") val invoiceFilePath: String?,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLine>,
+    val tags: List<Tag>,
 ) {
     fun generatedDateAsString(): String = generatedDate.toString().substring(0, 10)
 

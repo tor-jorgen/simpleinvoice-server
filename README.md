@@ -70,6 +70,14 @@ The following table shows the name of the merge fields in the document template:
 | `_PRICE_`        | Price of the product in the invoice line                      |
 | `_TOTAL_`        | Total price for the invoice                                   |
 
+## Database maintenance
+
+Delete database:
+
+```bash
+sudo rm -rf data/postgres/
+``` 
+
 ## Running locally
 
 All the components of the backend will run in Docker. This includes the database and the server.

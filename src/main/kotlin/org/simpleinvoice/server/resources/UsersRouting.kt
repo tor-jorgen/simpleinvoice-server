@@ -6,8 +6,8 @@ import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
-import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.common.UUIDSerializer
+import org.simpleinvoice.server.repository.UserRepository
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -23,7 +23,7 @@ class Users {
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-fun Application.configurePersonsRouting(repository: PersonRepository = getK<PersonRepository>()) {
+fun Application.configurePersonsRouting(repository: UserRepository = getK<UserRepository>()) {
     routing {
         //        authenticate(AUTH_SESSION) {
         get<Users> {

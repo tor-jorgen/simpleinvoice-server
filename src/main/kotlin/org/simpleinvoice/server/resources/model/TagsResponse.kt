@@ -1,12 +1,9 @@
 package org.simpleinvoice.server.resources.model
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.model.Tag
 
 @Serializable
-data class ImportHouseholdsRequest(
-    @SerialName("lines_to_skip") val linesToSkip: Int,
+data class TagsResponse(
     val tags: List<Tag>,
-    val households: String,
 )

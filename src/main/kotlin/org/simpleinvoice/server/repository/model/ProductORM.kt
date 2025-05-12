@@ -27,6 +27,7 @@ class ProductDAO(
     var quantity by ProductTable.quantity
     var price by ProductTable.price
     var currency by ProductTable.currency
+    val tags by TagDAO via HouseholdTagsTable
     var inactive by ProductTable.inactive
 
     fun toProduct(): Product =
@@ -37,6 +38,7 @@ class ProductDAO(
             quantity = quantity,
             price = price,
             currency = Currency.valueOf(currency),
+            tags = tags.map { it.toTag() },
             inactive = inactive,
         )
 }

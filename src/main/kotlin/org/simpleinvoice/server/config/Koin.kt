@@ -22,6 +22,7 @@ import org.simpleinvoice.server.repository.InvoiceLineRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.repository.SettingsRepository
+import org.simpleinvoice.server.repository.TagRepository
 import org.simpleinvoice.server.repository.UserRepository
 import util.smtp.SmtpClient
 
@@ -67,6 +68,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::InvoiceRepository)
                 singleOf(::InvoiceLineRepository)
                 singleOf(::AuditTrailRepository)
+                singleOf(::TagRepository)
                 singleOf(::InvoiceGenerator)
                 singleOf(::DocumentGenerator)
                 singleOf(::EmailGenerator)

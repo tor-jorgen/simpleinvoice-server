@@ -15,6 +15,7 @@ data class Household(
     val city: String,
     val country: String? = null,
     val persons: List<Person>,
+    val tags: List<Tag>,
     val inactive: Boolean = false,
 ) {
     fun description(): String =
@@ -26,7 +27,7 @@ data class Household(
             persons.map { it.lastName }.toSet().joinToString(", ")
         }
 
-    fun equalsIgnoreIdAndPersons(other: Household): Boolean =
+    fun equalsIgnoreIdPersonsAndTags(other: Household): Boolean =
         name == other.name &&
             address == other.address &&
             address2 == other.address2 &&

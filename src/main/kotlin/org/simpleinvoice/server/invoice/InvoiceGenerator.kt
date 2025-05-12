@@ -50,6 +50,7 @@ class InvoiceGenerator(
             currency = request.currency,
             household = householdRepository.get(householdId),
             invoiceFilePath = null,
+            tags = request.tags,
             invoiceLines =
                 request.invoiceLines.map {
                     // We know that `products` contains all the products in `invoiceLines`
@@ -68,6 +69,7 @@ class InvoiceGenerator(
                                 quantity = product.quantity,
                                 price = product.price,
                                 currency = product.currency,
+                                tags = product.tags,
                             ),
                     )
                 },

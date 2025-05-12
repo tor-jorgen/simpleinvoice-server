@@ -1,17 +1,21 @@
 package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Product
+import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.model.ProductDAO
 import org.simpleinvoice.server.repository.model.ProductTable
+import org.simpleinvoice.server.repository.model.ProductTagsTable
 import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 class ProductRepository(
+    private val tagRepository: TagRepository,
     val eventPublisher: EventPublisher,
 ) : ProductRepositoryInterface {
     override suspend fun all(activeOnly: Boolean): ProductsResponse =
@@ -33,13 +37,27 @@ class ProductRepository(
             )
         }
 
+    // TODO: Return Product
     override suspend fun upsert(
         product: Product,
         new: Boolean,
     ): UpsertStatement<Long> {
         val response =
             suspendTransaction {
-                upsertWithoutTransaction(product)
+                // Delete all tags for the invoice, since we don't know if any have been removed
+                ProductTagsTable.deleteWhere { productId eq product.id }
+                val upsert = upsertWithoutTransaction(product)
+                product.tags.forEach { tag ->
+                    tagRepository.upsertWithoutTransaction(tag = tag)
+                }
+                ProductTagsTable.batchUpsert(
+                    data = product.tags,
+                    body = { tag: Tag ->
+                        this[ProductTagsTable.productId] = product.id
+                        this[ProductTagsTable.tagId] = tag.id
+                    },
+                )
+                upsert
             }
         eventPublisher.publishEvent(
             id = product.id,
@@ -49,6 +67,7 @@ class ProductRepository(
         return response
     }
 
+    // TODO: Return Product
     override fun upsertWithoutTransaction(product: Product): UpsertStatement<Long> =
         ProductTable.upsert {
             it[id] = product.id
@@ -63,6 +82,7 @@ class ProductRepository(
     override suspend fun delete(id: UUID): Boolean {
         val response =
             suspendTransaction {
+                ProductTagsTable.deleteWhere { productId eq id }
                 val rowsDeleted =
                     ProductTable.deleteWhere {
                         ProductTable.id eq id

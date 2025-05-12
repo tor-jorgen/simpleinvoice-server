@@ -29,6 +29,7 @@ class HouseholdDAO(
     var city by HouseholdTable.city
     var country by HouseholdTable.country
     val persons by PersonDAO referrersOn PersonTable.householdId
+    val tags by TagDAO via HouseholdTagsTable
     val inactive: Boolean by HouseholdTable.inactive
 
     fun toHousehold(): Household =
@@ -41,6 +42,7 @@ class HouseholdDAO(
             city = city,
             country = country,
             persons = persons.map { it.toPerson() },
+            tags = tags.map { it.toTag() },
             inactive = inactive,
         )
 }

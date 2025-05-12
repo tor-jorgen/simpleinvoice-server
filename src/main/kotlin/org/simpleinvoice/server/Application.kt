@@ -18,6 +18,7 @@ import org.simpleinvoice.server.resources.configureInvoicesRouting
 import org.simpleinvoice.server.resources.configurePersonsRouting
 import org.simpleinvoice.server.resources.configureProductsRouting
 import org.simpleinvoice.server.resources.configureSettingsRouting
+import org.simpleinvoice.server.resources.configureTagsRouting
 
 fun main(args: Array<String>) {
     io.ktor.server.cio.EngineMain
@@ -42,5 +43,6 @@ fun Application.module() {
     configureInvoicesRouting()
     configureInvoiceLineRouting()
     configureProductsRouting()
+    configureTagsRouting()
     configureOpenAPI()
 }

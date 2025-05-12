@@ -24,7 +24,7 @@ object InvoiceTable : UUIDTable("invoice") {
 }
 
 object InvoiceTagsTable : Table("invoice_tags") {
-    val invoiceId = reference("invoice_id", HouseholdTable)
+    val invoiceId = reference("invoice_id", InvoiceTable)
     val tagId = reference("tag_id", TagTable)
     override val primaryKey = PrimaryKey(invoiceId, tagId)
 }
@@ -44,7 +44,7 @@ class InvoiceDAO(
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
     val invoiceFilePath by InvoiceTable.invoiceFilePath
-    val tags by TagDAO via HouseholdTagsTable
+    val tags by TagDAO via InvoiceTagsTable
 
     fun toInvoice(): Invoice =
         Invoice(

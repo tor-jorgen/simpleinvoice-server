@@ -12,7 +12,6 @@ import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
 import org.simpleinvoice.server.model.InvoiceStatus
 import org.simpleinvoice.server.model.Tag
-import org.simpleinvoice.server.repository.model.HouseholdTagsTable
 import org.simpleinvoice.server.repository.model.InvoiceDAO
 import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
@@ -79,8 +78,8 @@ class InvoiceRepository(
                 InvoiceTagsTable.batchUpsert(
                     data = invoice.tags,
                     body = { tag: Tag ->
-                        this[HouseholdTagsTable.householdId] = invoice.id
-                        this[HouseholdTagsTable.tagId] = tag.id
+                        this[InvoiceTagsTable.invoiceId] = invoice.id
+                        this[InvoiceTagsTable.tagId] = tag.id
                     },
                 )
                 upsert

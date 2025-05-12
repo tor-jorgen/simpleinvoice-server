@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Table
 import org.simpleinvoice.server.model.Household
 import java.util.UUID
 
@@ -15,6 +16,12 @@ object HouseholdTable : UUIDTable("household") {
     val city = varchar("city", 255)
     val country = varchar("country", 255).nullable()
     val inactive = bool("inactive")
+}
+
+object HouseholdTagsTable : Table("household_tags") {
+    val householdId = reference("household_id", HouseholdTable)
+    val tagId = reference("tag_id", TagTable)
+    override val primaryKey = PrimaryKey(householdId, tagId)
 }
 
 class HouseholdDAO(

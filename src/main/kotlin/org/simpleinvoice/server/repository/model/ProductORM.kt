@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Table
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Product
 import java.util.UUID
@@ -15,6 +16,12 @@ object ProductTable : UUIDTable("product") {
     val price = double("price")
     val currency = varchar("currency", 255)
     val inactive = bool("inactive")
+}
+
+object ProductTagsTable : Table("product_tags") {
+    val productId = reference("product_id", HouseholdTable)
+    val tagId = reference("tag_id", TagTable)
+    override val primaryKey = PrimaryKey(productId, tagId)
 }
 
 class ProductDAO(

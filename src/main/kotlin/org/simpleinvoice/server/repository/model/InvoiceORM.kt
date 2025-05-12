@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Table
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceStatus
@@ -22,6 +23,12 @@ object InvoiceTable : UUIDTable("invoice") {
     val invoiceFilePath = varchar("invoice_file_path", 255).nullable()
 }
 
+object InvoiceTagsTable : Table("invoice_tags") {
+    val invoiceId = reference("invoice_id", HouseholdTable)
+    val tagId = reference("tag_id", TagTable)
+    override val primaryKey = PrimaryKey(invoiceId, tagId)
+}
+
 class InvoiceDAO(
     id: EntityID<UUID>,
 ) : UUIDEntity(id) {
@@ -37,6 +44,7 @@ class InvoiceDAO(
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
     val invoiceFilePath by InvoiceTable.invoiceFilePath
+    val tags by TagDAO via HouseholdTagsTable
 
     fun toInvoice(): Invoice =
         Invoice(
@@ -51,5 +59,6 @@ class InvoiceDAO(
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
             invoiceFilePath = invoiceFilePath,
+            tags = tags.map { it.toTag() },
         )
 }

@@ -5,13 +5,8 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import java.util.UUID
 
 @Serializable
-data class Product(
+data class Tag(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
-    val code: String,
     val name: String,
-    val quantity: Int,
-    val price: Double,
-    val currency: Currency,
-    val tags: List<Tag>,
     val inactive: Boolean = false,
 )

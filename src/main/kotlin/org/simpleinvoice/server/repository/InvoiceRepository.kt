@@ -1,6 +1,7 @@
 package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
@@ -10,15 +11,19 @@ import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
 import org.simpleinvoice.server.model.InvoiceStatus
+import org.simpleinvoice.server.model.Tag
+import org.simpleinvoice.server.repository.model.HouseholdTagsTable
 import org.simpleinvoice.server.repository.model.InvoiceDAO
 import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
+import org.simpleinvoice.server.repository.model.InvoiceTagsTable
 import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.time.Instant
 import java.util.UUID
 
 class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
+    private val tagRepository: TagRepository,
     private val settingsRepository: SettingsRepository,
     private val eventPublisher: EventPublisher,
 ) : InvoiceRepositoryInterface {
@@ -50,8 +55,9 @@ class InvoiceRepository(
     ): Invoice {
         val response =
             suspendTransaction {
-                // Delete all invoice lines for the invoice, since we don't know if any have been removed
+                // Delete all invoice lines and tags for the invoice, since we don't know if any have been removed
                 InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
+                InvoiceTagsTable.deleteWhere { invoiceId eq invoice.id }
                 val dbInvoice =
                     if (new) {
                         // Generate a new invoice number
@@ -67,6 +73,16 @@ class InvoiceRepository(
                 invoice.invoiceLines.forEach { invoiceLine ->
                     invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
                 }
+                invoice.tags.forEach { tag ->
+                    tagRepository.upsertWithoutTransaction(tag = tag)
+                }
+                InvoiceTagsTable.batchUpsert(
+                    data = invoice.tags,
+                    body = { tag: Tag ->
+                        this[HouseholdTagsTable.householdId] = invoice.id
+                        this[HouseholdTagsTable.tagId] = tag.id
+                    },
+                )
                 upsert
             }
         eventPublisher.publishEvent(
@@ -74,7 +90,12 @@ class InvoiceRepository(
             item = invoice,
             message = if (new) "Invoice created" else "Invoice updated",
         )
-        return toInvoice(statement = response, household = invoice.household, invoiceLines = invoice.invoiceLines)
+        return toInvoice(
+            statement = response,
+            household = invoice.household,
+            invoiceLines = invoice.invoiceLines,
+            tags = invoice.tags,
+        )
     }
 
     private fun upsertWithoutTransaction(invoice: Invoice): UpsertStatement<Long> =
@@ -95,6 +116,7 @@ class InvoiceRepository(
         val response =
             suspendTransaction {
                 InvoiceLineTable.deleteWhere { invoiceId eq id }
+                InvoiceTagsTable.deleteWhere { invoiceId eq id }
                 val rowsDeleted = InvoiceTable.deleteWhere { InvoiceTable.id eq id }
                 rowsDeleted == 1
             }
@@ -108,6 +130,7 @@ class InvoiceRepository(
         statement: UpsertStatement<Long>,
         household: Household,
         invoiceLines: List<InvoiceLine>,
+        tags: List<Tag>,
     ): Invoice =
         Invoice(
             id = statement[InvoiceTable.id].value,
@@ -121,5 +144,6 @@ class InvoiceRepository(
             currency = Currency.valueOf(statement[InvoiceTable.currency]),
             invoiceFilePath = statement[InvoiceTable.invoiceFilePath],
             household = household,
+            tags = tags,
         )
 }

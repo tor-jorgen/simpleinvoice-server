@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Table
 import org.simpleinvoice.server.model.Household
 import java.util.UUID
 
@@ -15,6 +16,12 @@ object HouseholdTable : UUIDTable("household") {
     val city = varchar("city", 255)
     val country = varchar("country", 255).nullable()
     val inactive = bool("inactive")
+}
+
+object HouseholdTagsTable : Table("household_tags") {
+    val householdId = reference("household_id", HouseholdTable)
+    val tagId = reference("tag_id", TagTable)
+    override val primaryKey = PrimaryKey(householdId, tagId)
 }
 
 class HouseholdDAO(
@@ -29,6 +36,7 @@ class HouseholdDAO(
     var city by HouseholdTable.city
     var country by HouseholdTable.country
     val persons by PersonDAO referrersOn PersonTable.householdId
+    val tags by TagDAO via HouseholdTagsTable
     val inactive: Boolean by HouseholdTable.inactive
 
     fun toHousehold(): Household =
@@ -41,6 +49,7 @@ class HouseholdDAO(
             city = city,
             country = country,
             persons = persons.map { it.toPerson() },
+            tags = tags.map { it.toTag() },
             inactive = inactive,
         )
 }

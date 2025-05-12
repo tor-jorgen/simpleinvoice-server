@@ -84,3 +84,31 @@ CREATE TABLE audit_trail
     message   VARCHAR,
     user_id   VARCHAR
 );
+
+CREATE TABLE tag
+(
+    id       UUID    NOT NULL PRIMARY KEY,
+    name     VARCHAR NOT NULL UNIQUE,
+    inactive BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE household_tags
+(
+    household_id UUID NOT NULL REFERENCES household (id),
+    tag_id       UUID NOT NULL REFERENCES tag (id),
+    PRIMARY KEY (household_id, tag_id)
+);
+
+CREATE TABLE product_tags
+(
+    product_id UUID NOT NULL REFERENCES product (id),
+    tag_id     UUID NOT NULL REFERENCES tag (id),
+    PRIMARY KEY (product_id, tag_id)
+);
+
+CREATE TABLE invoice_tags
+(
+    invoice_id UUID NOT NULL REFERENCES invoice (id),
+    tag_id     UUID NOT NULL REFERENCES tag (id),
+    PRIMARY KEY (invoice_id, tag_id)
+);

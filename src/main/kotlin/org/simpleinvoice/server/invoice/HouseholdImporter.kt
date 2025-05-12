@@ -2,6 +2,7 @@ package org.simpleinvoice.server.invoice
 
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
+import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.ImportHouseholdsRequest
 import java.util.UUID
@@ -19,8 +20,8 @@ class HouseholdImporter(
                         throw Exception("Invalid line: $line")
                     }
                     val newPerson = person(columns = columns)
-                    val newHousehold = household(columns = columns, person = newPerson)
-                    val household = households.find { it.equalsIgnoreIdAndPersons(newHousehold) }
+                    val newHousehold = household(columns = columns, person = newPerson, tags = importHouseholds.tags)
+                    val household = households.find { it.equalsIgnoreIdPersonsAndTags(newHousehold) }
                     if (household != null) {
                         households.remove(household)
                         households.add(household.copy(persons = household.persons + newPerson))
@@ -46,6 +47,7 @@ class HouseholdImporter(
     private fun household(
         columns: List<String>,
         person: Person,
+        tags: List<Tag>,
     ): Household =
         Household(
             id = UUID.randomUUID(),
@@ -56,5 +58,6 @@ class HouseholdImporter(
             city = columns[4].trim(),
             country = columns[5].trim(),
             persons = listOf(person),
+            tags = tags,
         )
 }

@@ -1,6 +1,7 @@
 package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
@@ -8,14 +9,17 @@ import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
+import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.model.HouseholdDAO
 import org.simpleinvoice.server.repository.model.HouseholdTable
+import org.simpleinvoice.server.repository.model.HouseholdTagsTable
 import org.simpleinvoice.server.repository.model.PersonTable
 import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
 class HouseholdRepository(
     private val personRepository: PersonRepository,
+    private val tagRepository: TagRepository,
     private val eventPublisher: EventPublisher,
 ) : HouseholdRepositoryInterface {
     override suspend fun all(
@@ -42,10 +46,12 @@ class HouseholdRepository(
         new: Boolean,
     ): Household {
         val persons = mutableListOf<Person>()
+        val tags = mutableListOf<Tag>()
         val response =
             suspendTransaction {
-                // Delete all persons for the household, since we don't know if any have been removed
+                // Delete all persons and tags for the household, since we don't know if any have been removed
                 PersonTable.deleteWhere { householdId eq household.id }
+                HouseholdTagsTable.deleteWhere { householdId eq household.id }
                 val upsert =
                     HouseholdTable.upsert {
                         it[id] = household.id
@@ -60,6 +66,16 @@ class HouseholdRepository(
                 household.persons.forEach { person ->
                     persons.add(personRepository.upsertWithoutTransaction(person = person, household = household))
                 }
+                household.tags.forEach { tag ->
+                    tags.add(tagRepository.upsertWithoutTransaction(tag = tag))
+                }
+                HouseholdTagsTable.batchUpsert(
+                    data = tags,
+                    body = { tag: Tag ->
+                        this[HouseholdTagsTable.householdId] = household.id
+                        this[HouseholdTagsTable.tagId] = tag.id
+                    },
+                )
                 upsert
             }
         eventPublisher.publishEvent(
@@ -67,13 +83,14 @@ class HouseholdRepository(
             item = household,
             message = if (new) "Household created" else "Household updated",
         )
-        return toHousehold(statement = response, persons = persons)
+        return toHousehold(statement = response, persons = persons, tags = tags)
     }
 
     override suspend fun delete(id: UUID): Boolean {
         val response =
             suspendTransaction {
                 PersonTable.deleteWhere { householdId eq id }
+                HouseholdTagsTable.deleteWhere { householdId eq id }
                 val rowsDeleted = HouseholdTable.deleteWhere { HouseholdTable.id eq id }
                 rowsDeleted == 1
             }
@@ -84,6 +101,7 @@ class HouseholdRepository(
     private fun toHousehold(
         statement: UpsertStatement<Long>,
         persons: List<Person>,
+        tags: List<Tag>,
     ): Household =
         Household(
             id = statement[HouseholdTable.id].value,
@@ -94,6 +112,7 @@ class HouseholdRepository(
             city = statement[HouseholdTable.city],
             country = statement[HouseholdTable.country],
             persons = persons,
+            tags = tags,
             inactive = statement[HouseholdTable.inactive],
         )
 }

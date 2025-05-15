@@ -12,6 +12,6 @@ data class Product(
     val quantity: Int,
     val price: Double,
     val currency: Currency,
-    val tags: List<Tag>,
+    val tags: List<Tag> = emptyList(),
     val inactive: Boolean = false,
 )

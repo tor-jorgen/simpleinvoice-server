@@ -19,11 +19,11 @@ data class InvoiceRequest(
     @SerialName("generated_date") @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
     @SerialName("due_date") @Serializable(with = InstantSerializer::class) val dueDate: Instant,
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant? = null,
-    val household: Household,
+    val household: Household, // Use HouseholdRequest
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
-    val tags: List<TagRequest>,
+    val tags: List<TagRequest> = emptyList(),
 ) {
     fun toInvoice(
         id: UUID,
@@ -49,7 +49,7 @@ data class InvoiceRequest(
 data class InvoiceLineRequest(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("line_number") val lineNumber: Int,
-    val product: Product,
+    val product: Product, // TODO: Use ProductRequest
     val quantity: Int,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,

@@ -15,7 +15,7 @@ data class Household(
     val city: String,
     val country: String? = null,
     val persons: List<Person>,
-    val tags: List<Tag>,
+    val tags: List<Tag> = emptyList(),
     val inactive: Boolean = false,
 ) {
     fun description(): String =

@@ -16,7 +16,7 @@ data class HouseholdRequest(
     val city: String,
     val country: String? = null,
     val persons: List<PersonRequest>,
-    val tags: List<TagRequest>,
+    val tags: List<TagRequest> = emptyList(),
     val inactive: Boolean,
 ) {
     fun toHousehold(id: UUID): Household =

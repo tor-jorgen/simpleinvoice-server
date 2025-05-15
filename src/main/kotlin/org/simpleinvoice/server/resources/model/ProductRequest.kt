@@ -12,7 +12,7 @@ class ProductRequest(
     val quantity: Int,
     val price: Double,
     val currency: Currency,
-    val tags: List<TagRequest>,
+    val tags: List<TagRequest> = emptyList(),
     val inactive: Boolean,
 ) {
     fun toProduct(id: UUID): Product =

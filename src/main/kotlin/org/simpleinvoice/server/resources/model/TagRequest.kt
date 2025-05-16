@@ -9,7 +9,7 @@ import java.util.UUID
 class TagRequest(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     val name: String,
-    val inactive: Boolean,
+    val inactive: Boolean = false,
 ) {
     fun toTag(id: UUID): Tag =
         Tag(

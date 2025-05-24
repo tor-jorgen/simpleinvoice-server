@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.InstantSerializer
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.model.Currency
-import org.simpleinvoice.server.model.InvoiceStatus
 import org.simpleinvoice.server.model.Tag
 import java.time.Instant
 import java.util.UUID
@@ -16,7 +15,6 @@ import kotlin.uuid.Uuid
 data class GenerateInvoicesRequest
     @OptIn(ExperimentalUuidApi::class)
     constructor(
-        val status: InvoiceStatus,
         @Serializable(with = InstantSerializer::class) @SerialName("due_date") val dueDate: Instant,
         @SerialName("total_price") val totalPrice: Double,
         val currency: Currency,
@@ -24,6 +22,7 @@ data class GenerateInvoicesRequest
         // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
         @SerialName("household_ids") val householdIds: List<Uuid>,
         val tags: List<Tag>,
+        val email: EmailRequest? = null,
     )
 
 @Serializable
@@ -36,3 +35,9 @@ data class GenerateInvoiceLineRequest
         @SerialName("total_price") val totalPrice: Double,
         val currency: Currency,
     )
+
+@Serializable
+data class EmailRequest(
+    val subject: String,
+    val text: String? = null,
+)

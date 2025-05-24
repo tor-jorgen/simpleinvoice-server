@@ -7,6 +7,7 @@ import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
+import org.simpleinvoice.server.resources.model.EmailRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import java.time.Instant
 import java.util.UUID
@@ -42,7 +43,7 @@ class InvoiceGenerator(
             id = UUID.randomUUID(),
             // New invoice number will be generated
             invoiceNumber = 0,
-            status = request.status,
+            status = InvoiceStatus.CREATED,
             generatedDate = Instant.now(),
             dueDate = request.dueDate,
             finalizedDate = null,
@@ -73,32 +74,44 @@ class InvoiceGenerator(
                             ),
                     )
                 },
-        ).let { invoice -> generate(invoice = invoice, new = true) }
+        ).let { invoice -> generate(invoice = invoice, email = request.email, new = true) }
 
     suspend fun generate(
         invoice: Invoice,
         new: Boolean,
+        email: EmailRequest? = null,
     ): Invoice {
         var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new)
         val (invoiceName, odtPath, pdfPath) = documentGenerator.createDocuments(invoiceDb)
-        emailGenerator
-            .sendEmail(
-                invoice = invoice,
-                invoiceName = invoiceName,
-                odtPath = odtPath,
-                pdfPath = pdfPath,
-            ).let { emailSent ->
-                val status = if (emailSent) InvoiceStatus.DELIVERED else invoice.status
-                invoiceDb = updateInvoice(invoice = invoice, status = status, invoiceFilePath = pdfPath)
-            }
+        if (email != null) {
+            emailGenerator
+                .sendEmail(
+                    invoice = invoice,
+                    invoiceName = invoiceName,
+                    odtPath = odtPath,
+                    pdfPath = pdfPath,
+                    email = email,
+                ).let { emailSent ->
+                    val status = if (emailSent) InvoiceStatus.DELIVERED else invoice.status
+                    invoiceDb = updateInvoice(invoice = invoice, invoiceFilePath = pdfPath, status = status)
+                }
+        } else {
+            invoiceDb = updateInvoice(invoice = invoice, invoiceFilePath = pdfPath)
+        }
         return invoiceDb
     }
 
     private suspend fun updateInvoice(
         invoice: Invoice,
-        status: InvoiceStatus,
         invoiceFilePath: String,
-    ) = invoice.copy(status = status, invoiceFilePath = invoiceFilePath).let { copy ->
-        invoiceRepository.upsert(copy, new = false)
+        status: InvoiceStatus? = null,
+    ): Invoice {
+        val copy =
+            if (status != null) {
+                invoice.copy(status = status, invoiceFilePath = invoiceFilePath)
+            } else {
+                invoice.copy(invoiceFilePath = invoiceFilePath)
+            }
+        return invoiceRepository.upsert(copy, new = false)
     }
 }

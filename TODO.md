@@ -1,22 +1,8 @@
 # TODO
 
-1. ~~Add sorting to columns~~
-2. ~~Remove Register Persons~~
-3. Fail if wrong id on PUT /settings
-4. Possible to show a localized text for constants in dropdown lists
-5. ~~Show a list of unpaid invoices on front page?~~
-6. Add users
-7. ~~Handle offline server the same way in all places~~
-8. ~~Possible to search in dropdown lists for household and products in invoices~~
-9. ~~Jump to "First name" when "ADD PERSON" is clicked in Register Households~~
-10. Should not be possible to delete invoices
-11. Do not use Kotlin serialization, as it does not support all types, e.g. Instant and java.util.UUID. Currently, there
-    is a mixture of Uuid and UUID, because Kotlin Serialization support Uuid, while Exposed supports UUID...
-12. Fix Postgres authentication
-13. ~~Address 2 does not work~~
-14. Update repositories to return domain objects
-15. ~~Possible to create groups of households~~
-16. Possible to filter on households (including one or more groups) when generating invoices
-17. Possible to select and filter on tags when registering an invoice
-18. Possible to filter on tags when looking at open invoices
-19. Generating invoice in database failed, but invoice was created in DB, as well as a document
+1. Fail if wrong id on PUT /settings
+2. Do not use Kotlin serialization, as it does not support all types, e.g. Instant and java.util.UUID. Currently, there
+   is a mixture of Uuid and UUID, because Kotlin Serialization support Uuid, while Exposed supports UUID...
+3. Fix Postgres authentication
+4. Update repositories to return domain objects
+5. Generating invoice in database failed, but invoice was created in DB, as well as a document

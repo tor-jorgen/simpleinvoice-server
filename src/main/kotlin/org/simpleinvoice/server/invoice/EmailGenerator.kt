@@ -1,6 +1,7 @@
 package org.simpleinvoice.server.invoice
 
 import org.simpleinvoice.server.model.Invoice
+import org.simpleinvoice.server.resources.model.EmailRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import util.smtp.SmtpClient
@@ -18,6 +19,7 @@ class EmailGenerator(
         invoiceName: String,
         odtPath: String,
         pdfPath: String,
+        email: EmailRequest,
     ): Boolean {
         if (!invoiceConfig.sendEmail()) {
             logger.warn("e-mail sending is disabled in the configuration.")
@@ -43,8 +45,8 @@ class EmailGenerator(
         val invoiceFileName = "$invoiceName.${if (invoiceConfig.generatePdf()) "pdf" else "odt"}"
         val emailSent =
             client!!.send(
-                subject = invoiceConfig.emailSubject,
-                text = invoiceConfig.emailText,
+                subject = email.subject ?: invoiceConfig.emailSubject,
+                text = email.text ?: invoiceConfig.emailText,
                 toEmail1 = recipientEmails.first(),
                 toEmail2 = if (recipientEmails.size > 1) recipientEmails[1] else null,
                 invoicePath = invoicePath,

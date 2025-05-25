@@ -11,4 +11,6 @@ data class Settings(
     @SerialName("default_due_days") val defaultDueDays: Int,
     @SerialName("last_invoice_number") val lastInvoiceNumber: Int,
     @SerialName("default_currency") val defaultCurrency: Currency,
+    @SerialName("default_email_subject") val defaultEmailSubject: String?,
+    @SerialName("default_email_text") val defaultEmailText: String?,
 )

@@ -11,6 +11,8 @@ class SettingsRequest(
     @SerialName("default_due_days") val defaultDueDays: Int,
     @SerialName("last_invoice_number") val lastInvoiceNumber: Int,
     @SerialName("default_currency") val defaultCurrency: Currency,
+    @SerialName("default_email_subject") val defaultEmailSubject: String?,
+    @SerialName("default_email_text") val defaultEmailText: String?,
 ) {
     fun toSettings(id: UUID): Settings =
         Settings(
@@ -18,5 +20,7 @@ class SettingsRequest(
             defaultDueDays = defaultDueDays,
             lastInvoiceNumber = lastInvoiceNumber,
             defaultCurrency = defaultCurrency,
+            defaultEmailSubject = defaultEmailSubject,
+            defaultEmailText = defaultEmailText,
         )
 }

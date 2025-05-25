@@ -20,6 +20,8 @@ class SettingsRepository(
                 it.defaultDueDays = settings.defaultDueDays
                 it.lastInvoiceNumber = settings.lastInvoiceNumber
                 it.defaultCurrency = settings.defaultCurrency.name
+                it.defaultEmailSubject = settings.defaultEmailSubject
+                it.defaultEmailText = settings.defaultEmailText
             }
         }
         eventPublisher.publishEvent(

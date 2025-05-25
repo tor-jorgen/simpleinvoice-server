@@ -12,6 +12,8 @@ object SettingsTable : UUIDTable("settings") {
     val defaultDueDays = integer("default_due_days")
     val lastInvoiceNumber = integer("last_invoice_number")
     val defaultCurrency = varchar("default_currency", 5)
+    val defaultEmailSubject = varchar("default_email_subject", 1024).nullable()
+    val defaultEmailText = varchar("default_email_text", 8192).nullable()
 }
 
 class SettingsDAO(
@@ -22,6 +24,8 @@ class SettingsDAO(
     var defaultDueDays by SettingsTable.defaultDueDays
     var lastInvoiceNumber by SettingsTable.lastInvoiceNumber
     var defaultCurrency by SettingsTable.defaultCurrency
+    var defaultEmailSubject by SettingsTable.defaultEmailSubject
+    var defaultEmailText by SettingsTable.defaultEmailText
 
     fun toSettings(): Settings =
         Settings(
@@ -29,5 +33,7 @@ class SettingsDAO(
             defaultDueDays = defaultDueDays,
             lastInvoiceNumber = lastInvoiceNumber,
             defaultCurrency = Currency.valueOf(defaultCurrency),
+            defaultEmailSubject = defaultEmailSubject,
+            defaultEmailText = defaultEmailText,
         )
 }

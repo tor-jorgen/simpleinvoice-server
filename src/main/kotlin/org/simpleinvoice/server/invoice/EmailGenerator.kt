@@ -45,8 +45,8 @@ class EmailGenerator(
         val invoiceFileName = "$invoiceName.${if (invoiceConfig.generatePdf()) "pdf" else "odt"}"
         val emailSent =
             client!!.send(
-                subject = email.subject ?: invoiceConfig.emailSubject,
-                text = email.text ?: invoiceConfig.emailText,
+                subject = email.subject,
+                text = email.text ?: "",
                 toEmail1 = recipientEmails.first(),
                 toEmail2 = if (recipientEmails.size > 1) recipientEmails[1] else null,
                 invoicePath = invoicePath,

@@ -43,7 +43,7 @@ resolves to the internal IP address used by the host.
 
 To list the environment variables with `localhost` as the address, you can run the following command:
 
-```bash
+```shell
 ./build.sh --list-env
 ```
 
@@ -74,7 +74,7 @@ The following table shows the name of the merge fields in the document template:
 
 Delete database:
 
-```bash
+```shell
 sudo rm -rf data/postgres/
 ``` 
 
@@ -86,28 +86,34 @@ All the components of the backend will run in Docker. This includes the database
 
 The first time you run the backend, you need to build it. Do this by running the following command:
 
-```bash
+```shell
 ./build.sh
 ```  
 
-Run `--help to see all options.`
+Add `--help to see all options.`
 
 ### Running the backend
 
 To run both the server and the database in Docker, use the following command:
 
-```bash
+```shell
 ./start.sh
 ```
 
-Run `--help to see all options.`
+Add `--help to see all options.`
+
+Run the following command to stop the backend:
+
+````shell
+./stop.sh
+````
 
 ## Debugging locally
 
 The database will run in Docker, and the server will run in IntelliJ (or any other IDE).
 
 1. Start the Postgres database in Docker:
-    ```bash
+    ```shell
    docker compose -f compose-postgres.yml up
     ```
 

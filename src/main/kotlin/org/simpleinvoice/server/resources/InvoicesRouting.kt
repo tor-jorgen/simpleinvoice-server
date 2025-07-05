@@ -15,7 +15,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.invoice.InvoiceGenerator
+import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
+import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
@@ -50,6 +52,8 @@ class Invoices(
 @OptIn(ExperimentalUuidApi::class)
 fun Application.configureInvoicesRouting(
     repository: InvoiceRepository = getK<InvoiceRepository>(),
+    householdRepository: HouseholdRepository = getK<HouseholdRepository>(),
+    productRepository: ProductRepository = getK<ProductRepository>(),
     invoiceGenerator: InvoiceGenerator = getK<InvoiceGenerator>(),
 ) {
     routing {
@@ -86,8 +90,17 @@ fun Application.configureInvoicesRouting(
         post<Invoices> {
             // Create a new invoice
             val invoiceRequest = call.receive<InvoiceRequest>()
+            val household = householdRepository.get(invoiceRequest.householdId)
+            val products =
+                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).products.associateBy { it.id }
             // Invoice number can be set to anything, as it wil be generated for a new invoice
-            val invoice = invoiceRequest.toInvoice(id = UUID.randomUUID(), invoiceNumber = 0)
+            val invoice =
+                invoiceRequest.toInvoice(
+                    id = UUID.randomUUID(),
+                    invoiceNumber = 0,
+                    household = household,
+                    products = products,
+                )
             val invoiceDb = invoiceGenerator.generate(invoice = invoice, new = true)
             call.respond(status = HttpStatusCode.Created, message = invoiceDb)
         }
@@ -103,8 +116,12 @@ fun Application.configureInvoicesRouting(
         put<Invoices.Id> { request ->
             // Update an invoice with upserts on invoice lines
             val invoiceRequest = call.receive<InvoiceRequest>()
+            val household = householdRepository.get(invoiceRequest.householdId)
+            val products =
+                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).products.associateBy { it.id }
             // Invoice number can be set to anything, as it wil not be updated for an existing invoice
-            val invoice = invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0)
+            val invoice =
+                invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0, household = household, products = products)
             val invoiceDb = invoiceGenerator.generate(invoice, new = false)
             call.respond(status = HttpStatusCode.OK, message = invoiceDb)
         }

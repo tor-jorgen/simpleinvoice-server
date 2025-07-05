@@ -19,7 +19,7 @@ data class InvoiceRequest(
     @SerialName("generated_date") @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
     @SerialName("due_date") @Serializable(with = InstantSerializer::class) val dueDate: Instant,
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant? = null,
-    val household: Household, // Use HouseholdRequest
+    @Serializable(with = UUIDSerializer::class) @SerialName("household_id") val householdId: UUID,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
@@ -28,6 +28,8 @@ data class InvoiceRequest(
     fun toInvoice(
         id: UUID,
         invoiceNumber: Int,
+        household: Household,
+        products: Map<UUID, Product>,
     ): Invoice =
         Invoice(
             id = id,
@@ -37,7 +39,7 @@ data class InvoiceRequest(
             dueDate = dueDate,
             finalizedDate = finalizedDate,
             household = household,
-            invoiceLines = invoiceLines.map { it.toInvoiceLine() },
+            invoiceLines = invoiceLines.map { it.toInvoiceLine(products) },
             totalPrice = totalPrice,
             currency = currency,
             tags = tags.map { it.toTag(it.id!!) },
@@ -49,17 +51,17 @@ data class InvoiceRequest(
 data class InvoiceLineRequest(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("line_number") val lineNumber: Int,
-    val product: Product, // TODO: Use ProductRequest
+    @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
     val quantity: Int,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
 ) {
-    fun toInvoiceLine(): InvoiceLine =
+    fun toInvoiceLine(products: Map<UUID, Product>): InvoiceLine =
         InvoiceLine(
             // Create an ID if this is a new invoice line
             id = id ?: UUID.randomUUID(),
             lineNumber = lineNumber,
-            product = product,
+            product = products[productId] ?: throw RuntimeException("Product not found"),
             quantity = quantity,
             totalPrice = totalPrice,
             currency = currency,

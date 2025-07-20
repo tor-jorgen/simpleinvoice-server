@@ -12,7 +12,5 @@ interface UserRepositoryInterface {
         new: Boolean,
     ): User
 
-    fun upsertWithoutTransaction(user: User): User
-
     suspend fun delete(id: UUID): Boolean
 }

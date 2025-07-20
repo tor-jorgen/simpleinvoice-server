@@ -28,7 +28,18 @@ class UserRepository(
     ): User {
         val response =
             suspendTransaction {
-                upsertWithoutTransaction(user)
+                toUser(
+                    UserTable.upsert {
+                        it[id] = user.id
+                        it[principalId] = user.principalId
+                        it[loginProvider] = user.loginProvider.name
+                        it[firstName] = user.firstName
+                        it[lastName] = user.lastName
+                        it[emailAddress] = user.emailAddress
+                        it[emailAddress] = user.emailAddress
+                        it[scopes] = user.scopes.joinToString(",")
+                    },
+                )
             }
         eventPublisher.publishEvent(
             id = user.id,
@@ -37,20 +48,6 @@ class UserRepository(
         )
         return response
     }
-
-    override fun upsertWithoutTransaction(user: User): User =
-        toUser(
-            UserTable.upsert {
-                it[id] = user.id
-                it[principalId] = user.principalId
-                it[loginProvider] = user.loginProvider.name
-                it[firstName] = user.firstName
-                it[lastName] = user.lastName
-                it[emailAddress] = user.emailAddress
-                it[emailAddress] = user.emailAddress
-                it[scopes] = user.scopes.joinToString(",")
-            },
-        )
 
     override suspend fun delete(id: UUID): Boolean {
         val response =

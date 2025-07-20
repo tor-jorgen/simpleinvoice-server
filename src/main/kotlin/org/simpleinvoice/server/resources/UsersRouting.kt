@@ -1,13 +1,19 @@
 package org.simpleinvoice.server.resources
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.server.application.Application
+import io.ktor.server.request.receive
+import io.ktor.server.resources.delete
 import io.ktor.server.resources.get
+import io.ktor.server.resources.post
+import io.ktor.server.resources.put
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.UserRepository
+import org.simpleinvoice.server.resources.model.UserRequest
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -31,29 +37,32 @@ fun Application.configurePersonsRouting(repository: UserRepository = getK<UserRe
             call.respond(repository.all())
         }
 
-//        post<Persons> {
-//            // Add a new customer
-//            val customerRequest = call.receive<CustomerRequest>()
-//            val customer = customerRequest.toCustomer(UUID.randomUUID())
-//            personRepository.add(customer)
-//            call.respond(status = HttpStatusCode.Created, message = customer)
-//        }
-//
-//        get<Persons.Id> { request ->
+        post<Users> {
+            // Add a new user
+            val request = call.receive<UserRequest>()
+            val user = request.toUser(UUID.randomUUID())
+            repository.upsert(user = user, new = true)
+            call.respond(status = HttpStatusCode.Created, message = user)
+        }
+
+//        get<Users.Id> { request ->
 //            // Show a customer with id ${customer.id}
 //            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
 //        }
-//
-//        put<Persons.Id> { request ->
-//            // Update a customer
-//            val customer = call.receive<CustomerRequest>()
-//            call.respondText("$customer with id ${request.id} updated", status = HttpStatusCode.OK)
-//        }
-//
-//        delete<Persons.Id> { request ->
-//            // Delete a customer
-//            call.respondText("A customer with id ${request.id} deleted", status = HttpStatusCode.OK)
-//        }
+
+        put<Users.Id> { request ->
+            // Update a user
+            val userRequest = call.receive<UserRequest>()
+            val user = userRequest.toUser(request.id)
+            repository.upsert(user = user, new = false)
+            call.respond(status = HttpStatusCode.OK, message = user)
+        }
+
+        delete<Users.Id> { request ->
+            // Delete a user
+            repository.delete(request.id)
+            call.respond(HttpStatusCode.NoContent)
+        }
     }
     //    }
 }

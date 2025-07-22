@@ -32,7 +32,13 @@ class TagRepository(
     ): Tag {
         val response =
             suspendTransaction {
-                upsertWithoutTransaction(tag)
+                toTag(
+                    TagTable.upsert {
+                        it[id] = tag.id
+                        it[name] = tag.name
+                        it[inactive] = tag.inactive
+                    },
+                )
             }
         eventPublisher.publishEvent(
             id = tag.id,
@@ -41,15 +47,6 @@ class TagRepository(
         )
         return response
     }
-
-    override fun upsertWithoutTransaction(tag: Tag): Tag =
-        toTag(
-            TagTable.upsert {
-                it[id] = tag.id
-                it[name] = tag.name
-                it[inactive] = tag.inactive
-            },
-        )
 
     override suspend fun delete(id: UUID): Boolean {
         val response =

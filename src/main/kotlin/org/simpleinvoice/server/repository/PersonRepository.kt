@@ -38,14 +38,6 @@ class PersonRepository : PersonRepositoryInterface {
             }
         }
 
-    override suspend fun upsert(
-        person: Person,
-        household: Household,
-    ): Person =
-        suspendTransaction {
-            upsertWithoutTransaction(person = person, household = household)
-        }
-
     override fun upsertWithoutTransaction(
         person: Person,
         household: Household,

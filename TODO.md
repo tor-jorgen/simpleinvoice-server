@@ -7,3 +7,4 @@
 4. Update repositories to return domain objects
 5. Generating invoice in database failed, but invoice was created in DB, as well as a document
 6. ~~Return better error messages. E.g. when delete fails because of constraint violation~~
+7. Collect all database creation into one Flyway script

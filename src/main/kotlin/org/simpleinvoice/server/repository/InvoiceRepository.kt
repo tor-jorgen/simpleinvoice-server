@@ -72,9 +72,6 @@ class InvoiceRepository(
                 invoice.invoiceLines.forEach { invoiceLine ->
                     invoiceLineRepository.upsertWithoutTransaction(invoiceLine, dbInvoice)
                 }
-                invoice.tags.forEach { tag ->
-                    tagRepository.upsertWithoutTransaction(tag = tag)
-                }
                 InvoiceTagsTable.batchUpsert(
                     data = invoice.tags,
                     body = { tag: Tag ->

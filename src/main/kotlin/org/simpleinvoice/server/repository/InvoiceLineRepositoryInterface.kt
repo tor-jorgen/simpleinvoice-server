@@ -8,11 +8,6 @@ import java.util.UUID
 interface InvoiceLineRepositoryInterface {
     suspend fun all(): List<InvoiceLine>
 
-    suspend fun upsert(
-        invoiceLine: InvoiceLine,
-        invoice: Invoice,
-    ): UpsertStatement<Long>
-
     fun upsertWithoutTransaction(
         invoiceLine: InvoiceLine,
         invoice: Invoice,

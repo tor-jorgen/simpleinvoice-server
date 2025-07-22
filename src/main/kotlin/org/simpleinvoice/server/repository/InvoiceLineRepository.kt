@@ -16,14 +16,6 @@ class InvoiceLineRepository : InvoiceLineRepositoryInterface {
             InvoiceLineDAO.all().map { it.toInvoiceLine() }
         }
 
-    override suspend fun upsert(
-        invoiceLine: InvoiceLine,
-        invoice: Invoice,
-    ): UpsertStatement<Long> =
-        suspendTransaction {
-            upsertWithoutTransaction(invoiceLine = invoiceLine, invoice = invoice)
-        }
-
     override fun upsertWithoutTransaction(
         invoiceLine: InvoiceLine,
         invoice: Invoice,

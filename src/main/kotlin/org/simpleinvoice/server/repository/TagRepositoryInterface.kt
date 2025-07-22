@@ -12,7 +12,5 @@ interface TagRepositoryInterface {
         new: Boolean,
     ): Tag
 
-    fun upsertWithoutTransaction(tag: Tag): Tag
-
     suspend fun delete(id: UUID): Boolean
 }

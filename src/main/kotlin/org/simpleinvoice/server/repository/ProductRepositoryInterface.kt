@@ -1,6 +1,5 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
@@ -13,9 +12,7 @@ interface ProductRepositoryInterface {
     suspend fun upsert(
         product: Product,
         new: Boolean,
-    ): UpsertStatement<Long>
-
-    fun upsertWithoutTransaction(product: Product): UpsertStatement<Long>
+    ): Product
 
     suspend fun delete(id: UUID): Boolean
 }

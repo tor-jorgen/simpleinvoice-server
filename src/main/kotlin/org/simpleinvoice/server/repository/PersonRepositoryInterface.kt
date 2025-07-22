@@ -11,11 +11,6 @@ interface PersonRepositoryInterface {
 
     suspend fun update(person: Person): Unit
 
-    suspend fun upsert(
-        person: Person,
-        household: Household,
-    ): Person
-
     fun upsertWithoutTransaction(
         person: Person,
         household: Household,

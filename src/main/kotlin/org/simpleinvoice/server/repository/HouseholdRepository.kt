@@ -46,7 +46,6 @@ class HouseholdRepository(
         new: Boolean,
     ): Household {
         val persons = mutableListOf<Person>()
-        val tags = mutableListOf<Tag>()
         val response =
             suspendTransaction {
                 // Delete all persons and tags for the household, since we don't know if any have been removed
@@ -66,11 +65,8 @@ class HouseholdRepository(
                 household.persons.forEach { person ->
                     persons.add(personRepository.upsertWithoutTransaction(person = person, household = household))
                 }
-                household.tags.forEach { tag ->
-                    tags.add(tagRepository.upsertWithoutTransaction(tag = tag))
-                }
                 HouseholdTagsTable.batchUpsert(
-                    data = tags,
+                    data = household.tags,
                     body = { tag: Tag ->
                         this[HouseholdTagsTable.householdId] = household.id
                         this[HouseholdTagsTable.tagId] = tag.id
@@ -83,7 +79,7 @@ class HouseholdRepository(
             item = household,
             message = if (new) "Household created" else "Household updated",
         )
-        return toHousehold(statement = response, persons = persons, tags = tags)
+        return toHousehold(statement = response, persons = persons, tags = household.tags)
     }
 
     override suspend fun delete(id: UUID): Boolean {

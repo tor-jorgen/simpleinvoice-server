@@ -15,6 +15,8 @@ object ProductTable : UUIDTable("product") {
     val quantity = integer("quantity")
     val price = double("price")
     val currency = varchar("currency", 255)
+    val taxPercentage = integer("tax_percentage")
+    val totalPrice = double("total_price")
     val inactive = bool("inactive")
 }
 
@@ -34,6 +36,8 @@ class ProductDAO(
     var quantity by ProductTable.quantity
     var price by ProductTable.price
     var currency by ProductTable.currency
+    var taxPercentage by ProductTable.taxPercentage
+    var totalPrice by ProductTable.totalPrice
     val tags by TagDAO via ProductTagsTable
     var inactive by ProductTable.inactive
 
@@ -45,6 +49,8 @@ class ProductDAO(
             quantity = quantity,
             price = price,
             currency = Currency.valueOf(currency),
+            taxPercentage = taxPercentage,
+            totalPrice = totalPrice,
             tags = tags.map { it.toTag() },
             inactive = inactive,
         )

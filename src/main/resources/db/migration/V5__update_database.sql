@@ -1,0 +1,4 @@
+ALTER TABLE product
+    ADD COLUMN tax_percentage INT NOT NULL DEFAULT 0;
+ALTER TABLE product
+    ADD COLUMN total_price DECIMAL NOT NULL DEFAULT 0;

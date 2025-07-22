@@ -70,6 +70,8 @@ class InvoiceGenerator(
                                 quantity = product.quantity,
                                 price = product.price,
                                 currency = product.currency,
+                                taxPercentage = product.taxPercentage,
+                                totalPrice = product.totalPrice,
                                 tags = product.tags,
                             ),
                     )

@@ -54,8 +54,11 @@ class ProductRepository(
                             it[quantity] = product.quantity
                             it[price] = product.price
                             it[currency] = product.currency.name
+                            it[taxPercentage] = product.taxPercentage
+                            it[totalPrice] = product.totalPrice
                             it[inactive] = product.inactive
                         },
+                        product.tags,
                     )
                 ProductTagsTable.batchUpsert(
                     data = product.tags,
@@ -88,7 +91,10 @@ class ProductRepository(
         return response
     }
 
-    private fun toProduct(result: UpsertStatement<Long>): Product =
+    private fun toProduct(
+        result: UpsertStatement<Long>,
+        tags: List<Tag>,
+    ): Product =
         Product(
             id = result[ProductTable.id].value,
             code = result[ProductTable.productCode],
@@ -96,6 +102,9 @@ class ProductRepository(
             quantity = result[ProductTable.quantity],
             price = result[ProductTable.price],
             currency = Currency.valueOf(result[ProductTable.currency]),
+            taxPercentage = result[ProductTable.taxPercentage],
+            totalPrice = result[ProductTable.totalPrice],
+            tags = tags,
             inactive = result[ProductTable.inactive],
         )
 }

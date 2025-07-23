@@ -9,7 +9,7 @@ import java.util.UUID
 
 @Serializable
 data class UserRequest(
-    @Serializable(with = UUIDSerializer::class) val id: UUID,
+    @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("principal_id") val principalId: String,
     @SerialName("login_provider") val loginProvider: LoginProvider,
     @SerialName("first_name") val firstName: String,

@@ -179,3 +179,11 @@ Run the following to delete the database:
 ```shell
 sudo rm -rf <DATA_PATH environment variable>
 ``` 
+
+## Backup data
+
+Run the following commands:
+
+```shell
+sudo zip -r simpleinvoice <data directory>/
+```

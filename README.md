@@ -122,6 +122,8 @@ This will add the user `<your user name>` to the group `docker`, so that you can
 
 The first time you run the backend from Docker, you need to build it. Do this by running the following command:
 
+TODO: Add build step to Dockerfile?
+
 ```shell
 ./build.sh
 ```  
@@ -186,4 +188,5 @@ Run the following commands:
 
 ```shell
 sudo zip -r simpleinvoice <data directory>/
+chown <user>:<group> simpleinvoice.zip
 ```

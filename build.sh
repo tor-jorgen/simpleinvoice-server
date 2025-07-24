@@ -27,5 +27,5 @@ if [[ "$1" == "--list-env" ]]; then
   exit 0
 fi
 
-./gradlew clean build buildFatJar --no-daemon
+./gradlew clean build --no-daemon
 docker compose build --no-cache

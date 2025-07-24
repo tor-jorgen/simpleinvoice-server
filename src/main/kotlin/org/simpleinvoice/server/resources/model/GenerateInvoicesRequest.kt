@@ -36,6 +36,8 @@ constructor(
     val quantity: Int,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
+    val price: Double,
+    val tax: Double,
 )
 
 @Serializable

@@ -78,8 +78,10 @@ CREATE TABLE invoice_line
     line_number INT     NOT NULL,
     product_id  UUID    NOT NULL REFERENCES product (id),
     quantity    INT     NOT NULL,
-    total_price DECIMAL NOT NULL,
-    currency    VARCHAR NOT NULL
+    price       DECIMAL NOT NULL,
+    currency    VARCHAR NOT NULL,
+    tax         DECIMAL NOT NULL,
+    total_price DECIMAL NOT NULL
 );
 
 CREATE TABLE tag

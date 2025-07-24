@@ -10,3 +10,4 @@
 7. Collect all database creation into one Flyway script
 8. Handle a list of emails in `SmtpClient.send`
 9. Check if https://mvnrepository.com/artifact/com.itextpdf/itextpdf can be used to generate PDFs
+10. Use localized dates on the invoice

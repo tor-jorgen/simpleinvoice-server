@@ -62,6 +62,8 @@ class InvoiceGenerator(
                         id = UUID.randomUUID(),
                         lineNumber = it.lineNumber,
                         quantity = it.quantity,
+                        price = it.price,
+                        tax = it.tax,
                         totalPrice = it.totalPrice,
                         currency = it.currency,
                         product =

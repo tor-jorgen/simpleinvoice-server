@@ -14,6 +14,8 @@ object InvoiceLineTable : UUIDTable("invoice_line") {
     val productId = reference("product_id", ProductTable)
     val quantity = integer("quantity")
     val totalPrice = double("total_price")
+    val price = double("price")
+    val tax = double("tax")
     val currency = varchar("currency", 50)
 }
 
@@ -26,6 +28,8 @@ class InvoiceLineDAO(
     var lineNumber by InvoiceLineTable.lineNumber
     var product by ProductDAO referencedOn InvoiceLineTable.productId
     var quantity by InvoiceLineTable.quantity
+    var price by InvoiceLineTable.price
+    var tax by InvoiceLineTable.tax
     var totalPrice by InvoiceLineTable.totalPrice
     var currency by InvoiceLineTable.currency
 
@@ -35,6 +39,8 @@ class InvoiceLineDAO(
             lineNumber = lineNumber,
             product = product.toProduct(),
             quantity = quantity,
+            price = price,
+            tax = tax,
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
         )

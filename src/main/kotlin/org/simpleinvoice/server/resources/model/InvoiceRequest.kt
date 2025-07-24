@@ -21,8 +21,8 @@ data class InvoiceRequest(
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant? = null,
     @Serializable(with = UUIDSerializer::class) @SerialName("household_id") val householdId: UUID,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
-    val price: Double = 0.0,
-    val tax: Double = 0.0,
+    val price: Double,
+    val tax: Double,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
     val tags: List<TagRequest> = emptyList(),
@@ -57,6 +57,8 @@ data class InvoiceLineRequest(
     @SerialName("line_number") val lineNumber: Int,
     @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
     val quantity: Int,
+    val price: Double,
+    val tax: Double,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
 ) {
@@ -67,6 +69,8 @@ data class InvoiceLineRequest(
             lineNumber = lineNumber,
             product = products[productId] ?: throw RuntimeException("Product not found"),
             quantity = quantity,
+            price = price,
+            tax = tax,
             totalPrice = totalPrice,
             currency = currency,
         )

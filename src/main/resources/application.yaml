@@ -9,18 +9,23 @@ db:
   connectionPrefix: "$DB_CONNECTION_PRE:jdbc:postgresql://localhost"
   port: "$DB_PORT:5432"
   name: "$DB_NAME:simple_invoice"
-  user: "$DB_USER"
+  user: "$DB_USER:db"
   password: "$DB_PASSWORD"
-
-cfg:
-  invoice: "$INVOICE_CONFIG:./config/config.yml"
-  batch: "$BATCH_CONFIG:./config/batch.yml"
 
 security:
   clientId: "$GOOGLE_CLIENT_ID"
   clientSecret: "$GOOGLE_CLIENT_SECRET"
 
 smtp:
-  host: smtp.gmail.com
-  port: 587
-  tls: true
+  host: "$SMTP_HOST:smtp.gmail.com"
+  port: "$SMTP_PORT:587"
+  tls: "$SMTP_TLS:true"
+  username: "$SMTP_USER_NAME"
+  password: "$SMTP_PASSWORD"
+  senderEmail: "$SMTP_SENDER_EMAIL"
+  senderName: "$SMTP_SENDER_NAME"
+
+invoice:
+  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:./data/documents"
+  template: "$INVOICE_INVOICE_TEMPLATE:./config/invoice.odt"
+  invoiceName: "$INVOICE_INVOICE_NAME:_NO_-_HOUSEHOLD_"

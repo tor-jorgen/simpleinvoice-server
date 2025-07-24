@@ -1,4 +1,4 @@
-package util.smtp
+package org.simpleinvoice.server.util.smtp
 
 data class SmtpConfig(
     val host: String,

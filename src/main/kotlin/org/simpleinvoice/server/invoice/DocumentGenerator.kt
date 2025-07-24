@@ -25,14 +25,13 @@ private const val TOTAL_PRICE = "_TOTAL_"
 
 class DocumentGenerator(
     private val config: InvoiceConfig,
-    private val invoiceConfig: InvoiceBatchConfig,
+    private val pdfConverter: PDFConverter,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     fun createDocuments(invoice: Invoice): Triple<String, String, String> {
         File(config.invoiceDirectory).mkdirs()
-        val pdfConverter = initPdfConverter()
-        TextDocument.loadDocument(File(invoiceConfig.template)).use { document ->
+        TextDocument.loadDocument(File(config.template)).use { document ->
             val recipients = RecipientList.fromHouseHold(invoice.household)
             traverse(node = document.contentRoot, invoice = invoice, recipients = recipients)
             traverse(node = document.header.odfElement, invoice = invoice, recipients = recipients)
@@ -40,8 +39,7 @@ class DocumentGenerator(
             val invoiceName = getInvoiceName(invoice = invoice, recipients = recipients)
             val odtPath = "${config.invoiceDirectory}/$invoiceName.odt"
             val pdfPath = odtPath.replace("odt", "pdf")
-            generateOdf(document, odtPath)
-            generatePdf(document, pdfPath, pdfConverter)
+            generatePdf(document, pdfPath)
             logger.info("Invoice {} generated for {}", pdfPath, recipients[0].addressLine1)
             return Triple(invoiceName, odtPath, pdfPath)
         }
@@ -51,7 +49,7 @@ class DocumentGenerator(
         invoice: Invoice,
         recipients: List<Recipient>,
     ): String {
-        var invoiceName = invoiceConfig.invoiceName
+        var invoiceName = config.invoiceName
         invoiceName = invoiceName.replace(INVOICE_NO, invoice.invoiceNumber.toString())
         invoiceName = invoiceName.replace(INVOICE_DATE, invoice.generatedDate.toString())
         invoiceName = invoiceName.replace(DUE_DATE, invoice.dueDate.toString())
@@ -70,27 +68,13 @@ class DocumentGenerator(
         return invoiceName
     }
 
-    private fun initPdfConverter(): PDFConverter? = if (invoiceConfig.generatePdf()) PDFConverter() else null
-
     private fun generatePdf(
         document: TextDocument,
         outPath: String,
-        pdfConverter: PDFConverter?,
     ) {
-        if (invoiceConfig.generatePdf()) {
-            val out = ByteArrayOutputStream()
-            document.save(out)
-            pdfConverter!!.fromOdf(out.toByteArray(), outPath)
-        }
-    }
-
-    private fun generateOdf(
-        document: TextDocument,
-        invoicePath: String,
-    ) {
-        if (invoiceConfig.generateOdt()) {
-            document.save(File(invoicePath))
-        }
+        val out = ByteArrayOutputStream()
+        document.save(out)
+        pdfConverter.fromOdf(out.toByteArray(), outPath)
     }
 
     private fun traverse(

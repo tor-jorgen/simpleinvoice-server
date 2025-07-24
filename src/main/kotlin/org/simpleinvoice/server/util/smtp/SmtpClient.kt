@@ -1,4 +1,4 @@
-package util.smtp
+package org.simpleinvoice.server.util.smtp
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -87,4 +87,14 @@ class SmtpClient(
             return false
         }
     }
+
+    fun openAndSend(
+        subject: String,
+        text: String,
+        toEmail1: String,
+        toEmail2: String?,
+        invoicePath: String,
+        invoiceName: String,
+    ): Boolean =
+        (if (session == null) open() else this).send(subject, text, toEmail1, toEmail2, invoicePath, invoiceName)
 }

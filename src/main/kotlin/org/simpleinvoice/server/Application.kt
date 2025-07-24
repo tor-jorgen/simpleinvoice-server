@@ -34,7 +34,6 @@ fun Application.module() {
     configureSecurity()
     configureSerialization()
     configureErrorHandling()
-//    configureKafka()
     configureAdministration()
     configureBasicRouting()
     configureSettingsRouting()

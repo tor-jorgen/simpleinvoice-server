@@ -95,6 +95,8 @@ The following list shows the placeholders that can be used to create the invoice
 | `_NAME1_`        | First name and lastname of the first person in the household |
 | `_PRODUCT1_`     | Name of the product in the first invoice line                |
 
+All spaces will be removed from the invoice name.
+
 ## Running locally
 
 All the components of the backend will run in Docker. This includes the database and the server.
@@ -177,3 +179,11 @@ Run the following to delete the database:
 ```shell
 sudo rm -rf <DATA_PATH environment variable>
 ``` 
+
+## Backup data
+
+Run the following commands:
+
+```shell
+sudo zip -r simpleinvoice <data directory>/
+```

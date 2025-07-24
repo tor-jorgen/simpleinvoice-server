@@ -18,6 +18,8 @@ object InvoiceTable : UUIDTable("invoice") {
     val dueDate = varchar("due_date", 30)
     val finalizedDate = varchar("finalized_date", 30).nullable()
     val householdId = reference(name = "household_id", foreign = HouseholdTable)
+    val price = double("price")
+    val tax = double("tax")
     val totalPrice = double("total_price")
     val currency = varchar("currency", 255)
     val invoiceFilePath = varchar("invoice_file_path", 255).nullable()
@@ -41,6 +43,8 @@ class InvoiceDAO(
     var finalizedDate by InvoiceTable.finalizedDate
     var household by HouseholdDAO referencedOn InvoiceTable.householdId
     val invoiceLines by InvoiceLineDAO referrersOn InvoiceLineTable.invoiceId
+    val price by InvoiceTable.price
+    val tax by InvoiceTable.tax
     val totalPrice by InvoiceTable.totalPrice
     val currency by InvoiceTable.currency
     val invoiceFilePath by InvoiceTable.invoiceFilePath
@@ -56,6 +60,8 @@ class InvoiceDAO(
             finalizedDate = finalizedDate?.let { Instant.parse(it) },
             household = household.toHousehold(),
             invoiceLines = invoiceLines.map { it.toInvoiceLine() },
+            price = price,
+            tax = tax,
             totalPrice = totalPrice,
             currency = Currency.valueOf(currency),
             invoiceFilePath = invoiceFilePath,

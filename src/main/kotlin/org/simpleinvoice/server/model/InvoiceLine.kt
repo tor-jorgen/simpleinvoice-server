@@ -11,6 +11,8 @@ data class InvoiceLine(
     @SerialName("line_number") val lineNumber: Int,
     val product: Product,
     val quantity: Int,
+    val price: Double,
+    val tax: Double,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
 )

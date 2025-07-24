@@ -64,8 +64,10 @@ CREATE TABLE invoice
     due_date          VARCHAR    NOT NULL,
     finalized_date    VARCHAR,
     household_id      UUID       NOT NULL REFERENCES household (id),
-    total_price       DECIMAL    NOT NULL,
-    currency          VARCHAR    NOT NULL,
+    price             DECIMAL NOT NULL,
+    currency          VARCHAR NOT NULL,
+    tax               DECIMAL NOT NULL,
+    total_price       DECIMAL NOT NULL,
     invoice_file_path VARCHAR
 );
 
@@ -76,18 +78,10 @@ CREATE TABLE invoice_line
     line_number INT     NOT NULL,
     product_id  UUID    NOT NULL REFERENCES product (id),
     quantity    INT     NOT NULL,
-    total_price DECIMAL NOT NULL,
-    currency    VARCHAR NOT NULL
-);
-
-CREATE TABLE audit_trail
-(
-    id        UUID    NOT NULL PRIMARY KEY,
-    timestamp VARCHAR NOT NULL,
-    item_id   VARCHAR NOT NULL,
-    item      VARCHAR,
-    message   VARCHAR,
-    user_id   VARCHAR
+    price       DECIMAL NOT NULL,
+    currency    VARCHAR NOT NULL,
+    tax         DECIMAL NOT NULL,
+    total_price DECIMAL NOT NULL
 );
 
 CREATE TABLE tag
@@ -117,3 +111,14 @@ CREATE TABLE invoice_tags
     tag_id     UUID NOT NULL REFERENCES tag (id),
     PRIMARY KEY (invoice_id, tag_id)
 );
+
+CREATE TABLE audit_trail
+(
+    id        UUID    NOT NULL PRIMARY KEY,
+    timestamp VARCHAR NOT NULL,
+    item_id   VARCHAR NOT NULL,
+    item      VARCHAR,
+    message   VARCHAR,
+    user_id   VARCHAR
+);
+

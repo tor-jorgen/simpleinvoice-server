@@ -15,6 +15,8 @@ data class Invoice(
     @SerialName("generated_date") @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
     @SerialName("due_date") @Serializable(with = InstantSerializer::class) val dueDate: Instant,
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant?,
+    val price: Double,
+    val tax: Double,
     @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
     val household: Household,

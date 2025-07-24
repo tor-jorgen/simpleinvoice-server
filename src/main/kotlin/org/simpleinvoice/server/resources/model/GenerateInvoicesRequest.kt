@@ -13,28 +13,32 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class GenerateInvoicesRequest
-    @OptIn(ExperimentalUuidApi::class)
-    constructor(
-        @Serializable(with = InstantSerializer::class) @SerialName("due_date") val dueDate: Instant,
-        @SerialName("total_price") val totalPrice: Double,
-        val currency: Currency,
-        @SerialName("invoice_lines") val invoiceLines: List<GenerateInvoiceLineRequest>,
-        // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
-        @SerialName("household_ids") val householdIds: List<Uuid>,
-        val tags: List<Tag>,
-        val email: EmailRequest? = null,
-    )
+@OptIn(ExperimentalUuidApi::class)
+constructor(
+    @Serializable(with = InstantSerializer::class) @SerialName("due_date") val dueDate: Instant,
+    val price: Double = 0.0,
+    val tax: Double = 0.0,
+    @SerialName("total_price") val totalPrice: Double,
+    val currency: Currency,
+    @SerialName("invoice_lines") val invoiceLines: List<GenerateInvoiceLineRequest>,
+    // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
+    @SerialName("household_ids") val householdIds: List<Uuid>,
+    val tags: List<Tag>,
+    val email: EmailRequest? = null,
+)
 
 @Serializable
 data class GenerateInvoiceLineRequest
-    @OptIn(ExperimentalUuidApi::class)
-    constructor(
-        @SerialName("line_number") val lineNumber: Int,
-        @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
-        val quantity: Int,
-        @SerialName("total_price") val totalPrice: Double,
-        val currency: Currency,
-    )
+@OptIn(ExperimentalUuidApi::class)
+constructor(
+    @SerialName("line_number") val lineNumber: Int,
+    @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
+    val quantity: Int,
+    @SerialName("total_price") val totalPrice: Double,
+    val currency: Currency,
+    val price: Double,
+    val tax: Double,
+)
 
 @Serializable
 data class EmailRequest(

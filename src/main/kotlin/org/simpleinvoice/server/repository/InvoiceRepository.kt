@@ -22,7 +22,6 @@ import java.util.UUID
 
 class InvoiceRepository(
     private val invoiceLineRepository: InvoiceLineRepository,
-    private val tagRepository: TagRepository,
     private val settingsRepository: SettingsRepository,
     private val eventPublisher: EventPublisher,
 ) : InvoiceRepositoryInterface {
@@ -103,6 +102,8 @@ class InvoiceRepository(
             it[dueDate] = invoice.dueDate.toString()
             it[finalizedDate] = invoice.finalizedDate?.toString() ?: kotlin.run { null }
             it[householdId] = invoice.household.id
+            it[price] = invoice.price
+            it[tax] = invoice.tax
             it[totalPrice] = invoice.totalPrice
             it[currency] = invoice.currency.name
             it[invoiceFilePath] = invoice.invoiceFilePath
@@ -136,6 +137,8 @@ class InvoiceRepository(
             dueDate = Instant.parse(statement[InvoiceTable.dueDate]),
             finalizedDate = statement[InvoiceTable.finalizedDate]?.let { Instant.parse(it) },
             invoiceLines = invoiceLines,
+            price = statement[InvoiceTable.price],
+            tax = statement[InvoiceTable.tax],
             totalPrice = statement[InvoiceTable.totalPrice],
             currency = Currency.valueOf(statement[InvoiceTable.currency]),
             invoiceFilePath = statement[InvoiceTable.invoiceFilePath],

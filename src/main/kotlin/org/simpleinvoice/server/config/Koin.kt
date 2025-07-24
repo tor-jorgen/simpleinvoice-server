@@ -7,12 +7,12 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import org.odt2pdf.PDFConverter
 import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.DocumentGenerator
 import org.simpleinvoice.server.invoice.EmailGenerator
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.invoice.HouseholdImporter
-import org.simpleinvoice.server.invoice.InvoiceBatchConfig
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
 import org.simpleinvoice.server.model.AuditTrail
@@ -24,7 +24,8 @@ import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.repository.SettingsRepository
 import org.simpleinvoice.server.repository.TagRepository
 import org.simpleinvoice.server.repository.UserRepository
-import util.smtp.SmtpClient
+import org.simpleinvoice.server.util.smtp.SmtpClient
+import org.simpleinvoice.server.util.smtp.SmtpConfig
 
 fun Application.configureDependencyInjection() {
     install(Koin) {
@@ -42,16 +43,35 @@ fun Application.configureDependencyInjection() {
                     )
                 }
 
-                val invoiceConfig = InvoiceConfig.fromYaml(property("cfg.invoice"))
-                single { invoiceConfig }
-                single { invoiceConfig.smtp }
-                single { InvoiceBatchConfig.fromYaml(property("cfg.batch")) }
+                single {
+                    InvoiceConfig(
+                        invoiceDirectory = property("invoice.invoiceDirectory"),
+                        template = property("invoice.template"),
+                        invoiceName = property("invoice.invoiceName"),
+                    )
+                }
+
+                single {
+                    SmtpConfig(
+                        host = property("smtp.host"),
+                        port = property("smtp.port").toInt(),
+                        tls = property("smtp.tls").toBoolean(),
+                        username = property("smtp.username"),
+                        password = property("smtp.password"),
+                        senderEmail = property("smtp.senderEmail"),
+                        senderName = property("smtp.senderName"),
+                    )
+                }
 
                 single {
                     SecurityConfig(
                         clientId = property("security.clientId"),
                         clientSecret = property("security.clientSecret"),
                     )
+                }
+
+                single {
+                    PDFConverter()
                 }
 
                 single {

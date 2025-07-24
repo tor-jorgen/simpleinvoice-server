@@ -6,37 +6,48 @@ The server is built using [Ktor](https://ktor.io).
 
 ## Server configuration
 
-| Property (`allication.yaml`) | Environment variable   | Default value                 | Description                                                                                                                 |
-|------------------------------|------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `ktor.deployment.port`       | `SERVER_PORT`          | `8080`                        | The port the server runs at                                                                                                 |     
-| `db.connectionPrefix`        | `DB_CONNECTION_PRE`    | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port |     
-| `db.port`                    | `DB_PORT`              | `5432`                        | The port the database server runs at                                                                                        |     
-| `db.name`                    | `DB_NAME`              | `simple_invoice`              | The name of the database                                                                                                    |
-| `db.user`                    | `DB_USER`              |                               | The name of the user used to connect to the database                                                                        |     
-| `db.password`                | `DB_PASSWORD`          |                               | The password for the user used to connect to the database                                                                   |     
-| `cfg.batch`                  | `BATCH_CONFIG`         | `./config/batch.yml`          | Path to batch configuration file                                                                                            |     
-| `cfg.invoice`                | `INVOICE_CONFIG`       | `./config/config.yml`         | Path to invoice configuration file                                                                                          |     
-| `security.clientId`          | `GOOGLE_CLIENT_ID`     |                               | OAuth 2 client ID (not yet in use)                                                                                          |     
-| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET` |                               | OAuth 2 client secret  (not yet in use)                                                                                     |
-|                              | `CFG_PATH`             | `./config`                    | The path to the directory where the configuration files are stored                                                          |     
-|                              | `DATA_PATH`            | `./data`                      | The path to the directory where the data files are stored                                                                   |     
-|                              | `DB_DATA_PATH`         | `./data/postgres`             | The path to the directory where the database files are stored                                                               |     
+| Property (`allication.yaml`) | Environment variable        | Default value                 | Description                                                                                                                 |
+|------------------------------|-----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `ktor.deployment.port`       | `SERVER_PORT`               | `8080`                        | The port the server runs at                                                                                                 |     
+| `db.connectionPrefix`        | `DB_CONNECTION_PRE`         | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port |     
+| `db.port`                    | `DB_PORT`                   | `5432`                        | The port the database server runs at                                                                                        |     
+| `db.name`                    | `DB_NAME`                   | `simple_invoice`              | The name of the database                                                                                                    |
+| `db.user`                    | `DB_USER`                   | `db`                          | The name of the user used to connect to the database                                                                        |     
+| `db.password`                | `DB_PASSWORD`               |                               | The password for the user used to connect to the database                                                                   |
+| `security.clientId`          | `GOOGLE_CLIENT_ID`          |                               | OAuth 2 client ID (not yet in use)                                                                                          |     
+| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET`      |                               | OAuth 2 client secret  (not yet in use)                                                                                     |
+| `smtp.host`                  | `$SMTP_HOST`                | `smtp.gmail.com`              |                                                                                                                             |
+| `smtp.port`                  | `SMTP_PORT`                 | `587`                         |                                                                                                                             |                                                                                                                             |
+| `smtp.tls`                   | `SMTP_TLS`                  | `true`                        |                                                                                                                             |
+| `smtp.usernName`             | `SMTP_USER_NAME`            |                               |                                                                                                                             |
+| `smtp.password`              | `SMTP_PASSWORD`             |                               |                                                                                                                             |
+| `smtp.senderEmail`           | `SMTP_SENDER_EMAIL`         |                               |                                                                                                                             |
+| `smtp.senderName`            | `SMTP_SENDER_NAME`          |                               |                                                                                                                             |
+| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./data/documents`            |                                                                                                                             |
+| `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`        |                                                                                                                             |
+| `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`            | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>               |
+|                              | `CFG_PATH`                  | `./config`                    | The path to the directory where the configuration files are stored                                                          |     
+|                              | `DATA_PATH`                 | `./data`                      | The path to the directory where the data files are stored                                                                   |     
+|                              | `DB_DATA_PATH`              | `./data/postgres`             | The path to the directory where the database files are stored                                                               |     
 
 Set the environment variables in the `.env` file. This file is use when running the server backend from Docker. E.g.:
 
     SERVER_PORT=8080
-    CFG_PATH=./config
-    DATA_PATH=./data
-    DB_DATA_PATH=./data/postgres
     DB_CONNECTION_PRE=jdbc:postgresql://host.docker.internal
     DB_PORT=5432
     DB_NAME=simple_invoice
     DB_USER=user
     DB_PASSWORD=password
-    BATCH_CONFIG=./config/batch.yml
-    INVOICE_CONFIG=./config/config.yml
     GOOGLE_CLIENT_ID=XXX
     GOOGLE_CLIENT_SECRET=YYY
+    SMTP_USER_NAME=zzz
+    SMTP_PASSWORD=zzz
+    SMTP_SENDER_EMAIL=zzz
+    SMTP_SENDER_NAME=zzz
+    INVOICE_INVOICE_NAME=zzz
+    CFG_PATH=./config
+    DATA_PATH=./data
+    DB_DATA_PATH=./data/postgres
 
 Note that the address to localhost is `host.docker.internal` when running in Docker. This is a special DNS name that
 resolves to the internal IP address used by the host.
@@ -47,8 +58,8 @@ To list the environment variables with `localhost` as the address, you can run t
 ./build.sh --list-env
 ```
 
-These variables can be copied and pasted into the environment variables in IntelliJ, if you are running the server from
-there.
+These variables can be copied and pasted into the environment variables in e.g. IntelliJ, if you are running the server
+from there.
 
 ## Document template configuration
 
@@ -70,21 +81,30 @@ The following table shows the name of the merge fields in the document template:
 | `_PRICE_`        | Price of the product in the invoice line                      |
 | `_TOTAL_`        | Total price for the invoice                                   |
 
-## Database maintenance
-
-Delete database:
-
-```shell
-sudo rm -rf data/postgres/
-``` 
-
 ## Running locally
 
 All the components of the backend will run in Docker. This includes the database and the server.
 
+The required directories will be created if they do not exist.
+
+### Installing Docker
+
+### Ubuntu
+
+Run the following commands to install Docker on Ubuntu:
+
+```shell
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker <your user name>
+newgrp docker
+```
+
+This will add the user `<your user name>` to the group `docker`, so that you can run Docker as that user.
+
 ### Building the backend
 
-The first time you run the backend, you need to build it. Do this by running the following command:
+The first time you run the backend from Docker, you need to build it. Do this by running the following command:
 
 ```shell
 ./build.sh
@@ -110,14 +130,17 @@ Run the following command to stop the backend:
 
 ## Debugging locally
 
-The database will run in Docker, and the server will run in IntelliJ (or any other IDE).
+The database will run in Docker, and the server will run in IntelliJ (or any other IDE). The description below is for
+IntelliJ:
 
 1. Start the Postgres database in Docker:
     ```shell
-   docker compose -f compose-postgres.yml up
+   docker compose -f compose-postgres.yaml up
     ```
 
-2. Create a Ktor run configuration for `EngineMain` in IntelliJ
+2. Create either (under Services in IntelliJ):
+    1. A Ktor run configuration for `EngineMain`
+    2. or a Ktor debug configuration with Main class `org.simpleinvoice.server.ApplicationKt`
 3. Paste the environment variables from above into the run configuration:
     1. Select _Edit environment variables_
     2. Click the past button
@@ -127,3 +150,16 @@ The database will run in Docker, and the server will run in IntelliJ (or any oth
 
 Thanks to [Robin Selmer](https://github.com/robinselmer) for
 the [Retro Error Page](https://codepen.io/robinselmer/pen/vJjbOZ)
+
+## Database maintenance
+
+The database will be created by the server the first time it is run, and it will be stored under the path specified by
+the `DATA_PATH` environment variable.
+
+### Deleting the database
+
+Run the following to delete the database:
+
+```shell
+sudo rm -rf <DATA_PATH environment variable>
+``` 

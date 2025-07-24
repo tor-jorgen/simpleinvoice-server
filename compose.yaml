@@ -8,7 +8,7 @@ services:
       - ${DB_DATA_PATH:-./data/postgres}:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME:-simple_invoice}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: ${DB_USER:-db}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:
@@ -29,12 +29,10 @@ services:
     environment:
       SERVER_PORT: ${SERVER_PORT}
       DB_CONNECTION_PRE: ${DB_CONNECTION_PRE}
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-simple_invoice}
+      DB_USER: ${DB_USER:-db}
       DB_PASSWORD: ${DB_PASSWORD}
-      BATCH_CONFIG: ${BATCH_CONFIG}
-      INVOICE_CONFIG: ${INVOICE_CONFIG}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     depends_on:

@@ -1,1 +1,0 @@
-ALTER TABLE application_user ADD COLUMN inactive BOOLEAN DEFAULT FALSE;

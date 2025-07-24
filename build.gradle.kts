@@ -4,7 +4,8 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.simpleinvoice.server"
@@ -19,9 +20,10 @@ application {
 
 repositories {
     mavenCentral()
-    mavenLocal()
-    maven { url = uri("https://packages.confluent.io/maven/") }
 }
+
+val odt2pdfVersion = "1.0.0"
+val odt2pdfJar = "libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
     implementation("io.ktor:ktor-client-core")
@@ -43,7 +45,6 @@ dependencies {
     implementation("io.ktor:ktor-server-html-builder")
     implementation("io.ktor:ktor-server-call-logging")
     implementation("io.ktor:ktor-server-config-yaml")
-
     implementation("io.ktor:ktor-serialization-kotlinx-json")
 //    implementation("io.ktor:ktor-serialization-jackson")
 
@@ -52,13 +53,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
 
-//    val kafkaVersion = "2.1.2"
-//    implementation("io.github.flaxoos:ktor-server-kafka:$kafkaVersion")
-
     val h2Version = "2.3.232"
     implementation("com.h2database:h2:$h2Version")
 
-    val koinVersion = "3.5.6"
+    val koinVersion = "4.1.0"
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
@@ -68,33 +66,32 @@ dependencies {
     val logbackVersion = "1.5.18"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.5"
+    val postgresVersion = "42.7.7"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val ktorOpenApiVersion = "5.0.2"
+    val ktorOpenApiVersion = "5.1.0"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
-    val jacksonVersion = "2.19.0"
+    val jacksonVersion = "2.19.2"
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     // Document conversion
-    // This is the last version
+    // `odfdom-java` has vulnerabilities, but this is the last version
     val odfDomVersion = "0.12.0"
     implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
 
     val simpleOdfVersion = "0.9.0"
     implementation("org.odftoolkit:simple-odf:$simpleOdfVersion")
 
-    val odt2pdfVersion = "1.0"
-    implementation("org.odt2pdf", "odt2pdf", odt2pdfVersion, classifier = "all")
+    implementation(files(layout.buildDirectory.file(odt2pdfJar)))
 
     // Email
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
 
-    val flywayVersion = "11.7.0"
+    val flywayVersion = "11.10.3"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
@@ -106,4 +103,23 @@ ktor {
     docker {
         localImageName.set("simpleinvoice-server")
     }
+}
+
+// Download library from GitHub
+tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") {
+    src("https://github.com/tor-jorgen/odt2pdf/releases/download/v1.0.0/odt2pdf-$odt2pdfVersion-all.jar")
+    dest(layout.buildDirectory.file(odt2pdfJar))
+    overwrite(false)
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("downloadOdt2pdf")
+}
+
+ktlint {
+    additionalEditorconfig.set(
+        mapOf(
+            "max_line_length" to "120",
+        ),
+    )
 }

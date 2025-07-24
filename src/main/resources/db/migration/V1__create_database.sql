@@ -6,15 +6,18 @@ CREATE TABLE application_user
     first_name     VARCHAR NOT NULL,
     last_name      VARCHAR NOT NULL,
     email_address  VARCHAR NOT NULL,
-    scopes         VARCHAR NOT NULL
+    scopes         VARCHAR NOT NULL,
+    inactive       BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE settings
 (
-    id                  UUID    NOT NULL PRIMARY KEY,
-    default_due_days    INT     NOT NULL,
-    last_invoice_number INT     NOT NULL,
-    default_currency    VARCHAR NOT NULL
+    id                    UUID    NOT NULL PRIMARY KEY,
+    default_due_days      INT     NOT NULL,
+    last_invoice_number   INT     NOT NULL,
+    default_currency      VARCHAR NOT NULL,
+    default_email_subject VARCHAR,
+    default_email_text    VARCHAR
 );
 
 CREATE TABLE household
@@ -41,13 +44,15 @@ CREATE TABLE person
 
 CREATE TABLE product
 (
-    id           UUID    NOT NULL PRIMARY KEY,
-    product_code VARCHAR NOT NULL,
-    product_name VARCHAR NOT NULL,
-    quantity     INT     NOT NULL,
-    price        DECIMAL NOT NULL,
-    currency     VARCHAR NOT NULL,
-    inactive     BOOLEAN DEFAULT FALSE
+    id             UUID    NOT NULL PRIMARY KEY,
+    product_code   VARCHAR NOT NULL,
+    product_name   VARCHAR NOT NULL,
+    quantity       INT     NOT NULL,
+    price          DECIMAL NOT NULL,
+    currency       VARCHAR NOT NULL,
+    tax_percentage INT NOT NULL,
+    total_price    DECIMAL NOT NULL,
+    inactive       BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE invoice

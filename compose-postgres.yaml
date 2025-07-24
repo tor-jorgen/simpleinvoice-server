@@ -3,11 +3,11 @@ services:
     image: postgres
     restart: no
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT:-5432}:5432
     volumes:
       - ${DB_DATA_PATH:-./data/postgres}:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME:-simple_invoice}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: ${DB_USER:-db}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust

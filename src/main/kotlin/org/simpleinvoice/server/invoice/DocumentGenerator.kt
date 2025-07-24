@@ -20,6 +20,7 @@ private const val COUNTRY = "_COUNTRY_"
 private const val NAME_1 = "_NAME1_"
 private const val NAME_2 = "_NAME2_"
 private const val PRODUCT = "_PRODUCT_"
+private const val PRODUCT_1 = "_PRODUCT1_"
 private const val ITEM_PRICE = "_PRICE_"
 private const val TOTAL_PRICE = "_TOTAL_"
 
@@ -59,13 +60,13 @@ class DocumentGenerator(
         invoiceName = invoiceName.replace(NAME_1, if (recipients.isNotEmpty()) recipients[0].name else "")
         invoiceName =
             invoiceName.replace(
-                PRODUCT,
+                PRODUCT_1,
                 invoice.invoiceLines
                     .first()
                     .product.name,
             )
 
-        return invoiceName
+        return invoiceName.replace(" ", "")
     }
 
     private fun generatePdf(

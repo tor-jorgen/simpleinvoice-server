@@ -47,6 +47,8 @@ class InvoiceGenerator(
             generatedDate = Instant.now(),
             dueDate = request.dueDate,
             finalizedDate = null,
+            price = request.price,
+            tax = request.tax,
             totalPrice = request.totalPrice,
             currency = request.currency,
             household = householdRepository.get(householdId),

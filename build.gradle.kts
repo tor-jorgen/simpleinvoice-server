@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
     id("de.undercouch.download") version "5.6.0"
 }
 
@@ -116,10 +116,10 @@ tasks.named("compileKotlin") {
     dependsOn("downloadOdt2pdf")
 }
 
-ktlint {
-    additionalEditorconfig.set(
-        mapOf(
-            "max_line_length" to "120",
-        ),
-    )
-}
+//ktlint {
+//    additionalEditorconfig.set(
+//        mapOf(
+//            "max_line_length" to "120",
+//        ),
+//    )
+//}

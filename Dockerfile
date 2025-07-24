@@ -1,4 +1,4 @@
-FROM amazoncorretto:22
+FROM amazoncorretto:24
 ARG USER=service
 ARG GROUP=service
 

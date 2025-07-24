@@ -32,6 +32,7 @@ fun Application.configureHTTP() {
     install(CORS) {
         // Allow requests from your React app
         allowHost("localhost:3000", schemes = listOf("http", "https"))
+        allowHost("localhost", schemes = listOf("http", "https"))
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowHeader(CSRF_HEADER)

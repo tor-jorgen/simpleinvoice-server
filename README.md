@@ -6,29 +6,29 @@ The server is built using [Ktor](https://ktor.io).
 
 ## Server configuration
 
-| Property (`allication.yaml`) | Environment variable        | Default value                 | Description                                                                                                                 |
-|------------------------------|-----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `ktor.deployment.port`       | `SERVER_PORT`               | `8080`                        | The port the server runs at                                                                                                 |     
-| `db.connectionPrefix`        | `DB_CONNECTION_PRE`         | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port |     
-| `db.port`                    | `DB_PORT`                   | `5432`                        | The port the database server runs at                                                                                        |     
-| `db.name`                    | `DB_NAME`                   | `simple_invoice`              | The name of the database                                                                                                    |
-| `db.user`                    | `DB_USER`                   | `db`                          | The name of the user used to connect to the database                                                                        |     
-| `db.password`                | `DB_PASSWORD`               |                               | The password for the user used to connect to the database                                                                   |
-| `security.clientId`          | `GOOGLE_CLIENT_ID`          |                               | OAuth 2 client ID (not yet in use)                                                                                          |     
-| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET`      |                               | OAuth 2 client secret  (not yet in use)                                                                                     |
-| `smtp.host`                  | `$SMTP_HOST`                | `smtp.gmail.com`              |                                                                                                                             |
-| `smtp.port`                  | `SMTP_PORT`                 | `587`                         |                                                                                                                             |                                                                                                                             |
-| `smtp.tls`                   | `SMTP_TLS`                  | `true`                        |                                                                                                                             |
-| `smtp.usernName`             | `SMTP_USER_NAME`            |                               |                                                                                                                             |
-| `smtp.password`              | `SMTP_PASSWORD`             |                               |                                                                                                                             |
-| `smtp.senderEmail`           | `SMTP_SENDER_EMAIL`         |                               |                                                                                                                             |
-| `smtp.senderName`            | `SMTP_SENDER_NAME`          |                               |                                                                                                                             |
-| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./data/documents`            |                                                                                                                             |
-| `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`        |                                                                                                                             |
-| `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`            | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>               |
-|                              | `CFG_PATH`                  | `./config`                    | The path to the directory where the configuration files are stored                                                          |     
-|                              | `DATA_PATH`                 | `./data`                      | The path to the directory where the data files are stored                                                                   |     
-|                              | `DB_DATA_PATH`              | `./data/postgres`             | The path to the directory where the database files are stored                                                               |     
+| Property (`allication.yaml`) | Environment variable        | Default value                 | Description                                                                                                                                   |
+|------------------------------|-----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `ktor.deployment.port`       | `SERVER_PORT`               | `8080`                        | The port the server runs at                                                                                                                   |     
+| `db.connectionPrefix`        | `DB_CONNECTION_PRE`         | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port                   |     
+| `db.port`                    | `DB_PORT`                   | `5432`                        | The port the database server runs at                                                                                                          |     
+| `db.name`                    | `DB_NAME`                   | `simple_invoice`              | The name of the database                                                                                                                      |
+| `db.user`                    | `DB_USER`                   | `db`                          | The name of the user used to connect to the database                                                                                          |     
+| `db.password`                | `DB_PASSWORD`               |                               | The password for the user used to connect to the database                                                                                     |
+| `security.clientId`          | `GOOGLE_CLIENT_ID`          |                               | OAuth 2 client ID (not yet in use)                                                                                                            |     
+| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET`      |                               | OAuth 2 client secret  (not yet in use)                                                                                                       |
+| `smtp.host`                  | `$SMTP_HOST`                | `smtp.gmail.com`              |                                                                                                                                               |
+| `smtp.port`                  | `SMTP_PORT`                 | `587`                         |                                                                                                                                               |                                                                                                                             |
+| `smtp.tls`                   | `SMTP_TLS`                  | `true`                        |                                                                                                                                               |
+| `smtp.usernName`             | `SMTP_USER_NAME`            |                               |                                                                                                                                               |
+| `smtp.password`              | `SMTP_PASSWORD`             |                               |                                                                                                                                               |
+| `smtp.senderEmail`           | `SMTP_SENDER_EMAIL`         |                               |                                                                                                                                               |
+| `smtp.senderName`            | `SMTP_SENDER_NAME`          |                               |                                                                                                                                               |
+| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./data/documents`            |                                                                                                                                               |
+| `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`        |                                                                                                                                               |
+| `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`            | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information |
+|                              | `CFG_PATH`                  | `./config`                    | The path to the directory where the configuration files are stored                                                                            |     
+|                              | `DATA_PATH`                 | `./data`                      | The path to the directory where the data files are stored                                                                                     |     
+|                              | `DB_DATA_PATH`              | `./data/postgres`             | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |     
 
 Set the environment variables in the `.env` file. This file is use when running the server backend from Docker. E.g.:
 
@@ -61,11 +61,11 @@ To list the environment variables with `localhost` as the address, you can run t
 These variables can be copied and pasted into the environment variables in e.g. IntelliJ, if you are running the server
 from there.
 
-## Document template configuration
+## Invoice template configuration
 
-The following table shows the name of the merge fields in the document template:
+The following table shows the name of the placeholders in the invoice template:
 
-| Merge field name | Description                                                   |
+| Placeholder name | Description                                                   |
 |------------------|---------------------------------------------------------------|
 | `_NO_`           | Invoice number                                                |
 | `_DATE_`         | Generated date                                                |
@@ -81,11 +81,25 @@ The following table shows the name of the merge fields in the document template:
 | `_PRICE_`        | Price of the product in the invoice line                      |
 | `_TOTAL_`        | Total price for the invoice                                   |
 
+## Invoice name
+
+The following list shows the placeholders that can be used to create the invoice name:
+
+| Placeholder name | Description                                                  |
+|------------------|--------------------------------------------------------------|
+| `_NO_`           | Invoice number                                               |
+| `_DATE_`         | Generated date                                               |
+| `_DUE_DATE_`     | Due data                                                     |
+| `_HOUSEHOLD_`    | Name of household                                            |
+| `_ADDRESS1_`     | Address 1                                                    |
+| `_NAME1_`        | First name and lastname of the first person in the household |
+| `_PRODUCT1_`     | Name of the product in the first invoice line                |
+
 ## Running locally
 
 All the components of the backend will run in Docker. This includes the database and the server.
 
-The required directories will be created if they do not exist.
+To avoid problems with directory access, create the `DATA_PATH` directory manually before you start.
 
 ### Installing Docker
 

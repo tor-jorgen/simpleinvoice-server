@@ -1,9 +1,10 @@
 .env
+.config/
+.documents/
 .gradle/
 .idea/
 .kotlin/
 .libs/
+.postgres/
 build/
-config/
-data/
 remote-debug-profile/

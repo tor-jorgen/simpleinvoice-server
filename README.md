@@ -45,9 +45,9 @@ set up. The following table shows all the possible properties that must/can be c
 | `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./data/documents`            |                                                                                                                                               |
 | `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`        |                                                                                                                                               |
 | `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`            | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information |
-|                              | `CFG_PATH`                  | `./config`                    | The path to the directory where the configuration files are stored                                                                            |     
-|                              | `DATA_PATH`                 | `./data`                      | The path to the directory where the data files are stored                                                                                     |     
-|                              | `DB_DATA_PATH`              | `./data/postgres`             | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |     
+|                              | `CFG_PATH`                  | `./.config`                   | The path to the directory where the configuration files are stored                                                                            |     
+|                              | `DOCUMENT_PATH`             | `./.documents`                | The path to the directory where the data files are stored                                                                                     |     
+|                              | `DB_DATA_PATH`              | `./.postgres`                 | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |     
 
 Set the environment variables in a `.env` file in the project root directory. This file is use when running the server
 backend from Docker. E.g.:
@@ -104,6 +104,15 @@ All spaces will be removed from the invoice name.
 All the applications of the backend will run in Docker. This includes the database and the server.
 
 To avoid problems with directory access, create the `DATA_PATH` directory manually before you start.
+
+### Installing Java
+
+````shell
+sudo apt install zip
+sudo apt install unzip
+curl -s "https://get.sdkman.io" | bash
+sdk install java 24.0.2-amzn
+````
 
 ### Installing Docker
 

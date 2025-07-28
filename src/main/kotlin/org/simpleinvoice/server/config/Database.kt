@@ -11,6 +11,7 @@ fun Application.runFlyway(config: DatabaseConfig = getK<DatabaseConfig>()) {
     Flyway
         .configure()
         .dataSource(config.connectionString, config.user, config.password)
+        .validateMigrationNaming(true)
         .load()
         .migrate()
 }

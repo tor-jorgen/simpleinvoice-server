@@ -23,7 +23,7 @@ repositories {
 }
 
 val odt2pdfVersion = "1.0.0"
-val odt2pdfJar = "libs/odt2pdf-$odt2pdfVersion-all.jar"
+val odt2pdfJar = "./.libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
     implementation("io.ktor:ktor-client-core")
@@ -85,7 +85,7 @@ dependencies {
     val simpleOdfVersion = "0.9.0"
     implementation("org.odftoolkit:simple-odf:$simpleOdfVersion")
 
-    implementation(files(layout.buildDirectory.file(odt2pdfJar)))
+    implementation(files(layout.projectDirectory.file(odt2pdfJar)))
 
     // Email
     val javaxMailVersion = "1.6.2"
@@ -99,6 +99,13 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
+
 ktor {
     docker {
         localImageName.set("simpleinvoice-server")
@@ -108,7 +115,7 @@ ktor {
 // Download library from GitHub
 tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") {
     src("https://github.com/tor-jorgen/odt2pdf/releases/download/v1.0.0/odt2pdf-$odt2pdfVersion-all.jar")
-    dest(layout.buildDirectory.file(odt2pdfJar))
+    dest(layout.projectDirectory.file(odt2pdfJar))
     overwrite(false)
 }
 

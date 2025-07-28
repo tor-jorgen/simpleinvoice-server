@@ -4,7 +4,26 @@ This is the server for the Simple Invoice project. It provides an HTTP API that 
 
 The server is built using [Ktor](https://ktor.io).
 
-## Server configuration
+## Prerequisites
+
+The following software is needed to build/run the server:
+
+* Java 24
+* Docker
+
+Java is only needed to build the Docker image.
+
+**Note!** For Windows you need to install Windows Desktop, which again requires Windows Subsystem for Linux (WSL) with a
+Linux distribution, or virtualization or Hyper-V.
+
+## Configuration
+
+Before you run the server, you need to configure it.
+
+### Server configuration
+
+Many of the settings have default values that should work out of the box. The settings without default values have to be
+set up. The following table shows all the possible properties that must/can be configured:
 
 | Property (`allication.yaml`) | Environment variable        | Default value                 | Description                                                                                                                                   |
 |------------------------------|-----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -30,13 +49,9 @@ The server is built using [Ktor](https://ktor.io).
 |                              | `DATA_PATH`                 | `./data`                      | The path to the directory where the data files are stored                                                                                     |     
 |                              | `DB_DATA_PATH`              | `./data/postgres`             | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |     
 
-Set the environment variables in the `.env` file. This file is use when running the server backend from Docker. E.g.:
+Set the environment variables in a `.env` file in the project root directory. This file is use when running the server
+backend from Docker. E.g.:
 
-    SERVER_PORT=8080
-    DB_CONNECTION_PRE=jdbc:postgresql://host.docker.internal
-    DB_PORT=5432
-    DB_NAME=simple_invoice
-    DB_USER=user
     DB_PASSWORD=password
     GOOGLE_CLIENT_ID=XXX
     GOOGLE_CLIENT_SECRET=YYY
@@ -44,24 +59,11 @@ Set the environment variables in the `.env` file. This file is use when running 
     SMTP_PASSWORD=zzz
     SMTP_SENDER_EMAIL=zzz
     SMTP_SENDER_NAME=zzz
-    INVOICE_INVOICE_NAME=zzz
-    CFG_PATH=./config
-    DATA_PATH=./data
-    DB_DATA_PATH=./data/postgres
 
 Note that the address to localhost is `host.docker.internal` when running in Docker. This is a special DNS name that
 resolves to the internal IP address used by the host.
 
-To list the environment variables with `localhost` as the address, you can run the following command:
-
-```shell
-./build.sh --list-env
-```
-
-These variables can be copied and pasted into the environment variables in e.g. IntelliJ, if you are running the server
-from there.
-
-## Invoice template configuration
+### Invoice template configuration
 
 The following table shows the name of the placeholders in the invoice template:
 
@@ -81,7 +83,7 @@ The following table shows the name of the placeholders in the invoice template:
 | `_PRICE_`        | Price of the product in the invoice line                      |
 | `_TOTAL_`        | Total price for the invoice                                   |
 
-## Invoice name
+### Invoice name
 
 The following list shows the placeholders that can be used to create the invoice name:
 
@@ -99,7 +101,7 @@ All spaces will be removed from the invoice name.
 
 ## Running locally
 
-All the components of the backend will run in Docker. This includes the database and the server.
+All the applications of the backend will run in Docker. This includes the database and the server.
 
 To avoid problems with directory access, create the `DATA_PATH` directory manually before you start.
 
@@ -118,6 +120,10 @@ newgrp docker
 
 This will add the user `<your user name>` to the group `docker`, so that you can run Docker as that user.
 
+### Windows
+
+Install Docker Desktop...
+
 ### Building the backend
 
 The first time you run the backend from Docker, you need to build it. Do this by running the following command:
@@ -130,9 +136,12 @@ TODO: Add build step to Dockerfile?
 
 Add `--help to see all options.`
 
-### Running the backend
+### Running the backend and the frontend
 
-To run both the server and the database in Docker, use the following command:
+You need to build the frontend Docker image first.
+See [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app) for more information.
+
+Run the following command to start both backend and frontend in Docker:
 
 ```shell
 ./start.sh
@@ -140,11 +149,15 @@ To run both the server and the database in Docker, use the following command:
 
 Add `--help to see all options.`
 
-Run the following command to stop the backend:
+Run the following command to stop the applications:
 
 ````shell
 ./stop.sh
 ````
+
+### Running the backend
+
+To run both the server and the database in Docker, use the following command:
 
 ## Debugging locally
 
@@ -159,15 +172,16 @@ IntelliJ:
 2. Create either (under Services in IntelliJ):
     1. A Ktor run configuration for `EngineMain`
     2. or a Ktor debug configuration with Main class `org.simpleinvoice.server.ApplicationKt`
-3. Paste the environment variables from above into the run configuration:
+3. Run the following command to get the environment variables needed:
+
+```shell
+./build.sh --list-env
+```
+
+4. Copy all the environment variables and paste the environment variables in the run configuration:
     1. Select _Edit environment variables_
     2. Click the past button
 4. Run or debug the configuration
-
-## Credits
-
-Thanks to [Robin Selmer](https://github.com/robinselmer) for
-the [Retro Error Page](https://codepen.io/robinselmer/pen/vJjbOZ)
 
 ## Database maintenance
 

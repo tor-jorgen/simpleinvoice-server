@@ -91,7 +91,7 @@ dependencies {
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
 
-    val flywayVersion = "11.10.3"
+    val flywayVersion = "11.10.4"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 

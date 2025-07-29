@@ -18,6 +18,7 @@ fun Application.configureHTTP() {
         // Tests Origin is an expected value
         allowOrigin("http://localhost:3000")
         allowOrigin("https://localhost:3000")
+        allowOrigin("http://localhost")
 
         // Tests Origin matches Host
         //        originMatchesHost()

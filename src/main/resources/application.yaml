@@ -11,6 +11,7 @@ db:
   name: "$DB_NAME:simple_invoice"
   user: "$DB_USER:db"
   password: "$DB_PASSWORD"
+  applyUnrecognizedMigrationFileFormatFix: "$APPLY_UNRECOGNIZED_MIGRATION_FILE_FORMAT_FIX:false"
 
 security:
   clientId: "$GOOGLE_CLIENT_ID"
@@ -26,6 +27,6 @@ smtp:
   senderName: "$SMTP_SENDER_NAME"
 
 invoice:
-  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:./.documents"
-  template: "$INVOICE_INVOICE_TEMPLATE:./.config/invoice.odt"
+  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:./documents"
+  template: "$INVOICE_INVOICE_TEMPLATE:./config/invoice.odt"
   invoiceName: "$INVOICE_INVOICE_NAME:_NO_-_HOUSEHOLD_"

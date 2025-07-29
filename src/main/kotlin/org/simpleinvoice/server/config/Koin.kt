@@ -1,7 +1,6 @@
 package org.simpleinvoice.server.config
 
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
+import io.ktor.server.application.*
 import kotlinx.coroutines.channels.Channel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -9,21 +8,9 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.odt2pdf.PDFConverter
 import org.simpleinvoice.repository.PersonRepository
-import org.simpleinvoice.server.invoice.DocumentGenerator
-import org.simpleinvoice.server.invoice.EmailGenerator
-import org.simpleinvoice.server.invoice.EventPublisher
-import org.simpleinvoice.server.invoice.HouseholdImporter
-import org.simpleinvoice.server.invoice.InvoiceConfig
-import org.simpleinvoice.server.invoice.InvoiceGenerator
+import org.simpleinvoice.server.invoice.*
 import org.simpleinvoice.server.model.AuditTrail
-import org.simpleinvoice.server.repository.AuditTrailRepository
-import org.simpleinvoice.server.repository.HouseholdRepository
-import org.simpleinvoice.server.repository.InvoiceLineRepository
-import org.simpleinvoice.server.repository.InvoiceRepository
-import org.simpleinvoice.server.repository.ProductRepository
-import org.simpleinvoice.server.repository.SettingsRepository
-import org.simpleinvoice.server.repository.TagRepository
-import org.simpleinvoice.server.repository.UserRepository
+import org.simpleinvoice.server.repository.*
 import org.simpleinvoice.server.util.smtp.SmtpClient
 import org.simpleinvoice.server.util.smtp.SmtpConfig
 
@@ -40,6 +27,7 @@ fun Application.configureDependencyInjection() {
                         connectionString = "$dbConnectionPrefix:$dbPort/$dbName",
                         user = property("db.user"),
                         password = property("db.password"),
+                        applyUnrecognizedMigrationFileFormatFix = property("db.applyUnrecognizedMigrationFileFormatFix").toBoolean(),
                     )
                 }
 

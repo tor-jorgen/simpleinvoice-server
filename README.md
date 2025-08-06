@@ -6,15 +6,19 @@ The server is built using [Ktor](https://ktor.io).
 
 ## Prerequisites
 
-The following software is needed to build/run the server:
+The following software is needed to build and run Simple Invoice backend and app:
 
 * Java 24
-* Docker
+* WSL (Windows subsystem for Linux - for Windows)
+* Docker or Docker Desktop (for Windows)
+* A prebuilt Docker image of the Simple Invoice App (
+  see [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app))
 
 Java is only needed to build the Docker image.
 
-**Note!** For Windows you need to install Windows Desktop, which again requires Windows Subsystem for Linux (WSL) with a
-Linux distribution, or virtualization or Hyper-V.
+**Note!** For Windows, you need to install Windows Desktop, which again requires Windows Subsystem for Linux (WSL) with
+a Linux distribution. Depending on Windows version, you can use virtualization or Hyper-V instead, but WSL should work
+for all versions.
 
 ## Configuration
 
@@ -42,30 +46,40 @@ set up. The following table shows all the possible properties that must/can be c
 | `smtp.password`              | `SMTP_PASSWORD`             |                               |                                                                                                                                               |
 | `smtp.senderEmail`           | `SMTP_SENDER_EMAIL`         |                               |                                                                                                                                               |
 | `smtp.senderName`            | `SMTP_SENDER_NAME`          |                               |                                                                                                                                               |
-| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./data/documents`            |                                                                                                                                               |
+| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./documents`                 |                                                                                                                                               |
 | `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`        |                                                                                                                                               |
 | `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`            | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information |
 |                              | `CFG_PATH`                  | `./.config`                   | The path to the directory where the configuration files are stored                                                                            |     
 |                              | `DOCUMENT_PATH`             | `./.documents`                | The path to the directory where the data files are stored                                                                                     |     
-|                              | `DB_DATA_PATH`              | `./.postgres`                 | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |     
+|                              | `DB_DATA_PATH`              | `./.postgres`                 | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |
+|                              | `REACT_APP_API_BASE_URL`    | `http://localhost:8080`       | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                              |
+|                              | `REACT_APP_CSRF_TOKEN`      |                               | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                             |
 
-Set the environment variables in a `.env` file in the project root directory. This file is use when running the server
+Set the environment variables in a `.env` file in the project root directory. This file is used when running the server
 backend from Docker. E.g.:
 
-    DB_PASSWORD=password
-    GOOGLE_CLIENT_ID=XXX
-    GOOGLE_CLIENT_SECRET=YYY
-    SMTP_USER_NAME=zzz
-    SMTP_PASSWORD=zzz
-    SMTP_SENDER_EMAIL=zzz
-    SMTP_SENDER_NAME=zzz
+`````properties
+DB_PASSWORD=ef87bd37-cec4-4e5d-93c9-1e5eb56acda3
+GOOGLE_CLIENT_ID=XXX
+GOOGLE_CLIENT_SECRET=YYY
+SMTP_USER_NAME=harry.kure@gmail.com
+SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
+SMTP_SENDER_EMAIL=harry.kure@gmail.com
+SMTP_SENDER_NAME=Harry Kure
+REACT_APP_CSRF_TOKEN=d2477104-adc0-405f-a2eb-7b49c1371ea3
+`````
 
-Note that the address to localhost is `host.docker.internal` when running in Docker. This is a special DNS name that
-resolves to the internal IP address used by the host.
+Note that the address to localhost is `host.docker.internal` inside Docker. This is a special DNS name that resolves to
+the internal IP address of the host.
 
 ### Invoice template configuration
 
-The following table shows the name of the placeholders in the invoice template:
+The invoice template is an Open Document Text (ODT) file that is used to generate the invoice PDF files. The template
+can be customized to include the information you want in the invoice. The template file should be placed in the
+directory specified by the `INVOICE_INVOICE_TEMPLATE` environment variable (see above for more information).
+See [example-templates](./example-templates) for examples.
+
+The following table shows the name of the placeholders that can be used in an invoice template:
 
 | Placeholder name | Description                                                   |
 |------------------|---------------------------------------------------------------|
@@ -97,7 +111,7 @@ The following list shows the placeholders that can be used to create the invoice
 | `_NAME1_`        | First name and lastname of the first person in the household |
 | `_PRODUCT1_`     | Name of the product in the first invoice line                |
 
-All spaces will be removed from the invoice name.
+All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_NAME` above for more information.
 
 ## Running locally
 

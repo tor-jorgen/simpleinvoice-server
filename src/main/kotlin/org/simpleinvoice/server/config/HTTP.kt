@@ -1,49 +1,49 @@
 package org.simpleinvoice.server.config
 
-import io.ktor.server.application.*
-import io.ktor.server.plugins.calllogging.*
-import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.request.*
-import io.ktor.util.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.csrf.CSRF
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.uri
+import io.ktor.util.toMap
 
 private const val CSRF_HEADER = "X-SIMPLEINVOICE-CSRF-TOKEN"
 
 fun Application.configureHTTP() {
     install(CORS) {
-        anyMethod() // Allow all HTTP methods
-        anyHost() // Allow requests from any origin
-//        allowHost("localhost:5173", schemes = listOf("http", "https"))
-//        allowHost("localhost:3000", schemes = listOf("http", "https"))
-//        allowHost("localhost", schemes = listOf("http", "https"))
-//        allowHeader(HttpHeaders.ContentType)
-//        allowHeader(HttpHeaders.Authorization)
-//        allowHeader(CSRF_HEADER)
-//        allowMethod(HttpMethod.Get)
-//        allowMethod(HttpMethod.Post)
-//        allowMethod(HttpMethod.Put)
-//        allowMethod(HttpMethod.Delete)
-//        allowMethod(HttpMethod.Options)
+        allowHost("localhost:5173", schemes = listOf("http", "https"))
+        allowHost("localhost", schemes = listOf("http", "https"))
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader(CSRF_HEADER)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Options)
         allowCredentials = true
     }
 
-//    install(CSRF) {
-//        // Tests Origin is an expected value
-//        allowOrigin("http://localhost:5173")
-//        allowOrigin("https://localhost:5173")
-//        allowOrigin("http://localhost:3000")
-//        allowOrigin("https://localhost:3000")
-//        allowOrigin("http://localhost")
-//
-//        // Tests Origin matches Host
-//        //        originMatchesHost()
-//
-//        // Custom header checks
-//        checkHeader(CSRF_HEADER) { header ->
-//            // Check if the header value is a valid CSRF token
-//            println("CSRF Header: $header")
-//            header == "a02d94a4-0408-4153-af18-8d26d0966dfe"
-//        }
-//    }
+    install(CSRF) {
+        allowOrigin("http://localhost:5173")
+        allowOrigin("https://localhost:5173")
+        allowOrigin("http://localhost")
+        allowOrigin("https://localhost")
+
+        // Tests Origin matches Host
+        //        originMatchesHost()
+
+        // Custom header checks
+        checkHeader(CSRF_HEADER) { header ->
+            // Check if the header value is a valid CSRF token
+            println("CSRF Header: $header")
+            header == "a02d94a4-0408-4153-af18-8d26d0966dfe"
+        }
+    }
 
     install(CallLogging) {
         format { call ->

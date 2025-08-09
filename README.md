@@ -52,8 +52,10 @@ set up. The following table shows all the possible properties that must/can be c
 |                              | `CFG_PATH`                  | `./.config`                   | The path to the directory where the configuration files are stored                                                                            |     
 |                              | `DOCUMENT_PATH`             | `./.documents`                | The path to the directory where the data files are stored                                                                                     |     
 |                              | `DB_DATA_PATH`              | `./.postgres`                 | The path to the directory where the database files are stored. It will be created automatically when the database starts                      |
-|                              | `REACT_APP_API_BASE_URL`    | `http://localhost:8080`       | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                              |
-|                              | `REACT_APP_CSRF_TOKEN`      |                               | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                             |
+|                              | `CSRF_TOKEN`                |                               | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                             |
+|                              | `API_BASE_URL`              | `http://localhost:8080`       | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                              |
+|                              | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`        | The path to the simple invoice App, relative to Simple Invoice Server rootdirectory. You don't have to set this if you only run the backend   |
+|                              | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                  | The name of the Dockerfile used to build the Simple Invoice App Docker image. You don't have to set this if you only run the backend          |
 
 Set the environment variables in a `.env` file in the project root directory. This file is used when running the server
 backend from Docker. E.g.:
@@ -66,7 +68,7 @@ SMTP_USER_NAME=harry.kure@gmail.com
 SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
 SMTP_SENDER_EMAIL=harry.kure@gmail.com
 SMTP_SENDER_NAME=Harry Kure
-REACT_APP_CSRF_TOKEN=d2477104-adc0-405f-a2eb-7b49c1371ea3
+CSRF_TOKEN=d2477104-adc0-405f-a2eb-7b49c1371ea3
 `````
 
 Note that the address to localhost is `host.docker.internal` inside Docker. This is a special DNS name that resolves to

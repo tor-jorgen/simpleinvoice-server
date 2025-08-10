@@ -1,3 +1,12 @@
+# Stage 1: Build server
+FROM gradle:8.14-jdk24-corretto AS builder
+WORKDIR /server
+COPY build.gradle.kts gradle.properties settings.gradle.kts gradlew ./
+COPY gradle ./gradle
+COPY src ./src
+RUN ./gradlew clean build --no-daemon
+
+# Stage 2: Runtime
 FROM amazoncorretto:24
 ARG USER=service
 ARG GROUP=service
@@ -12,6 +21,6 @@ RUN \
     yum autoremove -y -q
 
 USER $USER
-COPY --chown=$USER:$GROUP build/libs/*-all.jar service.jar
+COPY --from=builder --chown=$USER:$GROUP /server/build/libs/*-all.jar service.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "service.jar"]

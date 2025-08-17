@@ -16,6 +16,8 @@ db:
 security:
   clientId: "$GOOGLE_CLIENT_ID"
   clientSecret: "$GOOGLE_CLIENT_SECRET"
+  allowHosts: "$ALLOW_HOSTS:http://localhost,http://localhost:5173"
+  csrfToken: "$CSRF_TOKEN"
 
 smtp:
   host: "$SMTP_HOST:smtp.gmail.com"

@@ -55,6 +55,8 @@ fun Application.configureDependencyInjection() {
                     SecurityConfig(
                         clientId = property("security.clientId"),
                         clientSecret = property("security.clientSecret"),
+                        allowHosts = property("security.allowHosts").split(",", ";", " ", "\t").map { it.trim() },
+                        csrfToken = property("security.csrfToken"),
                     )
                 }
 

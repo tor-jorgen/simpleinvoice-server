@@ -10,13 +10,15 @@ import io.ktor.server.plugins.csrf.CSRF
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.util.toMap
+import org.koin.ktor.ext.get as getK
 
 private const val CSRF_HEADER = "X-SIMPLEINVOICE-CSRF-TOKEN"
 
-fun Application.configureHTTP() {
+fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
     install(CORS) {
-        allowHost("localhost:5173", schemes = listOf("http", "https"))
-        allowHost("localhost", schemes = listOf("http", "https"))
+        config.allowHostsAndSchemas().forEach { (host, schemes) ->
+            allowHost(host = host, schemes = schemes)
+        }
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowHeader(CSRF_HEADER)
@@ -29,10 +31,7 @@ fun Application.configureHTTP() {
     }
 
     install(CSRF) {
-        allowOrigin("http://localhost:5173")
-        allowOrigin("https://localhost:5173")
-        allowOrigin("http://localhost")
-        allowOrigin("https://localhost")
+        config.allowHosts.forEach { allowOrigin(it) }
 
         // Tests Origin matches Host
         //        originMatchesHost()
@@ -41,7 +40,7 @@ fun Application.configureHTTP() {
         checkHeader(CSRF_HEADER) { header ->
             // Check if the header value is a valid CSRF token
             println("CSRF Header: $header")
-            header == "a02d94a4-0408-4153-af18-8d26d0966dfe"
+            header == config.csrfToken
         }
     }
 

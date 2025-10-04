@@ -8,8 +8,12 @@ In addition to the server, the backend consists of a Postgres database to store 
 automatically when the server is run for the first time.
 
 The Simple Invoice App is a web application that uses the server API to manage invoices. The Simple Invoice App can be
-found at [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app). The complete Simple Invoice system can
-be run from this project, but the Simple Invoice App needs to be downloaded first.
+found at [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app).
+
+The project started as [SimpleInvoice](https://github.com/tor-jorgen/simpleinvoice) - a simple command line tool.
+
+**Note!** The complete Simple Invoice system can be run from this project, but the Simple Invoice App needs to be
+downloaded first.
 
 ## Required software
 
@@ -27,6 +31,8 @@ The following software is needed to build and run Simple Invoice backend and app
 **Note!** For Windows, you need to install Docker Desktop, which again requires Windows Subsystem for Linux (WSL) with
 a Linux distribution. Depending on Windows version, you can use virtualization or Hyper-V instead, but WSL should work
 for all versions.
+
+If you have the required software installed, you can jump to the [Configuration](#Configuration) section.
 
 ## Windows Subsystem for Linux
 
@@ -78,37 +84,40 @@ Before you run Simple Invoice, you need to configure it.
 Many of the settings have default values that should work out of the box. The settings without default values have to be
 set up. The following table shows all the possible properties that must/can be configured:
 
-| Property (`allication.yaml`) | Environment variable        | Default value                            | Description                                                                                                                                                               |
-|------------------------------|-----------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ktor.deployment.port`       | `SERVER_PORT`               | `8080`                                   | The port the server runs at                                                                                                                                               |     
-| `db.connectionPrefix`        | `DB_CONNECTION_PRE`         | `jdbc:postgresql://localhost`            | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port                                               |     
-| `db.port`                    | `DB_PORT`                   | `5432`                                   | The port the database server runs at                                                                                                                                      |     
-| `db.name`                    | `DB_NAME`                   | `simple_invoice`                         | The name of the database                                                                                                                                                  |
-| `db.user`                    | `DB_USER`                   | `db`                                     | The name of the user used to connect to the database                                                                                                                      |     
-| `db.password`                | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
-| `security.clientId`          | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use)                                                                                                                                        |     
-| `security.clientSecret`      | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use)                                                                                                                                   |
-| `security.allowHosts`        | `ALLOW_HOSTS`               | `http://localhost,http://localhost:5173` | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
-| `security.csrfToken`         | `CSRF_TOKEN`                |                                          | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                                                         |
-| `smtp.host`                  | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
-| `smtp.port`                  | `SMTP_PORT`                 | `587`                                    | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       |                                                                                                                                                                                                                                                                          
-| `smtp.tls`                   | `SMTP_TLS`                  | `true`                                   | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice |                                                                                                                                                                                                                                                                          
-| `smtp.usernName`             | `SMTP_USER_NAME`            |                                          | The user name to use when logging on to the SMTP server                                                                                                                   |
-| `smtp.password`              | `SMTP_PASSWORD`             |                                          | The password to use when logging on to the SMTP server                                                                                                                    |
-| `smtp.senderEmail`           | `SMTP_SENDER_EMAIL`         |                                          | The email address to use as the sender of the emails                                                                                                                      |
-| `smtp.senderName`            | `SMTP_SENDER_NAME`          |                                          | The name to use as the sender of the emails                                                                                                                               |
-| `invoice.invoiceDirectory`   | `INVOICE_INVOICE_DIRECTORY` | `./documents`                            | The directory in which to store invoices generated by Simple Invoice                                                                                                      |
-| `invoice.invoiceTemplate`    | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`                   | The path to the invoice document template                                                                                                                                 |
-| `invoice.invoiceName`        | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`                       | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information                             |
-|                              | `CFG_PATH`                  | `./.config`                              | The path to the directory where the configuration files are stored                                                                                                        |     
-|                              | `DOCUMENT_PATH`             | `./.documents`                           | The path to the directory where the data files are stored                                                                                                                 |     
-|                              | `DB_DATA_PATH`              | `./.postgres`                            | The path to the directory where the database files are stored. It will be created automatically when the database starts                                                  |
-|                              | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                                                          |
-|                              | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server rootdirectory. You don't have to set this if you only run the backend                               |
-|                              | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image. You don't have to set this if you only run the backend                                      |
+| Property (`application.yaml`) | Environment variable        | Default value                            | Description                                                                                                                                                               |
+|-------------------------------|-----------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ktor.deployment.port`        | `SERVER_PORT`               | `8080`                                   | The port the server runs at                                                                                                                                               |     
+| `db.connectionPrefix`         | `DB_CONNECTION_PRE`         | `jdbc:postgresql://host.docker.internal` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port                                               |     
+| `db.port`                     | `DB_PORT`                   | `5432`                                   | The port the database server runs at                                                                                                                                      |     
+| `db.name`                     | `DB_NAME`                   | `simple_invoice`                         | The name of the database                                                                                                                                                  |
+| `db.user`                     | `DB_USER`                   | `db`                                     | The name of the user used to connect to the database                                                                                                                      |     
+| `db.password`                 | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
+| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use)                                                                                                                                        |     
+| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use)                                                                                                                                   |
+| `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost`                       | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
+| `security.csrfToken`          | `CSRF_TOKEN`                |                                          | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                                                         |
+| `smtp.host`                   | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
+| `smtp.port`                   | `SMTP_PORT`                 | `587`                                    | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       |                                                                                                                                                                                                                                                                          
+| `smtp.tls`                    | `SMTP_TLS`                  | `true`                                   | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice |                                                                                                                                                                                                                                                                          
+| `smtp.usernName`              | `SMTP_USER_NAME`            |                                          | The user name to use when logging on to the SMTP server                                                                                                                   |
+| `smtp.password`               | `SMTP_PASSWORD`             |                                          | The password to use when logging on to the SMTP server                                                                                                                    |
+| `smtp.senderEmail`            | `SMTP_SENDER_EMAIL`         |                                          | The email address to use as the sender of the emails                                                                                                                      |
+| `smtp.senderName`             | `SMTP_SENDER_NAME`          |                                          | The name to use as the sender of the emails                                                                                                                               |
+| `invoice.invoiceDirectory`    | `INVOICE_INVOICE_DIRECTORY` | `./documents`                            | The directory in which to store invoices generated by Simple Invoice                                                                                                      |
+| `invoice.invoiceTemplate`     | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`                   | The path to the invoice document template                                                                                                                                 |
+| `invoice.invoiceName`         | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`                       | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information                             |
+|                               | `CFG_PATH`                  | `./.config`                              | The path to the directory where the configuration files are stored                                                                                                        |     
+|                               | `DOCUMENT_PATH`             | `./.documents`                           | The path to the directory where the data files are stored                                                                                                                 |     
+|                               | `DB_DATA_PATH`              | `./.postgres`                            | The path to the directory where the database files are stored. It will be created automatically when the database starts                                                  |
+|                               | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                                                          |
+|                               | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server rootdirectory. You don't have to set this if you only run the backend                               |
+|                               | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image. You don't have to set this if you only run the backend                                      |
 
-Set the environment variables in a `.env` file in the project root directory. This file is used when running the system
-in Docker. E.g.:
+Note that the address to `localhost` is `host.docker.internal` inside Docker. This is a special DNS name that resolves
+to the internal IP address of the host.
+
+To configure the system, create a `.env` file in the project root directory, and add environment variables to it. This
+file is used when running the system in Docker. Below is a typical `.env` file:
 
 `````properties
 DB_PASSWORD=ef87bd37-cec4-4e5d-93c9-1e5eb56acda3
@@ -118,15 +127,12 @@ SMTP_USER_NAME=harry.kure@gmail.com
 SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
 SMTP_SENDER_EMAIL=harry.kure@gmail.com
 SMTP_SENDER_NAME=Harry Kure
-CSRF_TOKEN=d2477104-adc0-405f-a2eb-7b49c1371ea3
+CSRF_TOKEN=4581e4c0-39d1-4fc3-9ce6-8feee2269ee2
 `````
-
-Note that the address to localhost is `host.docker.internal` inside Docker. This is a special DNS name that resolves to
-the internal IP address of the host.
 
 ### Invoice template configuration
 
-The invoice template is an Open Document Text (ODT) file that is used to generate the invoice PDF files. The template
+The invoice template is an Open Document Text (ODT) file used to generate the PDF invoice files. The template
 can be customized to include the information you want in the invoice. The template file should be placed in the
 directory specified by the `INVOICE_INVOICE_TEMPLATE` environment variable (see above for more information).
 See [example-templates](./example-templates) for examples.
@@ -169,27 +175,18 @@ All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_
 
 All the components will run in Docker.
 
-**NB!** To avoid problems with directory access, create the `DATA_PATH` directory manually before you start Simple
+**Note!** To avoid problems with directory access, create the `DATA_PATH` directory manually before you start Simple
 invoice.
 
-### Building the components
-
-The first time you run Simple Invoice, you need to build the different components (Docker images). Do this by
-running the following command:
-
-```shell
-docker compose build
-```  
-
-### Running Simple Invoice
-
-After the Docker images have been built, you can run them with the following command:
+Run Simple Invoice with the following command:
 
 ```shell
 ./start.sh
 ```
 
 Add `--help` to see all options.
+
+The Simple Invoice App can be reached at http://localhost.
 
 Run the following command to stop Simple invoice:
 
@@ -230,6 +227,17 @@ Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 scoop bucket add java
 scoop install java/temurin24-jdk
 ```
+
+### Configuration
+
+Se [Configuration](#Configuration) for information on how to configure the backend. In addition to the typical
+configuration, you need to add the following environment variable to the `.env` file:
+
+```shell
+ALLOW_HOSTS=http://localhost:5173
+```
+
+This is to allow traffic from the Simple Invoice App running in React development mode.
 
 ### Running/debugging server from IDE
 

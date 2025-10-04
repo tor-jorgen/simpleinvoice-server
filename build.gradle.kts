@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.simpleinvoice.server"
-version = "0.0.1"
+version = "1.0.0"
 
 application {
     mainClass = "io.ktor.server.cio.EngineMain"
@@ -53,26 +53,26 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
 
-    val h2Version = "2.3.232"
+    val h2Version = "2.4.240"
     implementation("com.h2database:h2:$h2Version")
 
-    val koinVersion = "4.1.0"
+    val koinVersion = "4.1.1"
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.18"
+    val logbackVersion = "1.5.19"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.7"
+    val postgresVersion = "42.7.8"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val ktorOpenApiVersion = "5.1.0"
+    val ktorOpenApiVersion = "5.3.0"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
-    val jacksonVersion = "2.19.2"
+    val jacksonVersion = "2.20.0"
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")

@@ -95,6 +95,5 @@ class SmtpClient(
         toEmail2: String?,
         invoicePath: String,
         invoiceName: String,
-    ): Boolean =
-        (if (session == null) open() else this).send(subject, text, toEmail1, toEmail2, invoicePath, invoiceName)
+    ): Boolean = (if (session == null) open() else this).send(subject, text, toEmail1, toEmail2, invoicePath, invoiceName)
 }

@@ -40,7 +40,6 @@ fun Application.configureDependencyInjection() {
                         connectionString = "$dbConnectionPrefix:$dbPort/$dbName",
                         user = property("db.user"),
                         password = property("db.password"),
-                        applyUnrecognizedMigrationFileFormatFix = property("db.applyUnrecognizedMigrationFileFormatFix").toBoolean(),
                     )
                 }
 

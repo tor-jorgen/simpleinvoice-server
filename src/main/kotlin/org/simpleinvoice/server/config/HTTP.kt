@@ -60,7 +60,7 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
                     .allValues()
                     .toMap()
             "HTTP $method $uri | Status: $status | Request Headers: $requestHeaders | QueryParams: $queryParams " +
-                    "| Response Headers: $responseHeaders"
+                "| Response Headers: $responseHeaders"
         }
     }
 

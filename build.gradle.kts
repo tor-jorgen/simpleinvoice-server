@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
-//    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("de.undercouch.download") version "5.6.0"
 }
 
@@ -91,7 +91,8 @@ dependencies {
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
 
-    val flywayVersion = "11.10.4"
+    // 11.13 does not work in Docker
+    val flywayVersion = "11.12.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
@@ -104,7 +105,6 @@ kotlin {
         languageVersion.set(JavaLanguageVersion.of(24))
     }
 }
-
 
 ktor {
     docker {
@@ -122,11 +122,3 @@ tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") 
 tasks.named("compileKotlin") {
     dependsOn("downloadOdt2pdf")
 }
-
-//ktlint {
-//    additionalEditorconfig.set(
-//        mapOf(
-//            "max_line_length" to "120",
-//        ),
-//    )
-//}

@@ -30,6 +30,11 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
         allowCredentials = true
     }
 
+    /**
+     * CSRF protection.
+     *
+     * This will only be performed on state-changing requests (POST, PUT, DELETE, PATCH)
+     */
     install(CSRF) {
         config.allowHosts.forEach { allowOrigin(it) }
 
@@ -39,7 +44,6 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
         // Custom header checks
         checkHeader(CSRF_HEADER) { header ->
             // Check if the header value is a valid CSRF token
-            println("CSRF Header: $header")
             header == config.csrfToken
         }
     }

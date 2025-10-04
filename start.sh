@@ -41,6 +41,7 @@ fi
 
 docker compose up $DAEMON
 
-if [ ! "$DAEMON" == "d" ]; then
+if [ "$DAEMON" == "-d" ]; then
+  echo
   show_info
 fi

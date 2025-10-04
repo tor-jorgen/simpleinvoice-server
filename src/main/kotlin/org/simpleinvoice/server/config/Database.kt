@@ -18,12 +18,8 @@ fun Application.runFlyway(config: DatabaseConfig = getK<DatabaseConfig>()) {
         .dataSource(config.connectionString, config.user, config.password)
         .validateMigrationNaming(true)
         .load()
-        .apply {
-//            if (config.applyUnrecognizedMigrationFileFormatFix) {
-            registerCoreResourceTypeProviderIfMissing()
-            log.info("*** Applying unrecognized migration file format fix")
-//            }
-        }.migrate()
+        .registerCoreResourceTypeProviderIfMissing()
+        .migrate()
 }
 
 fun Application.configureDatabases(config: DatabaseConfig = getK<DatabaseConfig>()) {

@@ -27,9 +27,5 @@ class InstantSerializer : KSerializer<Instant> {
                 input
             }
         return Instant.parse(t) // Default ISO-8601 parsing
-//        return DateTimeFormatter.ISO_DATE.parse<Instant?>(
-//            input,
-//            TemporalQuery { temporal: TemporalAccessor? -> Instant.from(temporal) },
-//        )!!
     }
 }

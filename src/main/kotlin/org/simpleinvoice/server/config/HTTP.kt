@@ -28,22 +28,20 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Options)
         allowCredentials = true
+        maxAgeInSeconds = 3600 // Tell browser to cache preflight response for 1 hour to avoid unnecessary traffic
     }
 
     /**
      * CSRF protection.
      *
+     * Use a constant for now. The value should ideally be sent in a cookie
      * This will only be performed on state-changing requests (POST, PUT, DELETE, PATCH)
      */
     install(CSRF) {
         config.allowHosts.forEach { allowOrigin(it) }
 
-        // Tests Origin matches Host
-        //        originMatchesHost()
-
         // Custom header checks
         checkHeader(CSRF_HEADER) { header ->
-            // Check if the header value is a valid CSRF token
             header == config.csrfToken
         }
     }
@@ -63,18 +61,6 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
                 "| Response Headers: $responseHeaders"
         }
     }
-
-//    install(CORS) {
-//        anyMethod() // Allow all HTTP methods
-// //        anyHost() // Allow requests from any origin
-//        allowCredentials = true // Allow credentials
-//        allowNonSimpleContentTypes = true // Allow non-simple content types
-// //        allowHost(host = "localhost", schemes = listOf("http", "https")) // Allow localhost:3000
-// //        allowOrigins { origin ->
-// //            origin.equals("http://localhost:3000", true)
-// //        }
-//        allowSameOrigin = true
-//    }
 
 //    install(HttpsRedirect) {
 //        // The port to redirect to. By default 443, the default HTTPS port.

@@ -18,10 +18,12 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
+# Create the default config directory if it does not exist
 if [ ! -d ".config" ]; then
   mkdir .config
 fi
 
+# Create the default documents directory if it does not exist
 if [ ! -d ".documents" ]; then
   mkdir .documents
 fi

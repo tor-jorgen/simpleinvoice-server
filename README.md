@@ -174,9 +174,6 @@ All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_
 
 All the components will run in Docker.
 
-**Note!** To avoid problems with directory access, create the `DATA_PATH` directory manually before you start Simple
-invoice.
-
 Run Simple Invoice with the following command:
 
 ```shell

@@ -278,19 +278,20 @@ docker compose -f compose-backend.yaml up
 The database will be created by the server the first time it is run, and it will be stored under the path specified by
 the `DATA_PATH` environment variable.
 
+### Backing up database
+
+Run the following command:
+
+```shell
+./backup.sh
+```
+
+Run command with `--help` to get help.
+
 ### Deleting the database
 
 Run the following to delete the database:
 
 ```shell
-sudo rm -rf <DATA_PATH environment variable>
+docker volume rm simple-invoice-db-data
 ``` 
-
-## Backup data
-
-Run the following commands:
-
-```shell
-sudo zip -r simpleinvoice <data directory>/
-chown <user>:<group> simpleinvoice.zip
-```

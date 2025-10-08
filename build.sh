@@ -10,7 +10,7 @@ list_environment_variables() {
   while read line || [ -n "$line" ]; do
     if [[ ! "$line" =~ ^JAVA_TOOL_OPTIONS.* ]]; then
       # Export environment variables, but replace internal Docker addresses with external
-      EXPORT=$(echo "$line" | sed 's/host.docker.internal/localhost/')
+      EXPORT=$(echo "$line" | sed 's/postgres-server/localhost/')
       echo "$EXPORT"
       export "$EXPORT"
     fi

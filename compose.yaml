@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-server:
     image: postgres
     restart: no
     ports:
@@ -20,16 +20,15 @@ services:
   server:
     build: .
     image: simpleinvoice-server
+    restart: no
     ports:
       - ${SERVER_PORT:-8080}:${SERVER_PORT:-8080}
     volumes:
       - ${CFG_PATH:-./.config}:/config
-      - ${DOCUMENT_PATH:-./.documents}:/documents
-    extra_hosts:
-      - host.docker.internal:host-gateway
+      - documents:/documents
     environment:
       SERVER_PORT: ${SERVER_PORT:-8080}
-      DB_CONNECTION_PRE: ${DB_CONNECTION_PRE:-jdbc:postgresql://host.docker.internal}
+      DB_CONNECTION_PRE: ${DB_CONNECTION_PRE:-jdbc:postgresql://postgres-server}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME:-simple_invoice}
       DB_USER: ${DB_USER:-db}
@@ -43,7 +42,7 @@ services:
       SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL}
       SMTP_SENDER_NAME: ${SMTP_SENDER_NAME}
     depends_on:
-      postgres:
+      postgres-server:
         condition: service_healthy
 
   app:
@@ -54,12 +53,15 @@ services:
         API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
         CSRF_TOKEN: ${CSRF_TOKEN}
     image: simpleinvoice-app
+    restart: no
     ports:
       - ${APP_PORT:-80}:${APP_PORT:-80}
     depends_on:
-      postgres:
+      postgres-server:
         condition: service_healthy
 
 volumes:
   db-data:
     name: simple-invoice-db-data
+  documents:
+    name: simple-invoice-documents

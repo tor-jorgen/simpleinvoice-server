@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-server:
     image: postgres
     restart: no
     ports:

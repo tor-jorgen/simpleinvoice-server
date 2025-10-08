@@ -28,6 +28,6 @@ smtp:
   senderName: "$SMTP_SENDER_NAME"
 
 invoice:
-  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:./documents"
+  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:/documents"
   template: "$INVOICE_INVOICE_TEMPLATE:./config/invoice.odt"
   invoiceName: "$INVOICE_INVOICE_NAME:_NO_-_HOUSEHOLD_"

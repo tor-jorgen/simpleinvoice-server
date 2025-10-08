@@ -23,11 +23,6 @@ if [ ! -d ".config" ]; then
   mkdir .config
 fi
 
-# Create the default documents directory if it does not exist
-if [ ! -d ".documents" ]; then
-  mkdir .documents
-fi
-
 if [[ "$1" == "--no-daemon" || "$2" == "--no-daemon" ]]; then
   DAEMON=
   show_info

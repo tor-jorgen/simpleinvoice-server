@@ -1,7 +1,6 @@
 # Simple Invoice Server
 
-This is the server for Simple Invoice. It provides an HTTP API that is used by the Simple Invoice App. The server is
-built
+This is the server for Simple Invoice. It provides an HTTP API used by the Simple Invoice App. The server is built
 using [Ktor](https://ktor.io).
 
 In addition to the server, the backend consists of a Postgres database to store the data. The database is created
@@ -10,10 +9,14 @@ automatically when the server is run for the first time.
 The Simple Invoice App is a web application that uses the server API to manage invoices. The Simple Invoice App can be
 found at [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app).
 
-The project started as [SimpleInvoice](https://github.com/tor-jorgen/simpleinvoice) - a simple command line tool.
+Simple Invoice currently runs on a local computer and only supports a single user. However, both the app and the server
+run in Docker containers, so it is possible to run them on a server (e.g. in the cloud). Anyway, that requires some more
+work, and support for that will hopefully be added in the future.
 
-**Note!** The complete Simple Invoice system can be run from this project, but the Simple Invoice App needs to be
-downloaded first.
+**Note!** Simple Invoice should be run from this project, but the Simple Invoice App needs to be downloaded (cloned)
+first.
+
+The project started as [SimpleInvoice](https://github.com/tor-jorgen/simpleinvoice) - a simple command line tool.
 
 ## Required software
 

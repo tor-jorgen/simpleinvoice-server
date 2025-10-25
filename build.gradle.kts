@@ -1,4 +1,5 @@
 val kotlinVersion: String by project
+val javaLanguageVersion: String by project
 
 plugins {
     kotlin("jvm")
@@ -63,7 +64,7 @@ dependencies {
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.19"
+    val logbackVersion = "1.5.20"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     val postgresVersion = "42.7.8"
@@ -72,6 +73,8 @@ dependencies {
     val ktorOpenApiVersion = "5.3.0"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
+    // All jackson libraries, except jackson-datatype-jsr310, are moved to tools.jackson
+    // Wait with upgrade until all are moved
     val jacksonVersion = "2.20.0"
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -91,7 +94,7 @@ dependencies {
     val javaxMailVersion = "1.6.2"
     implementation("com.sun.mail:javax.mail:$javaxMailVersion")
 
-    // 11.13 does not work in Docker
+    // > 11.12.0 does not work in Docker
     val flywayVersion = "11.12.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
@@ -102,7 +105,7 @@ dependencies {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(24))
+        languageVersion.set(JavaLanguageVersion.of(javaLanguageVersion))
     }
 }
 
@@ -114,7 +117,7 @@ ktor {
 
 // Download library from GitHub
 tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") {
-    src("https://github.com/tor-jorgen/odt2pdf/releases/download/v1.0.0/odt2pdf-$odt2pdfVersion-all.jar")
+    src("https://github.com/tor-jorgen/odt2pdf/releases/download/v$odt2pdfVersion/odt2pdf-$odt2pdfVersion-all.jar")
     dest(layout.projectDirectory.file(odt2pdfJar))
     overwrite(false)
 }

@@ -13,15 +13,27 @@ show_info() {
   echo "Run './stop.sh' to stop Simple Invoice"
 }
 
+# Create the default config directory if it does not exist
+create_config_dir() {
+  CFG_PATH=$(grep "^CFG_PATH=" ".env" | cut -d '=' -f 2)
+  if [ "$CFG_PATH" == "" ]; then
+    CFG_PATH=".config"
+  fi
+
+  if [ ! -d "$CFG_PATH" ]; then
+    mkdir "$CFG_PATH"
+    echo "Created config directory at: $CFG_PATH"
+  else
+    echo "Config directory: $CFG_PATH"
+  fi
+}
+
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   help
   exit 0
 fi
 
-# Create the default config directory if it does not exist
-if [ ! -d ".config" ]; then
-  mkdir .config
-fi
+create_config_dir
 
 if [[ "$1" == "--no-daemon" || "$2" == "--no-daemon" ]]; then
   DAEMON=

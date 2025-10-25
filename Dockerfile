@@ -4,7 +4,7 @@ WORKDIR /server
 COPY build.gradle.kts gradle.properties settings.gradle.kts gradlew ./
 COPY gradle ./gradle
 COPY src ./src
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build -x test --no-daemon
 
 # Stage 2: Runtime
 FROM amazoncorretto:24

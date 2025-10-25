@@ -121,4 +121,3 @@ CREATE TABLE audit_trail
     message   VARCHAR,
     user_id   VARCHAR
 );
-

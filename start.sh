@@ -9,7 +9,7 @@ help() {
 }
 
 show_info() {
-  echo "Simple Invoice App can be reached in a web browser at http://localhost"
+  echo "Simple Invoice App can be reached in a web browser at http://localhost:8000"
   echo "Run './stop.sh' to stop Simple Invoice"
 }
 

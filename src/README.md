@@ -1,0 +1,114 @@
+# Simple Invoice Server Development
+
+## Required software
+
+The following software is needed to develop and debug the backend (in addition to the software needed to run the
+server):
+
+* Java 24
+* IntelliJ IDEA (or any other IDE that supports Kotlin and Ktor)
+
+## Installing Java
+
+### Linux
+
+Run the following commands to install Java with SdkMan:
+
+````shell
+sudo apt install zip
+sudo apt install unzip
+curl -s "https://get.sdkman.io" | bash
+sdk install java 24.0.2-amzn
+````
+
+SdkMan makes it easy to maintain more than one version of Java.
+
+### Windows
+
+If you need to install Java in Windows, you can use Scoop from PowerShell:
+
+```shell
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+scoop bucket add java
+scoop install java/temurin24-jdk
+```
+
+## Configuration
+
+Se [Configuration](../README.md#configuration) for information on how to configure the backend.
+
+In addition to the typical configuration, you need to add the following environment variable to the `.env` file to allow
+traffic from the Simple Invoice App running in React development mode:
+
+```shell
+ALLOW_HOSTS=http://localhost:5173
+```
+
+## Running/debugging server from IDE
+
+The database will run in Docker, and the server will run in IntelliJ (or any other IDE). The description below is for
+IntelliJ:
+
+1. Start the Postgres database in Docker:
+    ```shell
+   docker compose -f compose-postgres.yaml up
+    ```
+
+2. Create either (under Services in IntelliJ):
+    1. A Ktor run configuration for `EngineMain`
+    2. or a Ktor debug configuration with Main class `org.simpleinvoice.server.ApplicationKt`
+
+3. Run the following command to get the environment variables needed:
+   ```shell
+   ./build.sh --list-env
+
+4. Copy all the environment variables and paste the environment variables in the run configuration:
+    1. Select _Edit environment variables_
+    2. Click the paste button
+
+   You should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points to a
+   directory within the Docker image.
+
+5. Run or debug the configuration
+
+## Running backend in Docker
+
+This is helpful when you develop the Simple Invoice App.
+
+Run the following command to run backend (server and database) in Docker:
+
+```shell
+docker compose -f compose-backend.yaml up
+```
+
+## Database maintenance
+
+The database will be created by the server the first time it is run.
+
+The database is placed in a directory determined by Docker.
+
+## Backing up data
+
+Run the following command to back up the database, invoice documents, and configuration:
+
+```shell
+./backup.sh
+```
+
+Run command with `--help` to get help.
+
+## Deleting the database
+
+Run the following to delete the database:
+
+```shell
+docker volume rm simple-invoice-db-data
+``` 
+
+## Deleting the invoice documents
+
+Run the following to delete the documents:
+
+```shell
+docker volume rm simple-invoice-documents
+``` 

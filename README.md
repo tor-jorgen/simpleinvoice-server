@@ -84,8 +84,9 @@ Before you run Simple Invoice, you need to configure it.
 
 ### Server, database, and app configuration
 
-Many of the settings have default values that should work out of the box. The settings without default values have to be
-set up. The following table shows all the possible properties that must/can be configured:
+Many of the settings have default values that should work out of the box. You normally don't have to change those. The
+settings without default values have to be set up. The following table shows all the possible properties that must/can
+be configured:
 
 | Property (`application.yaml`) | Environment variable        | Default value                            | Description                                                                                                                                                               |
 |-------------------------------|-----------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -95,8 +96,8 @@ set up. The following table shows all the possible properties that must/can be c
 | `db.name`                     | `DB_NAME`                   | `simple_invoice`                         | The name of the database                                                                                                                                                  |
 | `db.user`                     | `DB_USER`                   | `db`                                     | The name of the user used to connect to the database                                                                                                                      |     
 | `db.password`                 | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
-| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use)                                                                                                                                        |     
-| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use)                                                                                                                                   |
+| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use, and it does not have to be set)                                                                                                        |     
+| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use, and it does not have to be set)                                                                                                   |
 | `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost`                       | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
 | `security.csrfToken`          | `CSRF_TOKEN`                |                                          | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                                                         |
 | `smtp.host`                   | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
@@ -110,9 +111,9 @@ set up. The following table shows all the possible properties that must/can be c
 | `invoice.invoiceTemplate`     | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`                   | The path to the invoice document template (note that this points to a local directory for easy access)                                                                    |
 | `invoice.invoiceName`         | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`                       | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information                             |
 |                               | `CFG_PATH`                  | `./config`                               | The path to the directory where the configuration files are stored (note that this points to a local directory for easy access)                                           |     
-|                               | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API. You don't have to set this if you only run the backend                                                                          |
-|                               | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server rootdirectory. You don't have to set this if you only run the backend                               |
-|                               | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image. You don't have to set this if you only run the backend                                      |
+|                               | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API                                                                                                                                  |
+|                               | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server root directory                                                                                      |
+|                               | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image                                                                                              |
 
 Note that the address to `localhost` is `host.docker.internal` inside Docker. This is a special DNS name that resolves
 to the internal IP address of the host.
@@ -122,8 +123,6 @@ file is used when running the system in Docker. Below is a typical `.env` file:
 
 `````properties
 DB_PASSWORD=ef87bd37-cec4-4e5d-93c9-1e5eb56acda3
-GOOGLE_CLIENT_ID=XXX
-GOOGLE_CLIENT_SECRET=YYY
 SMTP_USER_NAME=harry.kure@gmail.com
 SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
 SMTP_SENDER_EMAIL=harry.kure@gmail.com
@@ -192,6 +191,31 @@ Run the following command to stop Simple invoice:
 ./stop.sh
 ````
 
+## Maintenance
+
+The database and the invoice document storage will be created by the server the first time Simple Invoice is run, and
+they will be placed in directories determined by Docker.
+
+### Backing up data
+
+It's a good idea to stop Simple Invoice before backing up the data.
+
+Run the following command to back up the database, invoice documents, and configuration:
+
+```shell
+./backup.sh
+```
+
+Run command with `--help` to get help.
+
+You can back up to the cloud, e.g., Dropbox, by setting up a desktop client or a daemon, and back up to the directory
+used by the client/daemon (`-d`).
+
+**Note!** The configuration (`.env`) is not backup up, since it contains secret values. This file must be copied
+manually to a safe place.
+
+### Restoring data
+
 ## Developing/debugging the backend
 
 ### Required software
@@ -228,14 +252,14 @@ scoop install java/temurin24-jdk
 
 ### Configuration
 
-Se [Configuration](#Configuration) for information on how to configure the backend. In addition to the typical
-configuration, you need to add the following environment variable to the `.env` file:
+Se [Configuration](#Configuration) for information on how to configure the backend.
+
+In addition to the typical configuration, you need to add the following environment variable to the `.env` file to allow
+traffic from the Simple Invoice App running in React development mode:
 
 ```shell
 ALLOW_HOSTS=http://localhost:5173
 ```
-
-This is to allow traffic from the Simple Invoice App running in React development mode.
 
 ### Running/debugging server from IDE
 
@@ -254,13 +278,13 @@ IntelliJ:
 3. Run the following command to get the environment variables needed:
    ```shell
    ./build.sh --list-env
-   ```
-   In addition, you should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points
-   to a directory within the Docker image.
 
 4. Copy all the environment variables and paste the environment variables in the run configuration:
     1. Select _Edit environment variables_
     2. Click the paste button
+
+   You should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points to a
+   directory within the Docker image.
 
 5. Run or debug the configuration
 
@@ -278,7 +302,7 @@ docker compose -f compose-backend.yaml up
 
 The database will be created by the server the first time it is run.
 
-The database is placed in a volume determined by Docker.
+The database is placed in a directory determined by Docker.
 
 ### Backing up data
 

@@ -3,7 +3,8 @@
 1. Fail if wrong id on PUT /settings
 2. Do not use Kotlin serialization, as it does not support all types, e.g., Instant and java.util.UUID. Currently, there
    is a mixture of Uuid and UUID, because Kotlin Serialization supports Uuid, while Exposed supports UUID...
-3. Fix Postgres authentication
+3. Fix Postgres authentication. The current method is trust, which is not secure. Anyway, this should be OK for a single
+   user setup on local machine
 4. Update repositories to return domain objects
 5. ~~Return better error messages. E.g. when delete fails because of constraint violation~~
 6. Collect all database creation into one Flyway script before first release

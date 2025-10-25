@@ -114,6 +114,7 @@ be configured:
 |                               | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API                                                                                                                                  |
 |                               | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server root directory                                                                                      |
 |                               | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image                                                                                              |
+|                               | `APP_PORT`                  | `8000`                                   | The port that the app will be available at                                                                                                                                |
 
 Note that the address to `localhost` is `host.docker.internal` inside Docker. This is a special DNS name that resolves
 to the internal IP address of the host.

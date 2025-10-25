@@ -96,8 +96,8 @@ be configured:
 | `db.name`                     | `DB_NAME`                   | `simple_invoice`                         | The name of the database                                                                                                                                                  |
 | `db.user`                     | `DB_USER`                   | `db`                                     | The name of the user used to connect to the database                                                                                                                      |     
 | `db.password`                 | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
-| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use, and it does not have to be set)                                                                                                        |     
-| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use, and it does not have to be set)                                                                                                   |
+| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                               |     
+| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                          |
 | `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost`                       | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
 | `security.csrfToken`          | `CSRF_TOKEN`                |                                          | The CSRF token token to use. This can be set to any value. You don't have to set this if you only run the backend                                                         |
 | `smtp.host`                   | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
@@ -128,6 +128,8 @@ SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
 SMTP_SENDER_EMAIL=harry.kure@gmail.com
 SMTP_SENDER_NAME=Harry Kure
 CSRF_TOKEN=4581e4c0-39d1-4fc3-9ce6-8feee2269ee2
+GOOGLE_CLIENT_ID=XXX
+GOOGLE_CLIENT_SECRET=YYY
 `````
 
 ### Invoice template configuration
@@ -215,6 +217,15 @@ used by the client/daemon (`-d`).
 manually to a safe place.
 
 ### Restoring data
+
+This is a manual process, since we don't know which data to restore.
+
+Run the following commands to find out where docker stores the database and the invoice documents:
+
+```shell
+docker volume inspect simple-invoice-db-data
+docker volume inspect simple-invoice-documents
+```
 
 ## Developing/debugging the backend
 

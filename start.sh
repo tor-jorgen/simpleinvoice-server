@@ -15,9 +15,7 @@ show_info() {
 
 # Create the default config directory if it does not exist
 create_config_dir() {
-  ENV_FILE=".env"
-  VAR_NAME="CFG_PATH"
-  CFG_PATH=$(grep "^$VAR_NAME=" "$ENV_FILE" | cut -d '=' -f 2)
+  CFG_PATH=$(grep "^CFG_PATH=" ".env" | cut -d '=' -f 2)
   if [ "$CFG_PATH" == "" ]; then
     CFG_PATH=".config"
   fi

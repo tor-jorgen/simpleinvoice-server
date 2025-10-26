@@ -2,10 +2,12 @@
 
 help() {
   echo "start.sh [--no-daemon]"
-  echo "Start Simple Invoice backend"
+  echo "Start Simple Invoice"
   echo "--no-daemon: Do not run containers as daemons. This makes the logs visible in the console"
-  echo "--skip-build: Do not build the application. This can make startup faster if you have already run the application"
-  echo "Run './stop.sh' to stop the backend. If you start the backend with --no-daemon, you need to stop it with Ctrl+C"
+  echo "--skip-build: Do not build the application. This will make startup faster if you have already run the application"
+  echo
+  echo "If the startup fails, it might be because you have to little memory on your computer. Try to close other programs while you start up. Simple Invoice has to be built the first time you start up, and that consumes quite some resources"
+  echo "Run './stop.sh' to stop the backend. If you started it with --no-daemon, you need to push Ctrl+C before you run './stop.sh'"
 }
 
 show_info() {

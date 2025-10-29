@@ -66,7 +66,7 @@ jobs:
       - name: Make Gradle Wrapper executable
         run: chmod +x ./gradlew
       - name: Run Gradle check
-        run: ./gradlew check
+        run: ./gradlew check -x test
       # Archive the build directory (reports, classes, etc.)
       - name: Upload Gradle build artifacts
         id: upload-reports

@@ -31,7 +31,8 @@ The following software is needed to build and run Simple Invoice backend and app
 * Docker (using Homebrew)
 * or, Docker Desktop
 
-The shell scripts are made for Linux, but will hopefully work on a Mac as well.
+The shell scripts are made for Linux (including WSL), but will hopefully work on a Mac as well, possibly with some
+adjustments.
 
 ### Windows
 
@@ -61,16 +62,27 @@ Do the following to install WSL:
    ````
    ``Ubuntu`` can be replaced by the preferred Linux distro.
 
+### Command shell
+
 To run commands/scripts from WSL, do the following:
 
 1. Open PowerShell
 2. Click on the down arrow in the menu bar and select the distro you installed to open a terminal
 
-### Installing Docker
+Your drives will be mounted at `/mnt/<drive>`, so to go to the Windows C drive run the following command:
+
+````shell
+cd /mnt/c
+````
+
+## Installing Docker
+
+[Docker](https://www.docker.com/) is used to run the backend (Simple Invoice Server and database) and the web server
+that hosts the Simple Invoice App.
 
 ### Ubuntu
 
-Run the following commands to install Docker on Ubuntu:
+Go to the terminal and run the following commands to install Docker on Ubuntu:
 
 ```shell
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -185,17 +197,18 @@ All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_
 
 All the components will run in Docker.
 
-Run Simple Invoice with the following command:
+Go to the command shell and run Simple Invoice with the following command:
 
 ```shell
 ./start.sh
 ```
 
-Add `--help` to see all the options.
+**Note!** It will take some to start it up the first time, since Simple Invoice must be built first. Add `--help` to
+the script to see all the options, and what you can do to speed up the startup the next time.
 
 The Simple Invoice App can be reached at http://localhost:8000.
 
-Run the following command to stop Simple invoice:
+Go to the command shell and run the following command to stop Simple invoice:
 
 ````shell
 ./stop.sh
@@ -210,7 +223,7 @@ they will be placed in directories determined by Docker.
 
 It's a good idea to stop Simple Invoice before backing up the data.
 
-Run the following command to back up the database, invoice documents, and configuration:
+Go to the command shell and run the following command to back up the database, invoice documents, and configuration:
 
 ```shell
 ./backup.sh
@@ -228,7 +241,8 @@ safe place.
 
 This is a manual process, since we don't know which data to restore.
 
-Run the following commands to find out where docker stores the database and the invoice documents:
+Go to the command shell and run the following commands to find out where docker stores the database and the invoice
+documents:
 
 ```shell
 docker volume inspect simple-invoice-db-data

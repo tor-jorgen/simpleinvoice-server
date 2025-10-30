@@ -78,6 +78,7 @@ jobs:
     needs: [ gradle-build-and-test ]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
       checks: write
     steps:
@@ -94,7 +95,7 @@ jobs:
       - name: Download Gradle build artifacts
         uses: actions/download-artifact@v6
         with:
-#          name: gradle-reports
+          #          name: gradle-reports
           name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
           path: build/
       - name: Make Gradle Wrapper executable
@@ -107,12 +108,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   publish-and-scan-image:
-    name: Publish and san image
+    name: Publish and scan image
     needs: [ sonar-analysis, gradle-build-and-test ]
     runs-on: ubuntu-latest
     if: success()
     permissions:
+      contents: read
       packages: write
+      actions: write
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -139,22 +143,31 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: false
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
-#          cache-from: type=gha
-#          cache-to: type=gha,mode=max
+      #          cache-from: type=gha
+      #          cache-to: type=gha,mode=max
       - name: Scan image for vulnerabilities with Trivy
-        uses: aquasecurity/trivy-action@v0
+        uses: aquasecurity/trivy-action@master
         with:
+          version: latest
           image-ref: ghcr.io/${{ env.IMAGE_NAME }}:latest
-          format: sarif
-          output: trivy-results.sarif
+# Må vente til repoet er public
+#          format: sarif
+#          output: trivy-results.sarif
           severity: HIGH,CRITICAL
           vuln-type: os,library
           exit-code: 1
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
+# Må vente til repoet er public
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        if: always()
+#        uses: github/codeql-action/upload-sarif@v4
+#        with:
+#          sarif_file: trivy-results.sarif
+      - name: Build and push Docker image
+        id: scan-image
+        uses: docker/build-push-action@v6
         with:
-          sarif_file: trivy-results.sarif
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest,ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}

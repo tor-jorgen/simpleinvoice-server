@@ -78,6 +78,7 @@ jobs:
     needs: [ gradle-build-and-test ]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
       checks: write
     steps:
@@ -112,7 +113,9 @@ jobs:
     runs-on: ubuntu-latest
     if: success()
     permissions:
+      contents: read
       packages: write
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5

@@ -8,3 +8,4 @@
 .postgres/
 build/
 remote-debug-profile/
+sonar.sh

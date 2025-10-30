@@ -157,7 +157,7 @@ jobs:
           vuln-type: os,library
           exit-code: 1
       - name: Build and push Docker image
-        id: build-image
+        id: scan-image
         uses: docker/build-push-action@v6
         with:
           context: .

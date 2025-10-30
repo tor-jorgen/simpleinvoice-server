@@ -156,6 +156,7 @@ jobs:
           severity: HIGH,CRITICAL
           vuln-type: os,library
           exit-code: 1
+          args: --skip-version-check
       - name: Build and push Docker image
         id: scan-image
         uses: docker/build-push-action@v6
@@ -163,8 +164,8 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest,ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy-results.sarif
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        if: always()
+#        uses: github/codeql-action/upload-sarif@v4
+#        with:
+#          sarif_file: trivy-results.sarif

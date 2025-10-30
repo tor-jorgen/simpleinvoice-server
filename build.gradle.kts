@@ -28,6 +28,13 @@ val odt2pdfVersion = "1.0.0"
 val odt2pdfJar = "./.libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
+
+    constraints {
+        implementation("commons-beanutils:commons-beanutils:1.11.0") {
+            because("CVE-2025-48734")
+        }
+    }
+
     implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-client-content-negotiation")

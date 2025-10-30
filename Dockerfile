@@ -18,7 +18,8 @@ RUN \
     useradd -rm -s /sbin/nologin -g 1000 -u 1000 "$USER" && \
     chmod 755 "/home/$USER" && \
     yum remove shadow-utils -y -q && \
-    yum autoremove -y -q
+    yum autoremove -y -q && \
+    yum clean all
 
 USER $USER
 COPY --from=builder --chown=$USER:$GROUP /server/build/libs/*-all.jar service.jar

@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("de.undercouch.download") version "5.6.0"
+    id("org.sonarqube") version "7.0.1.6134"
 }
 
 group = "org.simpleinvoice.server"
@@ -124,4 +125,12 @@ tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") 
 
 tasks.named("compileKotlin") {
     dependsOn("downloadOdt2pdf")
+}
+
+sonar {
+    properties {
+        property("sonar.organization", "tor-jorgen")
+        property("sonar.projectKey", "tor-jorgen_simpleinvoice-server")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }

@@ -104,7 +104,7 @@ jobs:
         run: chmod +x ./gradlew
       # Run Sonar analysis, skipping the build step to reuse existing reports
       - name: Run SonarCloud analysis
-        run: ./gradlew sonarqube -x compileJava -x test
+        run: ./gradlew sonar -x compileJava -x test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

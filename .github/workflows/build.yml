@@ -1,5 +1,10 @@
 name: Build pipeline
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 on:
   push:
     branches: [ main ]
@@ -15,9 +20,6 @@ jobs:
   lint-code:
     name: Lint Code Base
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -36,8 +38,6 @@ jobs:
   lint-workflow:
     name: Lint Workflow YAML
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -53,8 +53,6 @@ jobs:
     needs: [ lint-code, lint-workflow ]
     outputs:
       build-artifact-name: gradle-reports
-    permissions:
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -80,7 +78,6 @@ jobs:
     needs: [ gradle-build-and-test ]
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pull-requests: write
       checks: write
     steps:
@@ -115,9 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     if: success()
     permissions:
-      contents: read
       packages: write
-      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -149,7 +144,7 @@ jobs:
 #          cache-from: type=gha
 #          cache-to: type=gha,mode=max
       - name: Scan image for vulnerabilities with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0
         with:
           image-ref: ghcr.io/${{ env.IMAGE_NAME }}:latest
           format: sarif
@@ -162,3 +157,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
+          github_token: ${{ secrets.GITHUB_TOKEN }}

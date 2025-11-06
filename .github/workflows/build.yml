@@ -150,13 +150,13 @@ jobs:
       - name: Scan image for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@master
         with:
+          version: latest
           image-ref: ghcr.io/${{ env.IMAGE_NAME }}:latest
           format: sarif
           output: trivy-results.sarif
           severity: HIGH,CRITICAL
           vuln-type: os,library
           exit-code: 1
-          skip-version-check: true
       - name: Build and push Docker image
         id: scan-image
         uses: docker/build-push-action@v6

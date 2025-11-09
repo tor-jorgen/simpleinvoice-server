@@ -9,3 +9,4 @@
 build/
 remote-debug-profile/
 sonar.sh
+verification-keyring.gpg

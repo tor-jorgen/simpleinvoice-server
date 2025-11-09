@@ -130,6 +130,15 @@ tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") 
     overwrite(false)
 }
 
+tasks.register("printVersion") {
+    group = "help"
+    description = "Prints the project version."
+
+    doLast {
+        println(project.version)
+    }
+}
+
 tasks.named("compileKotlin") {
     dependsOn("downloadOdt2pdf")
 }

@@ -1,5 +1,5 @@
 # Stage 1: Build server
-FROM gradle:8.14-jdk24-corretto AS builder
+FROM gradle:9.2.1-jdk21-corretto AS builder
 WORKDIR /server
 COPY build.gradle.kts gradle.properties settings.gradle.kts gradlew ./
 COPY gradle ./gradle
@@ -7,7 +7,7 @@ COPY src ./src
 RUN ./gradlew clean build -x test --no-daemon
 
 # Stage 2: Runtime
-FROM amazoncorretto:24
+FROM amazoncorretto:21
 ARG USER=service
 ARG GROUP=service
 

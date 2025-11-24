@@ -112,3 +112,23 @@ Run the following to delete the documents:
 ```shell
 docker volume rm simple-invoice-documents
 ``` 
+
+## Dependency verification
+
+Dependency verification is enabled. The following are verified:
+
+* Artifact checksums
+* Artifact signatures (if available)
+* Metadata checksums
+* Metadata signatures (if available)
+
+Build is set up to use local keyring only (`key-servers enabled="false"`). If dependency validation fails, you have to
+update the verification metadata and/or verification keyring. Run the following command to update the verification
+metadata and verification keyring:
+
+```shell
+./gradlew --write-verification-metadata pgp,sha256 --export-keys
+```
+
+Ideally checksums should be updated manually, but if you do it automatically, as above, be sure you validate the updated
+`verification-metadata.xml` before you commit it.

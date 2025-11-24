@@ -5,10 +5,12 @@
 The following software is needed to develop and debug the backend (in addition to the software needed to run the
 server):
 
-* Java 24
+* Java 21
 * IntelliJ IDEA (or any other IDE that supports Kotlin and Ktor)
 
 ## Installing Java
+
+Java 21 is the latest LTS version supported by Kotlin.
 
 ### Linux
 
@@ -18,7 +20,8 @@ Run the following commands to install Java with SdkMan:
 sudo apt install zip
 sudo apt install unzip
 curl -s "https://get.sdkman.io" | bash
-sdk install java 24.0.2-amzn
+# Use latest 21 version
+sdk install java 21.0.9-amzn
 ````
 
 SdkMan makes it easy to maintain more than one version of Java.
@@ -30,7 +33,7 @@ If you need to install Java in Windows, you can use Scoop from PowerShell:
 ```shell
 Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 scoop bucket add java
-scoop install java/temurin24-jdk
+scoop install java/corretto21-jdk
 ```
 
 ## Configuration

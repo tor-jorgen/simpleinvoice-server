@@ -5,9 +5,9 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
-    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("de.undercouch.download") version "5.6.0"
-    id("org.sonarqube") version "7.0.1.6134"
+    id("org.sonarqube") version "7.1.0.6387"
 }
 
 group = "org.simpleinvoice.server"
@@ -72,21 +72,19 @@ dependencies {
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.20"
+    val logbackVersion = "1.5.21"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     val postgresVersion = "42.7.8"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val ktorOpenApiVersion = "5.3.0"
+    val ktorOpenApiVersion = "5.4.0"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
-    // All jackson libraries, except jackson-datatype-jsr310, are moved to tools.jackson
-    // Wait with upgrade until all are moved
-    val jacksonVersion = "2.20.0"
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    val jacksonVersion = "3.0.2"
+    implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // Document conversion
     // `odfdom-java` has vulnerabilities, but this is the last version
@@ -99,8 +97,8 @@ dependencies {
     implementation(files(layout.projectDirectory.file(odt2pdfJar)))
 
     // Email
-    val javaxMailVersion = "1.6.2"
-    implementation("com.sun.mail:javax.mail:$javaxMailVersion")
+    val javaxMailVersion = "2.0.2"
+    implementation("com.sun.mail:jakarta.mail:$javaxMailVersion")
 
     // > 11.12.0 does not work in Docker
     val flywayVersion = "11.12.0"

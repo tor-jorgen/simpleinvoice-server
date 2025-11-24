@@ -1,8 +1,7 @@
 package org.simpleinvoice.server.util.yaml
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tools.jackson.dataformat.yaml.YAMLMapper
+import tools.jackson.module.kotlin.KotlinModule
 import java.io.File
 
 object YamlUtil {
@@ -14,9 +13,11 @@ object YamlUtil {
      */
     inline fun <reified T> fromYaml(path: String): T =
         try {
-            ObjectMapper()
-            val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
-            mapper.readValue(File(path), T::class.java)
+            YAMLMapper
+                .builder()
+                .addModule(KotlinModule.Builder().build())
+                .build()
+                .readValue(File(path), T::class.java)
         } catch (e: Exception) {
             println("Illegal format for file: '$path'")
             e.printStackTrace()

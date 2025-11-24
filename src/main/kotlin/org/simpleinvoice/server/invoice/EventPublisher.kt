@@ -2,7 +2,6 @@ package org.simpleinvoice.server.invoice
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import kotlinx.coroutines.channels.Channel
 import org.simpleinvoice.server.model.AuditTrail
 import org.slf4j.Logger
@@ -16,7 +15,6 @@ class EventPublisher(
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
     private val mapper =
         ObjectMapper().apply {
-            registerModule(JavaTimeModule())
             // Use ISO-8601 format
             disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         }

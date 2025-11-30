@@ -74,8 +74,8 @@ class SmtpClient(
 
             messageBodyPart = MimeBodyPart()
             val source: DataSource = FileDataSource(invoicePath)
-            messageBodyPart.setDataHandler(DataHandler(source))
-            messageBodyPart.setFileName(invoiceName)
+            messageBodyPart.dataHandler = DataHandler(source)
+            messageBodyPart.fileName = invoiceName
             multipart.addBodyPart(messageBodyPart)
 
             msg.setContent(multipart)

@@ -116,6 +116,8 @@ jobs:
       packages: write
       actions: write
       security-events: write
+    outputs:
+      server_version: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -169,3 +171,30 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest,ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }},ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: [ publish-and-scan-image ]
+    runs-on: ubuntu-latest
+    # Only run this job if the previous step succeeded AND the event was a push/merge to the main branch
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Set Release Tag
+        id: tag_variable
+        run: |
+          VERSION=${{ needs.publish-and-scan-image.outputs.server_version }}
+          TAG_NAME="v$VERSION"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_variable.outputs.TAG_NAME }}
+          name: Release ${{ steps.tag_variable.outputs.TAG_NAME }}
+          body: "Release for version ${{ steps.tag_variable.outputs.VERSION }}"
+          draft: false
+          prerelease: false

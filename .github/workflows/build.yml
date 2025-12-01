@@ -36,7 +36,7 @@ jobs:
           VALIDATE_YAML: true
 
   lint-workflow:
-    name: Lint Workflow YAML
+    name: Lint Github Workflows
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ lint-code, lint-workflow ]
     outputs:
-      build-artifact-name: gradle-reports
+      build-artifact-name: gradle-artifacts
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -69,7 +69,7 @@ jobs:
       - name: Upload Gradle build artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: gradle-reports
+          name: gradle-artifacts
           path: build/
 
   sonar-analysis:
@@ -90,16 +90,14 @@ jobs:
         with:
           distribution: ${{ env.DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
-      # The artifact name is hardcoded (or could be retrieved from needs.gradle-build-and-test.outputs.build-artifact-name)
       - name: Download Gradle build artifacts
         uses: actions/download-artifact@v6
         with:
-          #          name: gradle-reports
           name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
           path: build/
       - name: Make Gradle Wrapper executable
         run: chmod +x ./gradlew
-      # Run Sonar analysis, skipping the build step to reuse existing reports
+      # Run Sonar analysis, skipping the build step to reuse existing artifacts
       - name: Run SonarCloud analysis
         run: ./gradlew sonar -x compileJava -x test
         env:
@@ -124,7 +122,7 @@ jobs:
       - name: Download Gradle build artifacts
         uses: actions/download-artifact@v6
         with:
-          name: gradle-reports
+          name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
           path: build/
       - name: Set up Java
         uses: actions/setup-java@v5

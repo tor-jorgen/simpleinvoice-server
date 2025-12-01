@@ -135,3 +135,19 @@ metadata and verification keyring:
 
 Ideally checksums should be updated manually, but if you do it automatically, as above, be sure you validate the updated
 `verification-metadata.xml` before you commit it.
+
+## Lint Github workflows
+
+Run the following scrip to lint the Github workflows:
+
+```shell
+./actionlint.sh
+```
+
+## Check image vulnerabilities
+
+Run the following script to check the image for vulnerabilities:
+
+```shell
+./trivy.sh
+```

@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("de.undercouch.download") version "5.6.0"
-    id("org.sonarqube") version "7.1.0.6387"
+    id("org.sonarqube") version "7.2.0.6526"
 }
 
 group = "org.simpleinvoice.server"
@@ -81,7 +81,7 @@ dependencies {
     val ktorOpenApiVersion = "5.4.0"
     implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
 
-    val jacksonVersion = "3.0.2"
+    val jacksonVersion = "3.0.3"
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")

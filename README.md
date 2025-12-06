@@ -197,6 +197,12 @@ All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_
 
 All the components will run in Docker.
 
+You need to log in to Github Container Registry before you start:
+
+```shell
+docker login ghcr.io -u <your github username>
+```
+
 Go to the command shell and run Simple Invoice with the following command:
 
 ```shell

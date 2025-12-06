@@ -18,7 +18,8 @@ services:
       retries: 5
 
   server:
-    image: ghcr.io/tor-jorgen/simpleinvoice-server:1.0.0
+    build: .
+    image: simpleinvoice-server
     restart: no
     ports:
       - ${SERVER_PORT:-8080}:${SERVER_PORT:-8080}
@@ -34,7 +35,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      ALLOW_HOSTS: ${ALLOW_HOSTS:-http://localhost:8000}
+      ALLOW_HOSTS: ${ALLOW_HOSTS}
       CSRF_TOKEN: ${CSRF_TOKEN}
       SMTP_USER_NAME: ${SMTP_USER_NAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
@@ -45,7 +46,13 @@ services:
         condition: service_healthy
 
   app:
-    image: ghcr.io/tor-jorgen/simpleinvoice-app:1.0.0
+    build:
+      context: ${APP_BUILD_CONTEXT:-../simpleinvoice-app}
+      dockerfile: ${APP_BUILD_DOCKERFILE:-Dockerfile}
+      args:
+        API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
+        CSRF_TOKEN: ${CSRF_TOKEN}
+    image: simpleinvoice-app
     restart: no
     ports:
       - ${APP_PORT:-8000}:${APP_PORT:-8000}

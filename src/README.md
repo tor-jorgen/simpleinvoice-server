@@ -84,6 +84,16 @@ Run the following command to run backend (server and database) in Docker:
 docker compose -f compose-backend.yaml up
 ```
 
+## Running backend and app in Docker
+
+This will build both backend and frontend before running.
+
+Run the following command to run the complete system in Docker:
+
+```shell
+docker compose -f compose-all.yaml up
+```
+
 ## Database maintenance
 
 The database will be created by the server the first time it is run.

@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Lint code with Super-Linter
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Actionlint
         uses: reviewdog/action-actionlint@v1
         with:
@@ -55,7 +55,7 @@ jobs:
       build-artifact-name: gradle-artifacts
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
@@ -82,7 +82,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up Java
@@ -95,8 +95,6 @@ jobs:
         with:
           name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
           path: build/
-      - name: Make Gradle Wrapper executable
-        run: chmod +x ./gradlew
       # Run Sonar analysis, skipping the build step to reuse existing artifacts
       - name: Run SonarCloud analysis
         run: ./gradlew sonar -x compileJava -x test
@@ -115,10 +113,10 @@ jobs:
       actions: write
       security-events: write
     outputs:
-      server_version: ${{ steps.get_version.outputs.VERSION }}
+      server-version: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Download Gradle build artifacts
         uses: actions/download-artifact@v6
         with:
@@ -182,7 +180,7 @@ jobs:
       - name: Set Release Tag
         id: tag_variable
         run: |
-          VERSION=${{ needs.publish-and-scan-image.outputs.server_version }}
+          VERSION=${{ needs.publish-and-scan-image.outputs.server-version }}
           TAG_NAME="v$VERSION"
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT

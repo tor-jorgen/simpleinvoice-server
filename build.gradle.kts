@@ -7,7 +7,8 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("de.undercouch.download") version "5.6.0"
-    id("org.sonarqube") version "7.2.0.6526"
+    // The latest version (7.2.0.6526) fails dependency validation
+    id("org.sonarqube") version "7.1.0.6387"
 }
 
 group = "org.simpleinvoice.server"

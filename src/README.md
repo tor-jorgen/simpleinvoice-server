@@ -140,8 +140,13 @@ update the verification metadata and/or verification keyring. Run the following 
 metadata and verification keyring:
 
 ```shell
-./gradlew --write-verification-metadata pgp,sha256 --export-keys
+./gradlew clean build -x test --write-verification-metadata pgp,sha256 --export-keys [--refresh-dependencies]
 ```
+
+This will also build, so that we can verify that the verification metadata is correct.
+
+Sometimes, metadata is missing, and artifacts must be added to the `<trusted-artifacts>` section in
+`verification-metadata.xml`. Be careful when doing that.
 
 Ideally checksums should be updated manually, but if you do it automatically, as above, be sure you validate the updated
 `verification-metadata.xml` before you commit it.

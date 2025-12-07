@@ -6,6 +6,7 @@
       <keyring-format>armored</keyring-format>
       <key-servers enabled="false"/>
       <trusted-artifacts>
+         <trust group="org.sonarsource" name="*"/>
          <trust file=".*-sources[.]jar" regex="true"/>
          <trust file="gradle-[0-9.]+-src.zip" regex="true"/>
       </trusted-artifacts>

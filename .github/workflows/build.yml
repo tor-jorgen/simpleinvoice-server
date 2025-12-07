@@ -130,7 +130,7 @@ jobs:
 
       - name: Get version
         id: get_version
-        run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(./gradlew -q printVersion)" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -180,10 +180,10 @@ jobs:
       - name: Set Release Tag
         id: tag_variable
         run: |
-          VERSION=${{ needs.publish-and-scan-image.outputs.server-version }}
+          VERSION="${{ needs.publish-and-scan-image.outputs.server-version }}"
           TAG_NAME="v$VERSION"
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Create Release
         uses: softprops/action-gh-release@v2
         env:

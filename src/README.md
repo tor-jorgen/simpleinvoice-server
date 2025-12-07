@@ -140,10 +140,10 @@ update the verification metadata and/or verification keyring. Run the following 
 metadata and verification keyring:
 
 ```shell
-./gradlew clean build -x test --write-verification-metadata pgp,sha256 --export-keys [--refresh-dependencies]
+./gradlew --write-verification-metadata pgp,sha256 --export-keys [--refresh-dependencies]
 ```
 
-This will also build, so that we can verify that the verification metadata is correct.
+You should build the project after creating the metadata to verify that the metadata is correct.
 
 Sometimes, metadata is missing, and artifacts must be added to the `<trusted-artifacts>` section in
 `verification-metadata.xml`. Be careful when doing that.

@@ -2,11 +2,14 @@ package org.simpleinvoice.server.resources.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Product
 import java.util.UUID
 
 @Serializable
+@JsonIgnoreUnknownKeys
+@kotlinx.serialization.ExperimentalSerializationApi
 class ProductRequest(
     val code: String,
     val name: String,

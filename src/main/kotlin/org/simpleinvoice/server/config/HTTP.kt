@@ -37,14 +37,14 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
      * Use a constant for now. The value should ideally be sent in a cookie
      * This will only be performed on state-changing requests (POST, PUT, DELETE, PATCH)
      */
-    install(CSRF) {
-        config.allowHosts.forEach { allowOrigin(it) }
-
-        // Custom header checks
-        checkHeader(CSRF_HEADER) { header ->
-            header == config.csrfToken
-        }
-    }
+//    install(CSRF) {
+//        config.allowHosts.forEach { allowOrigin(it) }
+//
+//        // Custom header checks
+//        checkHeader(CSRF_HEADER) { header ->
+//            header == config.csrfToken
+//        }
+//    }
 
     install(CallLogging) {
         format { call ->

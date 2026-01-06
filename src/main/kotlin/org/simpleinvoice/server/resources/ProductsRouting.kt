@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package org.simpleinvoice.server.resources
 
 import io.ktor.http.HttpStatusCode

@@ -12,12 +12,13 @@ CREATE TABLE application_user
 
 CREATE TABLE settings
 (
-    id                    UUID       NOT NULL PRIMARY KEY,
-    default_due_days      INT        NOT NULL,
-    last_invoice_number   INT        NOT NULL,
-    default_currency      VARCHAR(8) NOT NULL,
-    default_email_subject VARCHAR(128),
-    default_email_text    VARCHAR(1024)
+    id                     UUID       NOT NULL PRIMARY KEY,
+    default_due_days       INT        NOT NULL,
+    last_invoice_number    INT        NOT NULL,
+    default_tax_percentage DECIMAL    NOT NULL,
+    default_currency       VARCHAR(8) NOT NULL,
+    default_email_subject  VARCHAR(128),
+    default_email_text     VARCHAR(1024)
 );
 
 CREATE TABLE household
@@ -50,7 +51,7 @@ CREATE TABLE product
     quantity       INT          NOT NULL,
     price          DECIMAL      NOT NULL,
     currency       VARCHAR(8)   NOT NULL,
-    tax_percentage INT          NOT NULL,
+    tax_percentage DECIMAL      NOT NULL,
     total_price    DECIMAL      NOT NULL,
     inactive       BOOLEAN      DEFAULT FALSE
 );
@@ -117,7 +118,7 @@ CREATE TABLE audit_trail
     id        UUID        NOT NULL PRIMARY KEY,
     timestamp VARCHAR(64) NOT NULL,
     item_id   VARCHAR(64) NOT NULL,
-    item      VARCHAR(128),
-    message   VARCHAR(1024),
+    item      VARCHAR(1024),
+    message   VARCHAR(128),
     user_id   VARCHAR(64)
 );

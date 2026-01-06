@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package org.simpleinvoice.server.resources
 
 import io.ktor.http.HttpStatusCode
@@ -32,7 +34,8 @@ fun Application.configureSettingsRouting(repository: SettingsRepository = getK<S
 //        authenticate(AUTH_SESSION) {
         get<Settings> {
             // Get the config
-            call.respond(status = HttpStatusCode.OK, message = repository.get())
+            val message = repository.get()
+            call.respond(status = HttpStatusCode.OK, message = message)
         }
 
         put<Settings.Id> { request ->

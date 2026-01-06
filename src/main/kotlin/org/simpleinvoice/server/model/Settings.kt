@@ -10,6 +10,7 @@ data class Settings(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     @SerialName("default_due_days") val defaultDueDays: Int,
     @SerialName("last_invoice_number") val lastInvoiceNumber: Int,
+    @SerialName("default_tax_percentage") val defaultTaxPercentage: Double,
     @SerialName("default_currency") val defaultCurrency: Currency,
     @SerialName("default_email_subject") val defaultEmailSubject: String?,
     @SerialName("default_email_text") val defaultEmailText: String?,

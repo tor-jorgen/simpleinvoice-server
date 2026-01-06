@@ -19,6 +19,7 @@ class SettingsRepository(
             SettingsDAO.findByIdAndUpdate(id = settings.id) {
                 it.defaultDueDays = settings.defaultDueDays
                 it.lastInvoiceNumber = settings.lastInvoiceNumber
+                it.defaultTaxPercentage = settings.defaultTaxPercentage
                 it.defaultCurrency = settings.defaultCurrency.name
                 it.defaultEmailSubject = settings.defaultEmailSubject
                 it.defaultEmailText = settings.defaultEmailText

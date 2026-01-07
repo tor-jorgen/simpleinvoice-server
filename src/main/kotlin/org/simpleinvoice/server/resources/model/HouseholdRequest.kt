@@ -2,12 +2,15 @@ package org.simpleinvoice.server.resources.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
 import java.util.UUID
 
 @Serializable
+@JsonIgnoreUnknownKeys
+@kotlinx.serialization.ExperimentalSerializationApi
 data class HouseholdRequest(
     val name: String? = null,
     val address: String,

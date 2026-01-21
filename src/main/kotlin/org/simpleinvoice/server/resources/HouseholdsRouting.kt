@@ -40,6 +40,7 @@ class Households(
 /**
  * These routes require a valid session, otherwise you have to log in
  */
+@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.configureHouseholdsRouting(
     repository: HouseholdRepository = getK<HouseholdRepository>(),
     importer: HouseholdImporter = getK<HouseholdImporter>(),

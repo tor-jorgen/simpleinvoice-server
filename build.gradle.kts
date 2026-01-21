@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("de.undercouch.download") version "5.6.0"
-    // The latest version (7.2.0.6526) fails dependency validation
+    // The latest version (7.2.2.6593) fails dependency validation
     id("org.sonarqube") version "7.1.0.6387"
 }
 
@@ -73,10 +73,10 @@ dependencies {
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.21"
+    val logbackVersion = "1.5.25"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.8"
+    val postgresVersion = "42.7.9"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
     val ktorOpenApiVersion = "5.4.0"

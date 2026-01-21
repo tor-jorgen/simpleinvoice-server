@@ -25,6 +25,7 @@ fun main(args: Array<String>) {
         .main(args)
 }
 
+@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.module() {
     configureDependencyInjection()
     handleEvents()

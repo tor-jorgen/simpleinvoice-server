@@ -12,6 +12,7 @@ ARG USER=service
 ARG GROUP=service
 
 RUN \
+    mkdir /migrations && \
     yum update -y -q --security && \
     yum install shadow-utils -y -q && \
     groupadd -r "$GROUP" -g 1000 && \
@@ -23,5 +24,6 @@ RUN \
 
 USER $USER
 COPY --from=builder --chown=$USER:$GROUP /server/build/libs/*-all.jar service.jar
+COPY --chown=$USER:$GROUP src/main/resources/db/migration /migrations
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "service.jar"]

@@ -101,7 +101,8 @@ dependencies {
     val javaxMailVersion = "2.0.2"
     implementation("com.sun.mail:jakarta.mail:$javaxMailVersion")
 
-    val flywayVersion = "11.20.2"
+    // > 11.12.0 does not work in a fatjar
+    val flywayVersion = "11.12.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 

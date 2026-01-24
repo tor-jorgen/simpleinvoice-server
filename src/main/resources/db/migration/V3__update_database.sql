@@ -1,0 +1,44 @@
+ALTER TABLE application_user ALTER COLUMN principal_id   TYPE VARCHAR(128);
+ALTER TABLE application_user ALTER COLUMN login_provider TYPE VARCHAR(16) ;
+ALTER TABLE application_user ALTER COLUMN first_name     TYPE VARCHAR(128);
+ALTER TABLE application_user ALTER COLUMN last_name      TYPE VARCHAR(128);
+ALTER TABLE application_user ALTER COLUMN email_address  TYPE VARCHAR(128);
+ALTER TABLE application_user ALTER COLUMN scopes         TYPE VARCHAR(512);
+
+ALTER TABLE settings ADD COLUMN default_tax_percentage DECIMAL;
+ALTER TABLE settings ALTER COLUMN default_currency      TYPE VARCHAR(8);
+ALTER TABLE settings ALTER COLUMN default_email_subject TYPE VARCHAR(128);
+ALTER TABLE settings ALTER COLUMN default_email_text    TYPE VARCHAR(1024);
+
+ALTER TABLE household ALTER COLUMN name     TYPE VARCHAR(128);
+ALTER TABLE household ALTER COLUMN address  TYPE VARCHAR(128);
+ALTER TABLE household ALTER COLUMN address2 TYPE VARCHAR(128);
+ALTER TABLE household ALTER COLUMN zip_code TYPE VARCHAR(16);
+
+ALTER TABLE person ALTER COLUMN first_name    TYPE VARCHAR(128);
+ALTER TABLE person ALTER COLUMN last_name     TYPE VARCHAR(128);
+ALTER TABLE person ALTER COLUMN email_address TYPE VARCHAR(128);
+ALTER TABLE person ALTER COLUMN phone_number  TYPE VARCHAR(32);
+
+ALTER TABLE product ALTER COLUMN tax_percentage TYPE DECIMAL;
+ALTER TABLE product ALTER COLUMN product_name   TYPE VARCHAR(128);
+ALTER TABLE product ALTER COLUMN currency       TYPE VARCHAR(8);
+ALTER TABLE product ALTER COLUMN currency       TYPE VARCHAR(8);
+
+ALTER TABLE invoice ALTER COLUMN invoice_number    TYPE INT;
+ALTER TABLE invoice ALTER COLUMN status            TYPE VARCHAR(32);
+ALTER TABLE invoice ALTER COLUMN generated_date    TYPE VARCHAR(64);
+ALTER TABLE invoice ALTER COLUMN due_date          TYPE VARCHAR(64);
+ALTER TABLE invoice ALTER COLUMN finalized_date    TYPE VARCHAR(64);
+ALTER TABLE invoice ALTER COLUMN currency          TYPE VARCHAR(8);
+ALTER TABLE invoice ALTER COLUMN invoice_file_path TYPE VARCHAR(512);
+
+ALTER TABLE invoice_line ALTER COLUMN currency TYPE VARCHAR(8);
+
+ALTER TABLE tag ALTER COLUMN name TYPE VARCHAR(128);
+
+ALTER TABLE audit_trail ALTER COLUMN timestamp TYPE VARCHAR(64);
+ALTER TABLE audit_trail ALTER COLUMN item_id   TYPE VARCHAR(64);
+ALTER TABLE audit_trail ALTER COLUMN item      TYPE VARCHAR(1024);
+ALTER TABLE audit_trail ALTER COLUMN message   TYPE VARCHAR(128);
+ALTER TABLE audit_trail ALTER COLUMN user_id   TYPE VARCHAR(64);

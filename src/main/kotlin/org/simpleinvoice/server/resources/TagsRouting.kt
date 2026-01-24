@@ -34,7 +34,6 @@ class Tags(
 /**
  * These routes require a valid session, otherwise you have to log in
  */
-@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.configureTagsRouting(repository: TagRepository = getK<TagRepository>()) {
     routing {
 //        authenticate(AUTH_SESSION) {

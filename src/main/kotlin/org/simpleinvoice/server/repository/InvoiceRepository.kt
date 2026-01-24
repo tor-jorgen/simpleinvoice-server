@@ -16,7 +16,6 @@ import org.simpleinvoice.server.repository.model.InvoiceDAO
 import org.simpleinvoice.server.repository.model.InvoiceLineTable
 import org.simpleinvoice.server.repository.model.InvoiceTable
 import org.simpleinvoice.server.repository.model.InvoiceTagsTable
-import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.time.Instant
 import java.util.UUID
 
@@ -28,18 +27,15 @@ class InvoiceRepository(
     override suspend fun all(
         openOnly: Boolean,
         ids: List<UUID>,
-    ): InvoicesResponse =
+    ): List<Invoice> =
         suspendTransaction {
-            InvoicesResponse(
-                invoices =
-                    if (openOnly) {
-                        InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
-                    } else if (ids.isNotEmpty()) {
-                        InvoiceDAO.find { InvoiceTable.id inList ids }.map { it.toInvoice() }
-                    } else {
-                        InvoiceDAO.all().map { it.toInvoice() }
-                    },
-            )
+            if (openOnly) {
+                InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
+            } else if (ids.isNotEmpty()) {
+                InvoiceDAO.find { InvoiceTable.id inList ids }.map { it.toInvoice() }
+            } else {
+                InvoiceDAO.all().map { it.toInvoice() }
+            }
         }
 
     override suspend fun get(id: UUID): Invoice =

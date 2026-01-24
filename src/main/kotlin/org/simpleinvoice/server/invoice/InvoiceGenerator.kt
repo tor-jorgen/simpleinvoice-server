@@ -23,7 +23,7 @@ class InvoiceGenerator(
     @OptIn(ExperimentalUuidApi::class)
     suspend fun generate(request: GenerateInvoicesRequest): List<UUID> {
         val productIds = request.invoiceLines.map { UUID.fromString(it.productId.toString()) }.toList()
-        val products = productRepository.byIds(productIds).products.associateBy { it.id }
+        val products = productRepository.byIds(productIds).associateBy { it.id }
         return request.householdIds
             .map { householdId ->
                 generateInvoice(
@@ -53,7 +53,7 @@ class InvoiceGenerator(
             currency = request.currency,
             household = householdRepository.get(householdId),
             invoiceFilePath = null,
-            tags = request.tags,
+            tags = request.tags.map { it.toTag() },
             invoiceLines =
                 request.invoiceLines.map {
                     // We know that `products` contains all the products in `invoiceLines`

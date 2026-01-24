@@ -14,7 +14,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.TagRepository
-import org.simpleinvoice.server.resources.model.TagRequest
+import org.simpleinvoice.server.resources.model.TagNoIdRequest
+import org.simpleinvoice.server.resources.model.TagRequestResponse
+import org.simpleinvoice.server.resources.model.TagsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -32,29 +34,32 @@ class Tags(
 /**
  * These routes require a valid session, otherwise you have to log in
  */
+@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.configureTagsRouting(repository: TagRepository = getK<TagRepository>()) {
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Tags> {
             // Get all tags
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
+            val response =
+                TagsResponse(tags = repository.all(activeOnly = activeOnly).map { TagRequestResponse.fromTag(it) })
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         post<Tags> {
             // Create a new tag
-            val tagRequest = call.receive<TagRequest>()
+            val tagRequest = call.receive<TagNoIdRequest>()
             val tag = tagRequest.toTag(UUID.randomUUID())
-            repository.upsert(tag = tag, new = true)
-            call.respond(status = HttpStatusCode.Created, message = tag)
+            val response = TagRequestResponse.fromTag(repository.upsert(tag = tag, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
 
         put<Tags.Id> { request ->
             // Update a tag
-            val tagRequest = call.receive<TagRequest>()
+            val tagRequest = call.receive<TagNoIdRequest>()
             val tag = tagRequest.toTag(request.id)
-            repository.upsert(tag = tag, new = false)
-            call.respond(status = HttpStatusCode.OK, message = tag)
+            val response = TagRequestResponse.fromTag(repository.upsert(tag = tag, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Tags.Id> { request ->

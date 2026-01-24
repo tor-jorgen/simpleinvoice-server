@@ -9,17 +9,14 @@ import org.simpleinvoice.server.model.LoginProvider
 import org.simpleinvoice.server.model.User
 import org.simpleinvoice.server.repository.model.UserDAO
 import org.simpleinvoice.server.repository.model.UserTable
-import org.simpleinvoice.server.resources.model.UsersResponse
 import java.util.UUID
 
 class UserRepository(
     val eventPublisher: EventPublisher,
 ) : UserRepositoryInterface {
-    override suspend fun all(): UsersResponse =
+    override suspend fun all(): List<User> =
         suspendTransaction {
-            UsersResponse(
-                users = UserDAO.all().map { it.toUser() },
-            )
+            UserDAO.all().map { it.toUser() }
         }
 
     override suspend fun upsert(

@@ -20,7 +20,12 @@ class HouseholdImporter(
                         throw Exception("Invalid line: $line")
                     }
                     val newPerson = person(columns = columns)
-                    val newHousehold = household(columns = columns, person = newPerson, tags = importHouseholds.tags)
+                    val newHousehold =
+                        household(
+                            columns = columns,
+                            person = newPerson,
+                            tags = importHouseholds.tags.map { it.toTag() },
+                        )
                     val household = households.find { it.equalsIgnoreIdPersonsAndTags(newHousehold) }
                     if (household != null) {
                         households.remove(household)

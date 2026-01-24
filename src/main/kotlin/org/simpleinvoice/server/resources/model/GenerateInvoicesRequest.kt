@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.InstantSerializer
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.model.Currency
-import org.simpleinvoice.server.model.Tag
 import java.time.Instant
 import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,7 +22,7 @@ data class GenerateInvoicesRequest
         @SerialName("invoice_lines") val invoiceLines: List<GenerateInvoiceLineRequest>,
         // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
         @SerialName("household_ids") val householdIds: List<Uuid>,
-        val tags: List<Tag>,
+        val tags: List<TagRequestResponse>,
         val email: EmailRequest? = null,
     )
 

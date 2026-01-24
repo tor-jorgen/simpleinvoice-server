@@ -1,14 +1,13 @@
 package org.simpleinvoice.server.repository
 
 import org.simpleinvoice.server.model.Invoice
-import org.simpleinvoice.server.resources.model.InvoicesResponse
 import java.util.UUID
 
 interface InvoiceRepositoryInterface {
     suspend fun all(
         openOnly: Boolean,
         ids: List<UUID>,
-    ): InvoicesResponse
+    ): List<Invoice>
 
     suspend fun get(id: UUID): Invoice
 

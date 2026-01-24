@@ -1,9 +1,8 @@
 package org.simpleinvoice.server.resources.model
 
 import kotlinx.serialization.Serializable
-import org.simpleinvoice.server.model.Tag
 
 @Serializable
 data class TagsResponse(
-    val tags: List<Tag>,
+    val tags: List<TagRequestResponse>,
 )

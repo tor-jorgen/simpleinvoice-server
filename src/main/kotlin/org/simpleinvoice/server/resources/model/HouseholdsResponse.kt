@@ -5,5 +5,5 @@ import org.simpleinvoice.server.model.Household
 
 @Serializable
 data class HouseholdsResponse(
-    val households: List<Household>,
+    val households: List<HouseholdResponse>,
 )

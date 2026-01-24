@@ -1,11 +1,10 @@
 package org.simpleinvoice.server.repository
 
 import org.simpleinvoice.server.model.User
-import org.simpleinvoice.server.resources.model.UsersResponse
 import java.util.UUID
 
 interface UserRepositoryInterface {
-    suspend fun all(): UsersResponse
+    suspend fun all(): List<User>
 
     suspend fun upsert(
         user: User,

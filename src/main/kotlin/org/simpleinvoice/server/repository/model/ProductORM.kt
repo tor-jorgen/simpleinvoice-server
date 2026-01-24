@@ -15,7 +15,7 @@ object ProductTable : UUIDTable("product") {
     val quantity = integer("quantity")
     val price = double("price")
     val currency = varchar("currency", 255)
-    val taxPercentage = integer("tax_percentage")
+    val taxPercentage = double("tax_percentage")
     val totalPrice = double("total_price")
     val inactive = bool("inactive")
 }

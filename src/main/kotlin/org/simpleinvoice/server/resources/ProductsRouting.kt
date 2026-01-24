@@ -17,6 +17,8 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.resources.model.ProductRequest
+import org.simpleinvoice.server.resources.model.ProductResponse
+import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -40,7 +42,9 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
         get<Products> {
             // Get all products
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
+            val response =
+                ProductsResponse(products = repository.all(activeOnly = activeOnly).map { ProductResponse.fromProduct(it) })
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         post<Products> {
@@ -55,8 +59,8 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
             // Update a product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(request.id)
-            repository.upsert(product = product, new = false)
-            call.respond(status = HttpStatusCode.OK, message = product)
+            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Products.Id> { request ->

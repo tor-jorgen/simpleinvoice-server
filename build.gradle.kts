@@ -34,6 +34,7 @@ dependencies {
         implementation("commons-beanutils:commons-beanutils:1.11.0") {
             because("CVE-2025-48734")
         }
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     }
 
     implementation("io.ktor:ktor-client-core")

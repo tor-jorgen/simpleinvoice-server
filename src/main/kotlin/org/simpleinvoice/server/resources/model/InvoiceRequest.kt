@@ -23,9 +23,9 @@ data class InvoiceRequest(
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
     val price: Double,
     val tax: Double,
-    @SerialName("total_price") val totalPrice: Double,
+    @SerialName("total_price") val totalPrice: String,
     val currency: Currency,
-    val tags: List<TagRequest> = emptyList(),
+    val tags: List<TagRequestResponse> = emptyList(),
 ) {
     fun toInvoice(
         id: UUID,
@@ -44,9 +44,9 @@ data class InvoiceRequest(
             invoiceLines = invoiceLines.map { it.toInvoiceLine(products) },
             price = price,
             tax = tax,
-            totalPrice = totalPrice,
+            totalPrice = totalPrice.toDouble(),
             currency = currency,
-            tags = tags.map { it.toTag(it.id!!) },
+            tags = tags.map { it.toTag() },
             invoiceFilePath = null,
         )
 }
@@ -57,9 +57,9 @@ data class InvoiceLineRequest(
     @SerialName("line_number") val lineNumber: Int,
     @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
     val quantity: Int,
-    val price: Double,
+    val price: String,
     val tax: Double,
-    @SerialName("total_price") val totalPrice: Double,
+    @SerialName("total_price") val totalPrice: String,
     val currency: Currency,
 ) {
     fun toInvoiceLine(products: Map<UUID, Product>): InvoiceLine =
@@ -69,9 +69,9 @@ data class InvoiceLineRequest(
             lineNumber = lineNumber,
             product = products[productId] ?: throw RuntimeException("Product not found"),
             quantity = quantity,
-            price = price,
+            price = price.toDouble(),
             tax = tax,
-            totalPrice = totalPrice,
+            totalPrice = totalPrice.toDouble(),
             currency = currency,
         )
 }

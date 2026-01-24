@@ -16,6 +16,8 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.invoice.HouseholdImporter
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.HouseholdRequest
+import org.simpleinvoice.server.resources.model.HouseholdResponse
+import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import org.simpleinvoice.server.resources.model.ImportHouseholdsRequest
 import org.simpleinvoice.server.resources.model.ImportHouseholdsResponse
 import java.util.UUID
@@ -57,23 +59,30 @@ fun Application.configureHouseholdsRouting(
                     ids.split(",").map { UUID.fromString(it.trim()) }
                 }
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly, ids = idList))
+            val response =
+                HouseholdsResponse(
+                    households =
+                        repository
+                            .all(activeOnly = activeOnly, ids = idList)
+                            .map { HouseholdResponse.fromHousehold(it) },
+                )
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         post<Households> {
             // Add a new household
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(UUID.randomUUID())
-            val dbHousehold = repository.upsert(household = household, new = true)
-            call.respond(status = HttpStatusCode.Created, message = dbHousehold)
+            val response = HouseholdResponse.fromHousehold(repository.upsert(household = household, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
 
         put<Households.Id> { request ->
             // Update a household with upserts on persons
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(request.id)
-            val dbHousehold = repository.upsert(household = household, new = false)
-            call.respond(status = HttpStatusCode.OK, message = dbHousehold)
+            val response = HouseholdResponse.fromHousehold(repository.upsert(household = household, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Households.Id> { request ->

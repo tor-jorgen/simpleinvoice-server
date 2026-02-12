@@ -5,7 +5,7 @@ ALTER TABLE application_user ALTER COLUMN last_name      TYPE VARCHAR(128);
 ALTER TABLE application_user ALTER COLUMN email_address  TYPE VARCHAR(128);
 ALTER TABLE application_user ALTER COLUMN scopes         TYPE VARCHAR(512);
 
-ALTER TABLE settings ADD COLUMN default_tax_percentage DECIMAL;
+ALTER TABLE settings ADD COLUMN default_tax_percentage DECIMAL NOT NULL DEFAULT 0;
 ALTER TABLE settings ALTER COLUMN default_currency      TYPE VARCHAR(8);
 ALTER TABLE settings ALTER COLUMN default_email_subject TYPE VARCHAR(128);
 ALTER TABLE settings ALTER COLUMN default_email_text    TYPE VARCHAR(1024);
@@ -20,6 +20,7 @@ ALTER TABLE person ALTER COLUMN last_name     TYPE VARCHAR(128);
 ALTER TABLE person ALTER COLUMN email_address TYPE VARCHAR(128);
 ALTER TABLE person ALTER COLUMN phone_number  TYPE VARCHAR(32);
 
+ALTER TABLE product ADD COLUMN tax DECIMAL NOT NULL DEFAULT 0;
 ALTER TABLE product ALTER COLUMN tax_percentage TYPE DECIMAL;
 ALTER TABLE product ALTER COLUMN product_name   TYPE VARCHAR(128);
 ALTER TABLE product ALTER COLUMN currency       TYPE VARCHAR(8);

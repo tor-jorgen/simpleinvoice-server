@@ -14,9 +14,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.TagRepository
+import org.simpleinvoice.server.resources.model.ListResponse
 import org.simpleinvoice.server.resources.model.TagNoIdRequest
 import org.simpleinvoice.server.resources.model.TagRequestResponse
-import org.simpleinvoice.server.resources.model.TagsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -41,7 +41,7 @@ fun Application.configureTagsRouting(repository: TagRepository = getK<TagReposit
             // Get all tags
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
             val response =
-                TagsResponse(tags = repository.all(activeOnly = activeOnly).map { TagRequestResponse.fromTag(it) })
+                ListResponse(data = repository.all(activeOnly = activeOnly).map { TagRequestResponse.fromTag(it) })
             call.respond(status = HttpStatusCode.OK, message = response)
         }
 

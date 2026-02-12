@@ -10,6 +10,7 @@ data class Product(
     val price: Double,
     val currency: Currency,
     val taxPercentage: Double,
+    val tax: Double,
     val totalPrice: Double,
     val tags: List<Tag> = emptyList(),
     val inactive: Boolean = false,

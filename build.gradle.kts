@@ -109,6 +109,9 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+
+    val assertjVersion = "3.27.7"
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
 }
 
 kotlin {

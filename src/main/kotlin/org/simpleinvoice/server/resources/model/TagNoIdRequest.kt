@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.model.Tag
 import java.util.UUID
 
+/**
+ * Request object for creating or updating a tag
+ */
 @Serializable
 data class TagNoIdRequest(
     val name: String,

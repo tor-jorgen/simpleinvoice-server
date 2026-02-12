@@ -17,9 +17,9 @@ import org.simpleinvoice.server.invoice.HouseholdImporter
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.resources.model.HouseholdRequest
 import org.simpleinvoice.server.resources.model.HouseholdResponse
-import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import org.simpleinvoice.server.resources.model.ImportHouseholdsRequest
 import org.simpleinvoice.server.resources.model.ImportHouseholdsResponse
+import org.simpleinvoice.server.resources.model.ListResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -60,8 +60,8 @@ fun Application.configureHouseholdsRouting(
                 }
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
             val response =
-                HouseholdsResponse(
-                    households =
+                ListResponse(
+                    data =
                         repository
                             .all(activeOnly = activeOnly, ids = idList)
                             .map { HouseholdResponse.fromHousehold(it) },

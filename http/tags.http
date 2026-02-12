@@ -1,0 +1,7 @@
+###
+GET {{host}}/tags
+Accept: application/json
+
+###
+GET {{host}}/tags?active_only=true
+Accept: application/json

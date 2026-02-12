@@ -49,6 +49,7 @@ class ProductRepository(
                             it[price] = product.price
                             it[currency] = product.currency.name
                             it[taxPercentage] = product.taxPercentage
+                            it[tax] = product.tax
                             it[totalPrice] = product.totalPrice
                             it[inactive] = product.inactive
                         },
@@ -97,6 +98,7 @@ class ProductRepository(
             price = result[ProductTable.price],
             currency = Currency.valueOf(result[ProductTable.currency]),
             taxPercentage = result[ProductTable.taxPercentage],
+            tax = result[ProductTable.tax],
             totalPrice = result[ProductTable.totalPrice],
             tags = tags,
             inactive = result[ProductTable.inactive],

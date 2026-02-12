@@ -22,7 +22,7 @@ import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
 import org.simpleinvoice.server.resources.model.InvoiceResponse
-import org.simpleinvoice.server.resources.model.InvoicesResponse
+import org.simpleinvoice.server.resources.model.ListResponse
 import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
 import org.koin.ktor.ext.get as getK
@@ -71,8 +71,8 @@ fun Application.configureInvoicesRouting(
                     ids.split(",").map { UUID.fromString(it.trim()) }
                 }
             val response =
-                InvoicesResponse(
-                    invoices =
+                ListResponse(
+                    data =
                         repository
                             .all(openOnly = openOnly, ids = idList)
                             .map { InvoiceResponse.fromInvoice(it) },

@@ -48,12 +48,10 @@ fi
 if [[ "$1" == "--skip-build" || "$2" == "--skip-build" || "$3" == "--skip-build" ]]; then
   echo "Skipping build"
 elif [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  echo "TJJ: building!"
   docker compose -f compose-build.yaml build --no-cache
 fi
 
 if [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  echo "TJJ: compose-build!"
   COMPOSE_FILE=compose-build.yaml
 else
   COMPOSE_FILE=compose.yaml

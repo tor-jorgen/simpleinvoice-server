@@ -14,9 +14,10 @@ data class ProductResponse(
     val name: String,
     val quantity: Int,
     val price: String,
-    val currency: Currency,
     @SerialName("tax_percentage") val taxPercentage: String,
+    val tax: String,
     @SerialName("total_price") val totalPrice: String,
+    val currency: Currency,
     val tags: List<TagRequestResponse> = emptyList(),
     val inactive: Boolean = false,
 ) {
@@ -28,9 +29,10 @@ data class ProductResponse(
                 name = product.name,
                 quantity = product.quantity,
                 price = product.price.toString(),
-                currency = product.currency,
                 taxPercentage = product.taxPercentage.toString(),
+                tax = product.tax.toString(),
                 totalPrice = product.totalPrice.toString(),
+                currency = product.currency,
                 tags = product.tags.map { TagRequestResponse.fromTag(it) },
                 inactive = product.inactive,
             )

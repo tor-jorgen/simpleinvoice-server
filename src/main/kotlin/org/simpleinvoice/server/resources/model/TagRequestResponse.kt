@@ -5,6 +5,9 @@ import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.model.Tag
 import java.util.UUID
 
+/**
+ * Request and response object for a tag that is a child of another object
+ */
 @Serializable
 data class TagRequestResponse(
     @Serializable(with = UUIDSerializer::class) val id: UUID,

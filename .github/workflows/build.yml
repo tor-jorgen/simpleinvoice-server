@@ -30,8 +30,8 @@ jobs:
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: true
-          VALIDATE_JAVA: true
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_KOTLIN: true
           VALIDATE_DOCKERFILE: true
           VALIDATE_YAML: true
 

@@ -36,6 +36,11 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
+if [[ ! -f .env ]]; then
+    echo "ERROR: You must create .env first, see README.md."
+    exit 1
+fi
+
 create_config_dir
 
 if [[ "$1" == "--no-daemon" || "$2" == "--no-daemon" || "$3" == "--no-daemon" ]]; then

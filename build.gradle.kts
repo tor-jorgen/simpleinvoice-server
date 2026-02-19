@@ -150,6 +150,7 @@ sonar {
     properties {
         property("sonar.organization", "tor-jorgen")
         property("sonar.projectKey", "tor-jorgen_simpleinvoice-server")
+        property("sonar.projectName", "Simple Invoice Server")
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }

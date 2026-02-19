@@ -36,6 +36,11 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
+if [[ ! -f .env ]]; then
+    echo "ERROR: You must create .env first, see README.md."
+    exit 1
+fi
+
 create_config_dir
 
 if [[ "$1" == "--no-daemon" || "$2" == "--no-daemon" || "$3" == "--no-daemon" ]]; then
@@ -48,16 +53,16 @@ fi
 if [[ "$1" == "--skip-build" || "$2" == "--skip-build" || "$3" == "--skip-build" ]]; then
   echo "Skipping build"
 elif [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  docker compose -f compose-all.yaml build --no-cache
+  docker compose -f compose-build.yaml build --no-cache
 fi
 
 if [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  COMPOSE_FILE="-f compose-all.yaml"
+  COMPOSE_FILE=compose-build.yaml
 else
-  COMPOSE_FILE=
+  COMPOSE_FILE=compose.yaml
 fi
 
-docker compose "$COMPOSE_FILE" up $DAEMON
+docker compose -f "$COMPOSE_FILE" up $DAEMON
 
 if [ "$DAEMON" == "-d" ]; then
   echo

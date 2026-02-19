@@ -16,7 +16,7 @@ data class HouseholdRequest(
     val city: String,
     val country: String? = null,
     val persons: List<PersonRequest>,
-    val tags: List<TagRequest> = emptyList(),
+    val tags: List<TagRequestResponse> = emptyList(),
     val inactive: Boolean,
 ) {
     fun toHousehold(id: UUID): Household =
@@ -29,7 +29,7 @@ data class HouseholdRequest(
             city = city,
             country = country,
             persons = persons.map { it.toPerson() },
-            tags = tags.map { it.toTag(it.id!!) },
+            tags = tags.map { it.toTag() },
             inactive = inactive,
         )
 }

@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package org.simpleinvoice.server.resources
 
 import io.ktor.http.HttpStatusCode
@@ -12,6 +14,7 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.SettingsRepository
 import org.simpleinvoice.server.resources.model.SettingsRequest
+import org.simpleinvoice.server.resources.model.SettingsResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -32,15 +35,16 @@ fun Application.configureSettingsRouting(repository: SettingsRepository = getK<S
 //        authenticate(AUTH_SESSION) {
         get<Settings> {
             // Get the config
-            call.respond(status = HttpStatusCode.OK, message = repository.get())
+            val response = SettingsResponse.fromSettings(repository.get())
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         put<Settings.Id> { request ->
             // Update a product
             val settingsRequest = call.receive<SettingsRequest>()
             val config = settingsRequest.toSettings(request.id)
-            repository.update(config)
-            call.respond(status = HttpStatusCode.OK, message = config)
+            val response = SettingsResponse.fromSettings(repository.update(config))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
     }
 //    }

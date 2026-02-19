@@ -14,20 +14,24 @@ class SettingsRepository(
 
     override fun getWithoutTransaction(): Settings = SettingsDAO.all().map { it.toSettings() }[0]
 
-    override suspend fun update(settings: Settings) {
-        suspendTransaction {
-            SettingsDAO.findByIdAndUpdate(id = settings.id) {
-                it.defaultDueDays = settings.defaultDueDays
-                it.lastInvoiceNumber = settings.lastInvoiceNumber
-                it.defaultCurrency = settings.defaultCurrency.name
-                it.defaultEmailSubject = settings.defaultEmailSubject
-                it.defaultEmailText = settings.defaultEmailText
+    override suspend fun update(settings: Settings): Settings {
+        val response =
+            suspendTransaction {
+                SettingsDAO
+                    .findByIdAndUpdate(id = settings.id) {
+                        it.defaultDueDays = settings.defaultDueDays
+                        it.lastInvoiceNumber = settings.lastInvoiceNumber
+                        it.defaultTaxPercentage = settings.defaultTaxPercentage
+                        it.defaultCurrency = settings.defaultCurrency.name
+                        it.defaultEmailSubject = settings.defaultEmailSubject
+                        it.defaultEmailText = settings.defaultEmailText
+                    }?.toSettings()!!
             }
-        }
         eventPublisher.publishEvent(
             id = settings.id,
             item = settings,
             message = "Settings updated",
         )
+        return response
     }
 }

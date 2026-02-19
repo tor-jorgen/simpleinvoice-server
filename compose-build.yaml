@@ -33,9 +33,10 @@ services:
       DB_NAME: ${DB_NAME:-simple_invoice}
       DB_USER: ${DB_USER:-db}
       DB_PASSWORD: ${DB_PASSWORD}
+      FLYWAY_LOCATIONS: filesystem:/migrations
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      ALLOW_HOSTS: ${ALLOW_HOSTS}
+      ALLOW_HOSTS: ${ALLOW_HOSTS:-http://localhost:8000}
       CSRF_TOKEN: ${CSRF_TOKEN}
       SMTP_USER_NAME: ${SMTP_USER_NAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}

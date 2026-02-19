@@ -60,19 +60,10 @@ IntelliJ:
 2. Create either (under Services in IntelliJ):
     1. A Ktor run configuration for `EngineMain`
     2. or a Ktor debug configuration with Main class `org.simpleinvoice.server.ApplicationKt`
-
-3. Run the following command to get the environment variables needed:
-   ```shell
-   ./build.sh --list-env
-
-4. Copy all the environment variables and paste the environment variables in the run configuration:
-    1. Select _Edit environment variables_
-    2. Click the paste button
-
-   You should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points to a
-   directory within the Docker image.
-
-5. Run or debug the configuration
+    3. Set "Environment variables:" to point to the `.env` file i the root directory of the project
+    4. You should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points to a
+       directory within the Docker image.
+    5. Run or debug the configuration
 
 ## Running backend in Docker
 
@@ -91,7 +82,7 @@ This will build both backend and frontend before running.
 Run the following command to run the complete system in Docker:
 
 ```shell
-docker compose -f compose-all.yaml up
+docker compose -f compose-build.yaml up
 ```
 
 ## Database maintenance

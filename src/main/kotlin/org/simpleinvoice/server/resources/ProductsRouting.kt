@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package org.simpleinvoice.server.resources
 
 import io.ktor.http.HttpStatusCode
@@ -14,7 +16,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.ProductRepository
+import org.simpleinvoice.server.resources.model.ListResponse
 import org.simpleinvoice.server.resources.model.ProductRequest
+import org.simpleinvoice.server.resources.model.ProductResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -38,23 +42,25 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
         get<Products> {
             // Get all products
             val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
-            call.respond(status = HttpStatusCode.OK, message = repository.all(activeOnly = activeOnly))
+            val response =
+                ListResponse(data = repository.all(activeOnly = activeOnly).map { ProductResponse.fromProduct(it) })
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         post<Products> {
             // Create a new product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(UUID.randomUUID())
-            repository.upsert(product = product, new = true)
-            call.respond(status = HttpStatusCode.Created, message = product)
+            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
 
         put<Products.Id> { request ->
             // Update a product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(request.id)
-            repository.upsert(product = product, new = false)
-            call.respond(status = HttpStatusCode.OK, message = product)
+            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Products.Id> { request ->

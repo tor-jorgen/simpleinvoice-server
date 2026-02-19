@@ -7,5 +7,5 @@ interface SettingsRepositoryInterface {
 
     fun getWithoutTransaction(): Settings
 
-    suspend fun update(settings: Settings): Unit
+    suspend fun update(settings: Settings): Settings
 }

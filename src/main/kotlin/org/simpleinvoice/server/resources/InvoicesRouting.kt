@@ -21,6 +21,8 @@ import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
+import org.simpleinvoice.server.resources.model.InvoiceResponse
+import org.simpleinvoice.server.resources.model.ListResponse
 import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
 import org.koin.ktor.ext.get as getK
@@ -68,7 +70,14 @@ fun Application.configureInvoicesRouting(
                 } else {
                     ids.split(",").map { UUID.fromString(it.trim()) }
                 }
-            call.respond(status = HttpStatusCode.OK, message = repository.all(openOnly = openOnly, ids = idList))
+            val response =
+                ListResponse(
+                    data =
+                        repository
+                            .all(openOnly = openOnly, ids = idList)
+                            .map { InvoiceResponse.fromInvoice(it) },
+                )
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         get<Invoices.Id.Document> { invoice ->
@@ -92,7 +101,7 @@ fun Application.configureInvoicesRouting(
             val invoiceRequest = call.receive<InvoiceRequest>()
             val household = householdRepository.get(invoiceRequest.householdId)
             val products =
-                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).products.associateBy { it.id }
+                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).associateBy { it.id }
             // Invoice number can be set to anything, as it wil be generated for a new invoice
             val invoice =
                 invoiceRequest.toInvoice(
@@ -101,8 +110,8 @@ fun Application.configureInvoicesRouting(
                     household = household,
                     products = products,
                 )
-            val invoiceDb = invoiceGenerator.generate(invoice = invoice, new = true)
-            call.respond(status = HttpStatusCode.Created, message = invoiceDb)
+            val response = InvoiceResponse.fromInvoice(invoiceGenerator.generate(invoice = invoice, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
 
         post<Invoices.Generate> {
@@ -118,12 +127,12 @@ fun Application.configureInvoicesRouting(
             val invoiceRequest = call.receive<InvoiceRequest>()
             val household = householdRepository.get(invoiceRequest.householdId)
             val products =
-                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).products.associateBy { it.id }
+                productRepository.byIds(invoiceRequest.invoiceLines.map { it.productId }).associateBy { it.id }
             // Invoice number can be set to anything, as it wil not be updated for an existing invoice
             val invoice =
                 invoiceRequest.toInvoice(id = request.id, invoiceNumber = 0, household = household, products = products)
-            val invoiceDb = invoiceGenerator.generate(invoice, new = false)
-            call.respond(status = HttpStatusCode.OK, message = invoiceDb)
+            val response = InvoiceResponse.fromInvoice(invoiceGenerator.generate(invoice, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Invoices.Id> { request ->

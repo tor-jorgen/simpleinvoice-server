@@ -1,94 +1,94 @@
 CREATE TABLE application_user
 (
-    id             UUID         NOT NULL PRIMARY KEY,
-    principal_id   VARCHAR(128) NOT NULL,
-    login_provider VARCHAR(16)  NOT NULL,
-    first_name     VARCHAR(128) NOT NULL,
-    last_name      VARCHAR(128) NOT NULL,
-    email_address  VARCHAR(128) NOT NULL,
-    scopes         VARCHAR(512) NOT NULL,
-    inactive       BOOLEAN      DEFAULT FALSE
+    id             UUID    NOT NULL PRIMARY KEY,
+    principal_id   VARCHAR NOT NULL,
+    login_provider VARCHAR NOT NULL,
+    first_name     VARCHAR NOT NULL,
+    last_name      VARCHAR NOT NULL,
+    email_address  VARCHAR NOT NULL,
+    scopes         VARCHAR NOT NULL,
+    inactive       BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE settings
 (
-    id                    UUID       NOT NULL PRIMARY KEY,
-    default_due_days      INT        NOT NULL,
-    last_invoice_number   INT        NOT NULL,
-    default_currency      VARCHAR(8) NOT NULL,
-    default_email_subject VARCHAR(128),
-    default_email_text    VARCHAR(1024)
+    id                    UUID    NOT NULL PRIMARY KEY,
+    default_due_days      INT     NOT NULL,
+    last_invoice_number   INT     NOT NULL,
+    default_currency      VARCHAR NOT NULL,
+    default_email_subject VARCHAR,
+    default_email_text    VARCHAR
 );
 
 CREATE TABLE household
 (
-    id       UUID         NOT NULL PRIMARY KEY,
-    name     VARCHAR(128),
-    address  VARCHAR(128) NOT NULL,
-    address2 VARCHAR(128),
-    zip_code VARCHAR(16)  NOT NULL,
-    city     VARCHAR(128) NOT NULL,
-    country  VARCHAR(128),
-    inactive BOOLEAN      DEFAULT FALSE
+    id       UUID    NOT NULL PRIMARY KEY,
+    name     VARCHAR,
+    address  VARCHAR NOT NULL,
+    address2 VARCHAR,
+    zip_code VARCHAR NOT NULL,
+    city     VARCHAR NOT NULL,
+    country  VARCHAR,
+    inactive BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE person
 (
-    id            UUID         NOT NULL PRIMARY KEY,
-    household_id  UUID         NOT NULL REFERENCES household (id),
-    first_name    VARCHAR(128) NOT NULL,
-    last_name     VARCHAR(128) NOT NULL,
-    email_address VARCHAR(128),
-    phone_number  VARCHAR(32)
+    id            UUID    NOT NULL PRIMARY KEY,
+    household_id  UUID    NOT NULL REFERENCES household (id),
+    first_name    VARCHAR NOT NULL,
+    last_name     VARCHAR NOT NULL,
+    email_address VARCHAR,
+    phone_number  VARCHAR
 );
 
 CREATE TABLE product
 (
-    id             UUID         NOT NULL PRIMARY KEY,
-    product_code   VARCHAR(64)  NOT NULL,
-    product_name   VARCHAR(128) NOT NULL,
-    quantity       INT          NOT NULL,
-    price          DECIMAL      NOT NULL,
-    currency       VARCHAR(8)   NOT NULL,
-    tax_percentage INT          NOT NULL,
-    total_price    DECIMAL      NOT NULL,
-    inactive       BOOLEAN      DEFAULT FALSE
+    id             UUID    NOT NULL PRIMARY KEY,
+    product_code   VARCHAR NOT NULL,
+    product_name   VARCHAR NOT NULL,
+    quantity       INT     NOT NULL,
+    price          DECIMAL NOT NULL,
+    currency       VARCHAR NOT NULL,
+    tax_percentage INT NOT NULL,
+    total_price    DECIMAL NOT NULL,
+    inactive       BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE invoice
 (
-    id                UUID           NOT NULL PRIMARY KEY,
-    invoice_number    INT            NOT NULL UNIQUE,
-    status            VARCHAR(32)    NOT NULL,
-    generated_date    VARCHAR(64)    NOT NULL,
-    due_date          VARCHAR(64)    NOT NULL,
-    finalized_date    VARCHAR(64),
-    household_id      UUID           NOT NULL REFERENCES household (id),
-    price             DECIMAL        NOT NULL,
-    currency          VARCHAR(8)     NOT NULL,
-    tax               DECIMAL        NOT NULL,
-    total_price       DECIMAL        NOT NULL,
-    invoice_file_path VARCHAR(512)
+    id                UUID       NOT NULL PRIMARY KEY,
+    invoice_number    INT UNIQUE NOT NULL,
+    status            VARCHAR    NOT NULL,
+    generated_date    VARCHAR    NOT NULL,
+    due_date          VARCHAR    NOT NULL,
+    finalized_date    VARCHAR,
+    household_id      UUID       NOT NULL REFERENCES household (id),
+    price             DECIMAL NOT NULL,
+    currency          VARCHAR NOT NULL,
+    tax               DECIMAL NOT NULL,
+    total_price       DECIMAL NOT NULL,
+    invoice_file_path VARCHAR
 );
 
 CREATE TABLE invoice_line
 (
-    id          UUID       NOT NULL PRIMARY KEY,
-    invoice_id  UUID       NOT NULL REFERENCES invoice (id),
-    line_number INT        NOT NULL,
-    product_id  UUID       NOT NULL REFERENCES product (id),
-    quantity    INT        NOT NULL,
-    price       DECIMAL    NOT NULL,
-    currency    VARCHAR(8) NOT NULL,
-    tax         DECIMAL    NOT NULL,
-    total_price DECIMAL    NOT NULL
+    id          UUID    NOT NULL PRIMARY KEY,
+    invoice_id  UUID    NOT NULL REFERENCES invoice (id),
+    line_number INT     NOT NULL,
+    product_id  UUID    NOT NULL REFERENCES product (id),
+    quantity    INT     NOT NULL,
+    price       DECIMAL NOT NULL,
+    currency    VARCHAR NOT NULL,
+    tax         DECIMAL NOT NULL,
+    total_price DECIMAL NOT NULL
 );
 
 CREATE TABLE tag
 (
-    id       UUID         NOT NULL PRIMARY KEY,
-    name     VARCHAR(128) NOT NULL UNIQUE,
-    inactive BOOLEAN      DEFAULT FALSE
+    id       UUID    NOT NULL PRIMARY KEY,
+    name     VARCHAR NOT NULL UNIQUE,
+    inactive BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE household_tags
@@ -114,10 +114,10 @@ CREATE TABLE invoice_tags
 
 CREATE TABLE audit_trail
 (
-    id        UUID        NOT NULL PRIMARY KEY,
-    timestamp VARCHAR(64) NOT NULL,
-    item_id   VARCHAR(64) NOT NULL,
-    item      VARCHAR(128),
-    message   VARCHAR(1024),
-    user_id   VARCHAR(64)
+    id        UUID    NOT NULL PRIMARY KEY,
+    timestamp VARCHAR NOT NULL,
+    item_id   VARCHAR NOT NULL,
+    item      VARCHAR,
+    message   VARCHAR,
+    user_id   VARCHAR
 );

@@ -12,29 +12,23 @@ import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.model.ProductDAO
 import org.simpleinvoice.server.repository.model.ProductTable
 import org.simpleinvoice.server.repository.model.ProductTagsTable
-import org.simpleinvoice.server.resources.model.ProductsResponse
 import java.util.UUID
 
 class ProductRepository(
     val eventPublisher: EventPublisher,
 ) : ProductRepositoryInterface {
-    override suspend fun all(activeOnly: Boolean): ProductsResponse =
+    override suspend fun all(activeOnly: Boolean): List<Product> =
         suspendTransaction {
-            ProductsResponse(
-                products =
-                    if (activeOnly) {
-                        ProductDAO.find { ProductTable.inactive eq false }.map { it.toProduct() }
-                    } else {
-                        ProductDAO.all().map { it.toProduct() }
-                    },
-            )
+            if (activeOnly) {
+                ProductDAO.find { ProductTable.inactive eq false }.map { it.toProduct() }
+            } else {
+                ProductDAO.all().map { it.toProduct() }
+            }
         }
 
-    override suspend fun byIds(ids: List<UUID>): ProductsResponse =
+    override suspend fun byIds(ids: List<UUID>): List<Product> =
         suspendTransaction {
-            ProductsResponse(
-                products = ProductDAO.find { ProductTable.id inList ids }.map { it.toProduct() },
-            )
+            ProductDAO.find { ProductTable.id inList ids }.map { it.toProduct() }
         }
 
     override suspend fun upsert(
@@ -55,6 +49,7 @@ class ProductRepository(
                             it[price] = product.price
                             it[currency] = product.currency.name
                             it[taxPercentage] = product.taxPercentage
+                            it[tax] = product.tax
                             it[totalPrice] = product.totalPrice
                             it[inactive] = product.inactive
                         },
@@ -103,6 +98,7 @@ class ProductRepository(
             price = result[ProductTable.price],
             currency = Currency.valueOf(result[ProductTable.currency]),
             taxPercentage = result[ProductTable.taxPercentage],
+            tax = result[ProductTable.tax],
             totalPrice = result[ProductTable.totalPrice],
             tags = tags,
             inactive = result[ProductTable.inactive],

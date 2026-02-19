@@ -13,7 +13,6 @@ import org.simpleinvoice.server.config.configureSerialization
 import org.simpleinvoice.server.config.handleEvents
 import org.simpleinvoice.server.config.runFlyway
 import org.simpleinvoice.server.resources.configureHouseholdsRouting
-import org.simpleinvoice.server.resources.configureInvoiceLineRouting
 import org.simpleinvoice.server.resources.configureInvoicesRouting
 import org.simpleinvoice.server.resources.configurePersonsRouting
 import org.simpleinvoice.server.resources.configureProductsRouting
@@ -25,6 +24,7 @@ fun main(args: Array<String>) {
         .main(args)
 }
 
+@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.module() {
     configureDependencyInjection()
     handleEvents()
@@ -40,7 +40,6 @@ fun Application.module() {
     configureHouseholdsRouting()
     configurePersonsRouting()
     configureInvoicesRouting()
-    configureInvoiceLineRouting()
     configureProductsRouting()
     configureTagsRouting()
     configureOpenAPI()

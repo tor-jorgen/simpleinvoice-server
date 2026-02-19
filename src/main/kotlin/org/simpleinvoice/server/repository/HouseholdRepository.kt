@@ -14,7 +14,6 @@ import org.simpleinvoice.server.repository.model.HouseholdDAO
 import org.simpleinvoice.server.repository.model.HouseholdTable
 import org.simpleinvoice.server.repository.model.HouseholdTagsTable
 import org.simpleinvoice.server.repository.model.PersonTable
-import org.simpleinvoice.server.resources.model.HouseholdsResponse
 import java.util.UUID
 
 class HouseholdRepository(
@@ -25,18 +24,15 @@ class HouseholdRepository(
     override suspend fun all(
         activeOnly: Boolean,
         ids: List<UUID>,
-    ): HouseholdsResponse =
+    ): List<Household> =
         suspendTransaction {
-            HouseholdsResponse(
-                households =
-                    if (activeOnly) {
-                        HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
-                    } else if (ids.isNotEmpty()) {
-                        HouseholdDAO.find { HouseholdTable.id inList ids }.map { it.toHousehold() }
-                    } else {
-                        HouseholdDAO.all().map { it.toHousehold() }
-                    },
-            )
+            if (activeOnly) {
+                HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
+            } else if (ids.isNotEmpty()) {
+                HouseholdDAO.find { HouseholdTable.id inList ids }.map { it.toHousehold() }
+            } else {
+                HouseholdDAO.all().map { it.toHousehold() }
+            }
         }
 
     override suspend fun get(id: UUID): Household = suspendTransaction { HouseholdDAO[id].toHousehold() }

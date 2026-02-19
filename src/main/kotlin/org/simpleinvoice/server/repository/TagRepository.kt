@@ -8,22 +8,18 @@ import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.model.TagDAO
 import org.simpleinvoice.server.repository.model.TagTable
-import org.simpleinvoice.server.resources.model.TagsResponse
 import java.util.UUID
 
 class TagRepository(
     val eventPublisher: EventPublisher,
 ) : TagRepositoryInterface {
-    override suspend fun all(activeOnly: Boolean): TagsResponse =
+    override suspend fun all(activeOnly: Boolean): List<Tag> =
         suspendTransaction {
-            TagsResponse(
-                tags =
-                    if (activeOnly) {
-                        TagDAO.find { TagTable.inactive eq false }.map { it.toTag() }
-                    } else {
-                        TagDAO.all().map { it.toTag() }
-                    },
-            )
+            if (activeOnly) {
+                TagDAO.find { TagTable.inactive eq false }.map { it.toTag() }
+            } else {
+                TagDAO.all().map { it.toTag() }
+            }
         }
 
     override suspend fun upsert(

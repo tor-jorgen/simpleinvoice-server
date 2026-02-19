@@ -7,12 +7,12 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("de.undercouch.download") version "5.6.0"
-    // The latest version (7.2.0.6526) fails dependency validation
+    // The latest version (7.2.2.6593) fails dependency validation
     id("org.sonarqube") version "7.1.0.6387"
 }
 
 group = "org.simpleinvoice.server"
-version = "1.0.0"
+version = "1.0.1"
 
 application {
     mainClass = "io.ktor.server.cio.EngineMain"
@@ -34,6 +34,7 @@ dependencies {
         implementation("commons-beanutils:commons-beanutils:1.11.0") {
             because("CVE-2025-48734")
         }
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     }
 
     implementation("io.ktor:ktor-client-core")
@@ -73,10 +74,10 @@ dependencies {
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.21"
+    val logbackVersion = "1.5.25"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.8"
+    val postgresVersion = "42.7.9"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
     val ktorOpenApiVersion = "5.4.0"
@@ -101,13 +102,16 @@ dependencies {
     val javaxMailVersion = "2.0.2"
     implementation("com.sun.mail:jakarta.mail:$javaxMailVersion")
 
-    // > 11.12.0 does not work in Docker
+    // > 11.12.0 does not work in a fatjar
     val flywayVersion = "11.12.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+
+    val assertjVersion = "3.27.7"
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
 }
 
 kotlin {
@@ -146,6 +150,7 @@ sonar {
     properties {
         property("sonar.organization", "tor-jorgen")
         property("sonar.projectKey", "tor-jorgen_simpleinvoice-server")
+        property("sonar.projectName", "Simple Invoice Server")
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }

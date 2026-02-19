@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.UserRepository
 import org.simpleinvoice.server.resources.model.UserRequest
+import org.simpleinvoice.server.resources.model.UserResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
@@ -41,8 +42,8 @@ fun Application.configurePersonsRouting(repository: UserRepository = getK<UserRe
             // Add a new user
             val request = call.receive<UserRequest>()
             val user = request.toUser(UUID.randomUUID())
-            repository.upsert(user = user, new = true)
-            call.respond(status = HttpStatusCode.Created, message = user)
+            val response = UserResponse.fromUser(repository.upsert(user = user, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
 
 //        get<Users.Id> { request ->
@@ -54,8 +55,8 @@ fun Application.configurePersonsRouting(repository: UserRepository = getK<UserRe
             // Update a user
             val userRequest = call.receive<UserRequest>()
             val user = userRequest.toUser(request.id)
-            repository.upsert(user = user, new = false)
-            call.respond(status = HttpStatusCode.OK, message = user)
+            val response = UserResponse.fromUser(repository.upsert(user = user, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Users.Id> { request ->

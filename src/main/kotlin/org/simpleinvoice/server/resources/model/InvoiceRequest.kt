@@ -21,19 +21,18 @@ data class InvoiceRequest(
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant? = null,
     @Serializable(with = UUIDSerializer::class) @SerialName("household_id") val householdId: UUID,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
-    val price: Double,
-    val tax: Double,
-    @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
-    val tags: List<TagRequest> = emptyList(),
+    val tags: List<TagRequestResponse> = emptyList(),
 ) {
     fun toInvoice(
         id: UUID,
         invoiceNumber: Int,
         household: Household,
         products: Map<UUID, Product>,
-    ): Invoice =
-        Invoice(
+    ): Invoice {
+        val mappedInvoiceLines = invoiceLines.map { it.toInvoiceLine(products) }
+        val totals = calculateTotals(mappedInvoiceLines)
+        return Invoice(
             id = id,
             invoiceNumber = invoiceNumber,
             status = status,
@@ -41,14 +40,25 @@ data class InvoiceRequest(
             dueDate = dueDate,
             finalizedDate = finalizedDate,
             household = household,
-            invoiceLines = invoiceLines.map { it.toInvoiceLine(products) },
-            price = price,
-            tax = tax,
-            totalPrice = totalPrice,
+            invoiceLines = mappedInvoiceLines,
+            price = totals.price,
+            tax = totals.tax,
+            totalPrice = totals.total,
             currency = currency,
-            tags = tags.map { it.toTag(it.id!!) },
+            tags = tags.map { it.toTag() },
             invoiceFilePath = null,
         )
+    }
+
+    private fun calculateTotals(lines: Collection<InvoiceLine>): Totals {
+        var price = 0.0
+        var tax = 0.0
+        lines.forEach { item ->
+            price += item.price
+            tax += item.tax
+        }
+        return Totals(price = price, tax = tax, total = price + tax)
+    }
 }
 
 @Serializable
@@ -57,21 +67,33 @@ data class InvoiceLineRequest(
     @SerialName("line_number") val lineNumber: Int,
     @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,
     val quantity: Int,
-    val price: Double,
-    val tax: Double,
-    @SerialName("total_price") val totalPrice: Double,
     val currency: Currency,
 ) {
-    fun toInvoiceLine(products: Map<UUID, Product>): InvoiceLine =
-        InvoiceLine(
+    fun toInvoiceLine(products: Map<UUID, Product>): InvoiceLine {
+        val product = products[productId] ?: throw RuntimeException("Product not found")
+        val totals = calculateTotals(product)
+        return InvoiceLine(
             // Create an ID if this is a new invoice line
             id = id ?: UUID.randomUUID(),
             lineNumber = lineNumber,
-            product = products[productId] ?: throw RuntimeException("Product not found"),
+            product = product,
             quantity = quantity,
-            price = price,
-            tax = tax,
-            totalPrice = totalPrice,
+            price = totals.price,
+            tax = totals.tax,
+            totalPrice = totals.total,
             currency = currency,
         )
+    }
+
+    private fun calculateTotals(product: Product): Totals {
+        val price = product.price * quantity
+        val tax = ((product.taxPercentage * product.price) / 100) * quantity
+        return Totals(price = price, tax = tax, total = price + tax)
+    }
 }
+
+private data class Totals(
+    val price: Double,
+    val tax: Double,
+    val total: Double,
+)

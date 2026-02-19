@@ -11,6 +11,7 @@ import java.util.UUID
 object SettingsTable : UUIDTable("settings") {
     val defaultDueDays = integer("default_due_days")
     val lastInvoiceNumber = integer("last_invoice_number")
+    val defaultTaxPercentage = double("default_tax_percentage")
     val defaultCurrency = varchar("default_currency", 5)
     val defaultEmailSubject = varchar("default_email_subject", 1024).nullable()
     val defaultEmailText = varchar("default_email_text", 8192).nullable()
@@ -23,6 +24,7 @@ class SettingsDAO(
 
     var defaultDueDays by SettingsTable.defaultDueDays
     var lastInvoiceNumber by SettingsTable.lastInvoiceNumber
+    var defaultTaxPercentage by SettingsTable.defaultTaxPercentage
     var defaultCurrency by SettingsTable.defaultCurrency
     var defaultEmailSubject by SettingsTable.defaultEmailSubject
     var defaultEmailText by SettingsTable.defaultEmailText
@@ -32,6 +34,7 @@ class SettingsDAO(
             id = id.value,
             defaultDueDays = defaultDueDays,
             lastInvoiceNumber = lastInvoiceNumber,
+            defaultTaxPercentage = defaultTaxPercentage,
             defaultCurrency = Currency.valueOf(defaultCurrency),
             defaultEmailSubject = defaultEmailSubject,
             defaultEmailText = defaultEmailText,

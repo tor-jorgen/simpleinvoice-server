@@ -1,0 +1,7 @@
+###
+GET {{host}}/products
+Accept: application/json
+
+###
+GET {{host}}/products?active_only=true
+Accept: application/json

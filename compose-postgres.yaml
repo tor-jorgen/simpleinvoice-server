@@ -1,0 +1,17 @@
+services:
+  postgres-server:
+    image: postgres
+    restart: no
+    ports:
+      - ${DB_PORT:-5432}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME:-simple_invoice}
+      POSTGRES_USER: ${DB_USER:-db}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+volumes:
+  db-data:
+    name: simple-invoice-db-data

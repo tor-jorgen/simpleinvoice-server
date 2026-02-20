@@ -5,4 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class Currency {
     NOK,
+    EUR,
+    NONE,
 }

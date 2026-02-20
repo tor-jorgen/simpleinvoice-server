@@ -38,25 +38,20 @@ class PersonRepository : PersonRepositoryInterface {
             }
         }
 
-    override suspend fun upsert(
-        person: Person,
-        household: Household,
-    ): UpsertStatement<Long> =
-        suspendTransaction {
-            upsertWithoutTransaction(person = person, household = household)
-        }
-
     override fun upsertWithoutTransaction(
         person: Person,
         household: Household,
-    ): UpsertStatement<Long> =
-        PersonTable.upsert {
-            it[householdId] = household.id
-            it[firstName] = person.firstName
-            it[lastName] = person.lastName
-            it[emailAddress] = person.emailAddress
-            it[phoneNumber] = person.phoneNumber
-        }
+    ): Person =
+        toPerson(
+            PersonTable.upsert {
+                it[id] = person.id
+                it[householdId] = household.id
+                it[firstName] = person.firstName
+                it[lastName] = person.lastName
+                it[emailAddress] = person.emailAddress
+                it[phoneNumber] = person.phoneNumber
+            },
+        )
 
     override suspend fun delete(id: UUID): Boolean =
         suspendTransaction {
@@ -66,4 +61,13 @@ class PersonRepository : PersonRepositoryInterface {
                 }
             rowsDeleted == 1
         }
+
+    private fun toPerson(result: UpsertStatement<Long>): Person =
+        Person(
+            id = result[PersonTable.id].value,
+            firstName = result[PersonTable.firstName],
+            lastName = result[PersonTable.lastName],
+            emailAddress = result[PersonTable.emailAddress],
+            phoneNumber = result[PersonTable.phoneNumber],
+        )
 }

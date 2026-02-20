@@ -5,24 +5,29 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
 import io.ktor.server.application.log
-import io.ktor.server.http.content.resolveResource
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
+import org.simpleinvoice.server.resources.model.ErrorCode
+import org.simpleinvoice.server.resources.model.ErrorResponse
+import org.simpleinvoice.server.resources.model.ErrorsResponse
 
 fun Application.configureErrorHandling() {
     install(StatusPages) {
         statusFileWithLogging(
             code = HttpStatusCode.NotFound,
-            filePath = "template404.html",
             logMessage = "The page does not exist!",
         )
 
         statusFileWithLogging(
             code = HttpStatusCode.Unauthorized,
-            filePath = "template401.html",
             logMessage = "The user is not authorized to access this resource!",
+        )
+
+        statusFileWithLogging(
+            code = HttpStatusCode.BadRequest,
+            logMessage = "A bad request!",
         )
 
         exception<Throwable> { call, cause ->
@@ -31,18 +36,16 @@ fun Application.configureErrorHandling() {
                     logAndRespondWithResourceFile(
                         call = call,
                         status = HttpStatusCode.BadRequest,
-                        filePath = "template400.html",
                         cause = cause,
-                        logMessage = "The request was malformed!"
+                        logMessage = "The request was malformed!",
                     )
                 }
             }
             logAndRespondWithResourceFile(
                 call = call,
                 status = HttpStatusCode.InternalServerError,
-                filePath = "template500.html",
                 cause = cause,
-                logMessage = "Internal server error!"
+                logMessage = "Internal server error!",
             )
         }
     }
@@ -50,14 +53,12 @@ fun Application.configureErrorHandling() {
 
 private fun StatusPagesConfig.statusFileWithLogging(
     code: HttpStatusCode,
-    filePath: String,
     logMessage: String? = null,
 ) {
     status(code) { call, status ->
         logAndRespondWithResourceFile(
             call = call,
             status = status,
-            filePath = filePath,
             logMessage = logMessage,
         )
     }
@@ -66,17 +67,17 @@ private fun StatusPagesConfig.statusFileWithLogging(
 private suspend fun logAndRespondWithResourceFile(
     call: ApplicationCall,
     status: HttpStatusCode,
-    filePath: String,
     cause: Throwable? = null,
     logMessage: String? = null,
 ) {
     call.application.log.error("${status.value}/${status.description}: $logMessage @ ${call.request.local}", cause)
-    val resource = call.resolveResource(filePath)
-    if (resource == null) {
-        call.response.status(status)
-        call.respond("${status.value}/${status.description}: $logMessage")
-    } else {
-        call.response.status(status)
-        call.respond(resource)
-    }
+    call.response.status(status)
+    call.respond(decodeCause(cause))
 }
+
+private fun decodeCause(cause: Throwable?): ErrorsResponse =
+    if (cause?.message?.contains("violates foreign key constraint") == true) {
+        ErrorsResponse(listOf(ErrorResponse(code = ErrorCode.FOREIGN_KEY_VIOLATION)))
+    } else {
+        ErrorsResponse(listOf(ErrorResponse(code = ErrorCode.GENERAL_ERROR)))
+    }

@@ -3,42 +3,44 @@ package org.simpleinvoice.server
 import io.ktor.server.application.Application
 import org.simpleinvoice.server.config.configureAdministration
 import org.simpleinvoice.server.config.configureBasicRouting
-import org.simpleinvoice.server.config.configureCallLogging
 import org.simpleinvoice.server.config.configureDatabases
 import org.simpleinvoice.server.config.configureDependencyInjection
 import org.simpleinvoice.server.config.configureErrorHandling
 import org.simpleinvoice.server.config.configureHTTP
+import org.simpleinvoice.server.config.configureOpenAPI
 import org.simpleinvoice.server.config.configureSecurity
 import org.simpleinvoice.server.config.configureSerialization
+import org.simpleinvoice.server.config.handleEvents
 import org.simpleinvoice.server.config.runFlyway
-import org.simpleinvoice.server.resources.configureConfigsRouting
 import org.simpleinvoice.server.resources.configureHouseholdsRouting
-import org.simpleinvoice.server.resources.configureInvoiceLineRouting
 import org.simpleinvoice.server.resources.configureInvoicesRouting
 import org.simpleinvoice.server.resources.configurePersonsRouting
 import org.simpleinvoice.server.resources.configureProductsRouting
+import org.simpleinvoice.server.resources.configureSettingsRouting
+import org.simpleinvoice.server.resources.configureTagsRouting
 
 fun main(args: Array<String>) {
     io.ktor.server.cio.EngineMain
         .main(args)
 }
 
+@kotlinx.serialization.ExperimentalSerializationApi
 fun Application.module() {
-    configureCallLogging()
+    configureDependencyInjection()
+    handleEvents()
+    configureHTTP()
     runFlyway()
     configureDatabases()
-    configureDependencyInjection()
     configureSecurity()
     configureSerialization()
-    configureHTTP()
     configureErrorHandling()
-//    configureKafka()
     configureAdministration()
     configureBasicRouting()
-    configureConfigsRouting()
+    configureSettingsRouting()
     configureHouseholdsRouting()
     configurePersonsRouting()
     configureInvoicesRouting()
-    configureInvoiceLineRouting()
     configureProductsRouting()
+    configureTagsRouting()
+    configureOpenAPI()
 }

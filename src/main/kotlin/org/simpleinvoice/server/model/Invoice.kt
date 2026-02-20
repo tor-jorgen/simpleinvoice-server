@@ -1,21 +1,27 @@
 package org.simpleinvoice.server.model
 
-import kotlinx.serialization.Serializable
-import org.simpleinvoice.server.common.InstantSerializer
-import org.simpleinvoice.server.common.UUIDSerializer
 import java.time.Instant
 import java.util.UUID
 
-@Serializable
 data class Invoice(
-    @Serializable(with = UUIDSerializer::class) val id: UUID,
+    val id: UUID,
     val invoiceNumber: Int,
     val status: InvoiceStatus,
-    @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
-    @Serializable(with = InstantSerializer::class) val dueDate: Instant,
-    @Serializable(with = InstantSerializer::class) val finalizedDate: Instant?,
-    val household: Household,
-    val invoiceLines: List<InvoiceLine>,
+    val generatedDate: Instant,
+    val dueDate: Instant,
+    val finalizedDate: Instant?,
+    val price: Double,
+    val tax: Double,
     val totalPrice: Double,
     val currency: Currency,
-)
+    val household: Household,
+    val invoiceFilePath: String?,
+    val invoiceLines: List<InvoiceLine>,
+    val tags: List<Tag>,
+) {
+    fun generatedDateAsString(): String = generatedDate.toString().substring(0, 10)
+
+    fun dueDateAsString(): String = dueDate.toString().substring(0, 10)
+
+    fun finalizedDateAsString(): String = finalizedDate?.toString()?.substring(0, 10) ?: ""
+}

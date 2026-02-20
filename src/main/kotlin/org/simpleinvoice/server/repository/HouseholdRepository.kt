@@ -1,44 +1,110 @@
 package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.jetbrains.exposed.sql.upsert
 import org.simpleinvoice.repository.PersonRepository
+import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Household
+import org.simpleinvoice.server.model.Person
+import org.simpleinvoice.server.model.Tag
 import org.simpleinvoice.server.repository.model.HouseholdDAO
 import org.simpleinvoice.server.repository.model.HouseholdTable
+import org.simpleinvoice.server.repository.model.HouseholdTagsTable
 import org.simpleinvoice.server.repository.model.PersonTable
 import java.util.UUID
 
-class HouseholdRepository(private val personRepository: PersonRepository) :
-    HouseholdRepositoryInterface {
-
-    override suspend fun all(): List<Household> =
+class HouseholdRepository(
+    private val personRepository: PersonRepository,
+    private val tagRepository: TagRepository,
+    private val eventPublisher: EventPublisher,
+) : HouseholdRepositoryInterface {
+    override suspend fun all(
+        activeOnly: Boolean,
+        ids: List<UUID>,
+    ): List<Household> =
         suspendTransaction {
-            HouseholdDAO.all().map { it.toHousehold() }
-        }
-
-    override suspend fun upsert(household: Household): UpsertStatement<Long> =
-        suspendTransaction {
-            val upsert =
-                HouseholdTable.upsert {
-                    it[id] = household.id
-                    it[address] = household.address
-                    it[zipCode] = household.zipCode
-                    it[city] = household.city
-                    it[country] = household.country
-                }
-            household.persons.forEach { person ->
-                personRepository.upsertWithoutTransaction(person = person, household = household)
+            if (activeOnly) {
+                HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
+            } else if (ids.isNotEmpty()) {
+                HouseholdDAO.find { HouseholdTable.id inList ids }.map { it.toHousehold() }
+            } else {
+                HouseholdDAO.all().map { it.toHousehold() }
             }
-            upsert
         }
 
-    override suspend fun delete(id: UUID): Boolean =
-        suspendTransaction {
-            PersonTable.deleteWhere { householdId eq id }
-            val rowsDeleted = HouseholdTable.deleteWhere { HouseholdTable.id eq id }
-            rowsDeleted == 1
-        }
+    override suspend fun get(id: UUID): Household = suspendTransaction { HouseholdDAO[id].toHousehold() }
+
+    override suspend fun upsert(
+        household: Household,
+        new: Boolean,
+    ): Household {
+        val persons = mutableListOf<Person>()
+        val response =
+            suspendTransaction {
+                // Delete all persons and tags for the household, since we don't know if any have been removed
+                PersonTable.deleteWhere { householdId eq household.id }
+                HouseholdTagsTable.deleteWhere { householdId eq household.id }
+                val upsert =
+                    HouseholdTable.upsert {
+                        it[id] = household.id
+                        it[name] = household.description()
+                        it[address] = household.address
+                        it[address2] = household.address2
+                        it[zipCode] = household.zipCode
+                        it[city] = household.city
+                        it[country] = household.country
+                        it[inactive] = household.inactive
+                    }
+                household.persons.forEach { person ->
+                    persons.add(personRepository.upsertWithoutTransaction(person = person, household = household))
+                }
+                HouseholdTagsTable.batchUpsert(
+                    data = household.tags,
+                    body = { tag: Tag ->
+                        this[HouseholdTagsTable.householdId] = household.id
+                        this[HouseholdTagsTable.tagId] = tag.id
+                    },
+                )
+                upsert
+            }
+        eventPublisher.publishEvent(
+            id = household.id,
+            item = household,
+            message = if (new) "Household created" else "Household updated",
+        )
+        return toHousehold(statement = response, persons = persons, tags = household.tags)
+    }
+
+    override suspend fun delete(id: UUID): Boolean {
+        val response =
+            suspendTransaction {
+                PersonTable.deleteWhere { householdId eq id }
+                HouseholdTagsTable.deleteWhere { householdId eq id }
+                val rowsDeleted = HouseholdTable.deleteWhere { HouseholdTable.id eq id }
+                rowsDeleted == 1
+            }
+        eventPublisher.publishIdEvent(id = id, message = "Household deleted")
+        return response
+    }
+
+    private fun toHousehold(
+        statement: UpsertStatement<Long>,
+        persons: List<Person>,
+        tags: List<Tag>,
+    ): Household =
+        Household(
+            id = statement[HouseholdTable.id].value,
+            name = statement[HouseholdTable.name],
+            address = statement[HouseholdTable.address],
+            address2 = statement[HouseholdTable.address2],
+            zipCode = statement[HouseholdTable.zipCode],
+            city = statement[HouseholdTable.city],
+            country = statement[HouseholdTable.country],
+            persons = persons,
+            tags = tags,
+            inactive = statement[HouseholdTable.inactive],
+        )
 }

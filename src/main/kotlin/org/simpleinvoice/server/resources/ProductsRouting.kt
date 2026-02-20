@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package org.simpleinvoice.server.resources
 
 import io.ktor.http.HttpStatusCode
@@ -10,15 +12,20 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
 import org.simpleinvoice.server.repository.ProductRepository
+import org.simpleinvoice.server.resources.model.ListResponse
 import org.simpleinvoice.server.resources.model.ProductRequest
+import org.simpleinvoice.server.resources.model.ProductResponse
 import java.util.UUID
 import org.koin.ktor.ext.get as getK
 
 @Resource("/products")
-class Products {
+class Products(
+    @SerialName("active_only") val activeOnly: Boolean = false,
+) {
     @Resource("{id}")
     class Id(
         @Suppress("unused") val parent: Products = Products(),
@@ -30,33 +37,30 @@ class Products {
  * These routes require a valid session, otherwise you have to log in
  */
 fun Application.configureProductsRouting(repository: ProductRepository = getK<ProductRepository>()) {
-
     routing {
 //        authenticate(AUTH_SESSION) {
         get<Products> {
             // Get all products
-            call.respond(status = HttpStatusCode.OK, message = repository.all())
+            val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
+            val response =
+                ListResponse(data = repository.all(activeOnly = activeOnly).map { ProductResponse.fromProduct(it) })
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         post<Products> {
             // Create a new product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(UUID.randomUUID())
-            repository.upsert(product)
-            call.respond(status = HttpStatusCode.Created, message = product)
+            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = true))
+            call.respond(status = HttpStatusCode.Created, message = response)
         }
-
-        //        get<Household.Id> { request ->
-//            // Show a customer with id ${customer.id}
-//            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
-//        }
 
         put<Products.Id> { request ->
             // Update a product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(request.id)
-            repository.upsert(product)
-            call.respond(status = HttpStatusCode.OK, message = product)
+            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = false))
+            call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Products.Id> { request ->

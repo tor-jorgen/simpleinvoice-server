@@ -15,6 +15,7 @@ object UserTable : UUIDTable("application_user") {
     val lastName = varchar("last_name", 255)
     val emailAddress = varchar("email_address", 255)
     val scopes = varchar("scopes", 1024)
+    val inactive = bool("inactive")
 }
 
 class UserDAO(
@@ -28,6 +29,7 @@ class UserDAO(
     var lastName by UserTable.lastName
     var emailAddress by UserTable.emailAddress
     var scopes by UserTable.scopes
+    var inactive by UserTable.inactive
 
     fun toUser(): User =
         User(
@@ -38,5 +40,6 @@ class UserDAO(
             lastName = lastName,
             emailAddress = emailAddress,
             scopes = scopes.split(",").toSet(),
+            inactive = inactive,
         )
 }

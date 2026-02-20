@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Table
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Product
 import java.util.UUID
@@ -14,6 +15,16 @@ object ProductTable : UUIDTable("product") {
     val quantity = integer("quantity")
     val price = double("price")
     val currency = varchar("currency", 255)
+    val taxPercentage = double("tax_percentage")
+    val tax = double("tax")
+    val totalPrice = double("total_price")
+    val inactive = bool("inactive")
+}
+
+object ProductTagsTable : Table("product_tags") {
+    val productId = reference("product_id", ProductTable)
+    val tagId = reference("tag_id", TagTable)
+    override val primaryKey = PrimaryKey(productId, tagId)
 }
 
 class ProductDAO(
@@ -26,6 +37,11 @@ class ProductDAO(
     var quantity by ProductTable.quantity
     var price by ProductTable.price
     var currency by ProductTable.currency
+    var taxPercentage by ProductTable.taxPercentage
+    var tax by ProductTable.tax
+    var totalPrice by ProductTable.totalPrice
+    val tags by TagDAO via ProductTagsTable
+    var inactive by ProductTable.inactive
 
     fun toProduct(): Product =
         Product(
@@ -35,5 +51,10 @@ class ProductDAO(
             quantity = quantity,
             price = price,
             currency = Currency.valueOf(currency),
+            taxPercentage = taxPercentage,
+            tax = tax,
+            totalPrice = totalPrice,
+            tags = tags.map { it.toTag() },
+            inactive = inactive,
         )
 }

@@ -1,4 +1,11 @@
-.gradle
-.idea
-.kotlin
-build
+.env
+.config/
+.documents/
+.gradle/
+.idea/
+.kotlin/
+.libs/
+.postgres/
+build/
+remote-debug-profile/
+sonar.sh

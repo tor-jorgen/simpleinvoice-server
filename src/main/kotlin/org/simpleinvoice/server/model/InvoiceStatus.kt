@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class InvoiceStatus {
-    UNPAID,
+    CREATED,
+    DELIVERED,
     PAID,
     REPLACED,
     CANCELLED,

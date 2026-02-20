@@ -43,7 +43,7 @@ private fun Application.configurePublicRouting() {
         get("/about") {
             call.respondText(
                 "This is a simple application for handling invoices. Please ask the administrator to be " +
-                        "registered as a user if you want to use the application :-)",
+                    "registered as a user if you want to use the application :-)",
                 status = HttpStatusCode.OK,
             )
         }
@@ -54,7 +54,6 @@ private fun Application.configurePublicRouting() {
  * These routes require a valid session, otherwise you have to log in
  */
 private fun Application.configureSessionProtectedRouting() {
-
     routing {
 //        authenticate(AUTH_SESSION) {
         // The home page (/ or /home)

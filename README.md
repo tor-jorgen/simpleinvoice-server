@@ -1,61 +1,266 @@
-# simpleinvoice
+# Simple Invoice Server
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+This is the server for Simple Invoice. It provides an HTTP API used by the Simple Invoice App. The server is built
+using [Ktor](https://ktor.io).
 
-Here are some useful links to get you started:
+In addition to the server, the backend consists of a Postgres database to store the data. The database is created
+automatically when the server is run for the first time.
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need
-  to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+The Simple Invoice App is a web application that uses the server API to manage invoices. The Simple Invoice App can be
+found at [Simple Invoice App](https://github.com/tor-jorgen/simpleinvoice-app).
 
-## Features
+Simple Invoice currently runs on a local computer and only supports a single user. However, both the app and the server
+run in Docker containers, so it is possible to run them on a server (e.g. in the cloud). Anyway, that requires some more
+work, and support for that will hopefully be added in the future.
 
-Here's a list of features included in this project:
+**Note!** Simple Invoice should be run from this project, but the Simple Invoice App needs to be downloaded (cloned)
+first.
 
-| Name                                                                   | Description                                                                        |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [Authentication](https://start.ktor.io/p/auth)                         | Provides extension point for handling the Authorization header                     |
-| [Authentication OAuth](https://start.ktor.io/p/auth-oauth)             | Handles OAuth Bearer authentication scheme                                         |
-| [CSRF](https://start.ktor.io/p/csrf)                                   | Cross-site request forgery mitigation                                              |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Sessions](https://start.ktor.io/p/ktor-sessions)                      | Adds support for persistent sessions through cookies or headers                    |
-| [AutoHeadResponse](https://start.ktor.io/p/auto-head-response)         | Provides automatic responses for HEAD requests                                     |
-| [Request Validation](https://start.ktor.io/p/request-validation)       | Adds validation for incoming requests                                              |
-| [Resources](https://start.ktor.io/p/resources)                         | Provides type-safe routing                                                         |
-| [Status Pages](https://start.ktor.io/p/status-pages)                   | Provides exception handling for routes                                             |
-| [CORS](https://start.ktor.io/p/cors)                                   | Enables Cross-Origin Resource Sharing (CORS)                                       |
-| [HttpsRedirect](https://start.ktor.io/p/https-redirect)                | Redirects insecure HTTP requests to the respective HTTPS endpoint                  |
-| [Jackson](https://start.ktor.io/p/ktor-jackson)                        | Handles JSON serialization using Jackson library                                   |
-| [Kafka](https://start.ktor.io/p/ktor-server-kafka)                     | Adds Kafka support to your application                                             |
-| [Postgres](https://start.ktor.io/p/postgres)                           | Adds Postgres database to your application                                         |
-| [Koin](https://start.ktor.io/p/koin)                                   | Provides dependency injection                                                      |
-| [Shutdown URL](https://start.ktor.io/p/shutdown-url)                   | Enables a URL that shuts down the server when accessed                             |
+The project started as [SimpleInvoice](https://github.com/tor-jorgen/simpleinvoice) - a simple command line tool.
 
-## Building & Running
+## Required software
 
-To build or run the project, use one of the following tasks:
+The following software is needed to build and run Simple Invoice backend and app.
 
-| Task                          | Description                                                          |
-|-------------------------------|----------------------------------------------------------------------|
-| `./gradlew test`              | Run the tests                                                        |
-| `./gradlew build`             | Build everything                                                     |
-| `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the docker image locally                                     |
-| `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local docker image                                     |
+### Linux
 
-If the server starts successfully, you'll see the following output:
+* Docker
 
+### Mac
+
+* Docker (using Homebrew)
+* or, Docker Desktop
+
+The shell scripts are made for Linux (including WSL), but will hopefully work on a Mac as well, possibly with some
+adjustments.
+
+### Windows
+
+* WSL (Windows subsystem for Linux)
+* Docker Desktop
+
+**Note!** For Windows, you need to install Docker Desktop, which again requires Windows Subsystem for Linux (WSL) with
+a Linux distribution. Depending on Windows version, you can use virtualization or Hyper-V instead, but WSL should work
+for all versions.
+
+If you have the required software installed, you can jump to the [Configuration](#Configuration) section.
+
+## Windows Subsystem for Linux
+
+The rest of the document assumes that the operating system is Linux, or that WSL is installed, so that Linux shell
+scripts can be run.
+
+### Installing WSL
+
+Do the following to install WSL:
+
+1. Open `Turn Windows features on or off`
+2. Check `Windows Subsystem for Linux` and follow instructions
+3. Open Powershell and run:
+   ````shell
+   wsl --install -d Ubuntu
+   ````
+   ``Ubuntu`` can be replaced by the preferred Linux distro.
+
+### Command shell
+
+To run commands/scripts from WSL, do the following:
+
+1. Open PowerShell
+2. Click on the down arrow in the menu bar and select the distro you installed to open a terminal
+
+Your drives will be mounted at `/mnt/<drive>`, so to go to the Windows C drive run the following command:
+
+````shell
+cd /mnt/c
+````
+
+## Installing Docker
+
+[Docker](https://www.docker.com/) is used to run the backend (Simple Invoice Server and database) and the web server
+that hosts the Simple Invoice App.
+
+### Ubuntu
+
+Go to the terminal and run the following commands to install Docker on Ubuntu:
+
+```shell
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker <your user name>
+newgrp docker
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+This will add the user `<your user name>` to the group `docker`, so that you can run Docker as that user.
+
+### Windows
+
+Follow instruction on https://docs.docker.com/desktop/setup/install/windows-install/ to Install Docker Desktop.
+
+## Configuration
+
+Before you run Simple Invoice, you need to configure it.
+
+### Server, database, and app configuration
+
+Many of the settings have default values that should work out of the box. You normally don't have to change those. The
+settings without default values have to be set up. The following table shows all the possible properties that must/can
+be configured:
+
+| Property (`application.yaml`) | Environment variable        | Default value                            | Description                                                                                                                                                               |
+|-------------------------------|-----------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ktor.deployment.port`        | `SERVER_PORT`               | `8080`                                   | The port the server runs at                                                                                                                                               |     
+| `db.connectionPrefix`         | `DB_CONNECTION_PRE`         | `jdbc:postgresql://host.docker.internal` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port                                               |     
+| `db.port`                     | `DB_PORT`                   | `5432`                                   | The port the database server runs at                                                                                                                                      |     
+| `db.name`                     | `DB_NAME`                   | `simple_invoice`                         | The name of the database                                                                                                                                                  |
+| `db.user`                     | `DB_USER`                   | `db`                                     | The name of the user used to connect to the database                                                                                                                      |     
+| `db.password`                 | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
+| `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                               |     
+| `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                          |
+| `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost:8000`                  | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
+| `smtp.host`                   | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
+| `smtp.port`                   | `SMTP_PORT`                 | `587`                                    | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       |                                                                                                                                                                                                                                                                          
+| `smtp.tls`                    | `SMTP_TLS`                  | `true`                                   | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice |                                                                                                                                                                                                                                                                          
+| `smtp.usernName`              | `SMTP_USER_NAME`            |                                          | The user name to use when logging on to the SMTP server                                                                                                                   |
+| `smtp.password`               | `SMTP_PASSWORD`             |                                          | The password to use when logging on to the SMTP server                                                                                                                    |
+| `smtp.senderEmail`            | `SMTP_SENDER_EMAIL`         |                                          | The email address to use as the sender of the emails                                                                                                                      |
+| `smtp.senderName`             | `SMTP_SENDER_NAME`          |                                          | The name to use as the sender of the emails                                                                                                                               |
+| `invoice.invoiceDirectory`    | `INVOICE_INVOICE_DIRECTORY` | `/documents`                             | The directory in which to store invoices generated by Simple Invoice (note that this is the directory within the Docker image)                                            |
+| `invoice.invoiceTemplate`     | `INVOICE_INVOICE_TEMPLATE`  | `./config/invoice.odt`                   | The path to the invoice document template (note that this points to a local directory for easy access)                                                                    |
+| `invoice.invoiceName`         | `INVOICE_INVOICE_NAME`      | `_NO_-_HOUSEHOLD_`                       | The name of the generated invoice files. The default will give _<invoice number>-<household name>.<extension>. See below for more information                             |
+|                               | `CFG_PATH`                  | `./config`                               | The path to the directory where the configuration files are stored (note that this points to a local directory for easy access)                                           |     
+|                               | `API_BASE_URL`              | `http://localhost:8080`                  | The URL to the Simple Invoice server API                                                                                                                                  |
+|                               | `APP_BUILD_CONTEXT`         | `../simpleinvoice-app`                   | The path to the simple invoice App, relative to Simple Invoice Server root directory                                                                                      |
+|                               | `APP_BUILD_DOCKERFILE`      | `Dockerfile`                             | The name of the Dockerfile used to build the Simple Invoice App Docker image                                                                                              |
+|                               | `APP_PORT`                  | `8000`                                   | The port that the app will be available at                                                                                                                                |
+
+Note that the address to `localhost` is `host.docker.internal` inside Docker. This is a special DNS name that resolves
+to the internal IP address of the host.
+
+To configure the system, create a `.env` file in the project root directory, and add environment variables to it. This
+file is used when running the system in Docker. Below is a typical `.env` file:
+
+`````properties
+DB_PASSWORD=ef87bd37-cec4-4e5d-93c9-1e5eb56acda3
+SMTP_USER_NAME=harry.kure@gmail.com
+SMTP_PASSWORD=77d38251-2184-4539-b44d-a1fe9d019063
+SMTP_SENDER_EMAIL=harry.kure@gmail.com
+SMTP_SENDER_NAME=Harry Kure
+GOOGLE_CLIENT_ID=XXX
+GOOGLE_CLIENT_SECRET=YYY
+`````
+
+### Invoice template configuration
+
+The invoice template is an Open Document Text (ODT) file used to generate the PDF invoice files. The template
+can be customized to include the information you want in the invoice. The template file should be placed in the
+directory specified by the `INVOICE_INVOICE_TEMPLATE` environment variable (see above for more information).
+See [example-templates](./example-templates) for examples.
+
+The following table shows the name of the placeholders that can be used in an invoice template:
+
+| Placeholder name | Description                                                   |
+|------------------|---------------------------------------------------------------|
+| `_NO_`           | Invoice number                                                |
+| `_DATE_`         | Generated date                                                |
+| `_DUE_DATE_`     | Due data                                                      |
+| `_HOUSEHOLD_`    | Name of household                                             |
+| `_ADDRESS1_`     | Address 1                                                     |
+| `_ADDRESS2_`     | Address 2                                                     |
+| `_ZIP_CITY_`     | Zip code and city                                             |
+| `_COUNTRY_`      | Country                                                       |
+| `_NAME1_`        | First name and lastname of the first person in the household  |
+| `_NAME2_`        | First name and lastname of the second person in the household |
+| `_PRODUCT_`      | Name of the product in the invoice line                       |
+| `_PRICE_`        | Price of the product in the invoice line                      |
+| `_TOTAL_`        | Total price for the invoice                                   |
+
+### Invoice name configuration
+
+The following list shows the placeholders that can be used to create the invoice name:
+
+| Placeholder name | Description                                                  |
+|------------------|--------------------------------------------------------------|
+| `_NO_`           | Invoice number                                               |
+| `_DATE_`         | Generated date                                               |
+| `_DUE_DATE_`     | Due data                                                     |
+| `_HOUSEHOLD_`    | Name of household                                            |
+| `_ADDRESS1_`     | Address 1                                                    |
+| `_NAME1_`        | First name and lastname of the first person in the household |
+| `_PRODUCT1_`     | Name of the product in the first invoice line                |
+
+All spaces will be removed when creating the invoice name. See `INVOICE_INVOICE_NAME` above for more information.
+
+## Running Simple Invoice
+
+All the components will run in Docker.
+
+You need to log in to Github Container Registry before you start:
+
+```shell
+docker login ghcr.io -u <your github username>
 ```
 
-## Credits
+Go to the command shell and run Simple Invoice with the following command:
 
-Thanks to [Robin Selmer](https://github.com/robinselmer) for
-the [Retro Error Page](https://codepen.io/robinselmer/pen/vJjbOZ)
+```shell
+./start.sh
+```
+
+**Note!** It will take some to start it up the first time, since Simple Invoice must be built first. Add `--help` to
+the script to see all the options, and what you can do to speed up the startup the next time.
+
+The Simple Invoice App can be reached at http://localhost:8000.
+
+Go to the command shell and run the following command to stop Simple invoice:
+
+````shell
+./stop.sh
+````
+
+## Maintenance
+
+The database and the invoice document storage will be created by the server the first time Simple Invoice is run, and
+they will be placed in directories determined by Docker.
+
+### Backing up data
+
+It's a good idea to stop Simple Invoice before backing up the data.
+
+Go to the command shell and run the following command to back up the database, invoice documents, and configuration:
+
+```shell
+./backup.sh
+```
+
+Run command with `--help` to get help.
+
+You can back up to the cloud, e.g., Dropbox, by setting up a desktop client or a daemon, and back up to the directory
+used by the client/daemon.
+
+**Note!** The configuration (`.env`) is not backup up, since it contains secrets. This file must be copied manually to a
+safe place.
+
+### Restoring data
+
+This is a manual process, since we don't know which data to restore.
+
+Go to the command shell and run the following commands to find out where docker stores the database and the invoice
+documents:
+
+```shell
+docker volume inspect simple-invoice-db-data
+docker volume inspect simple-invoice-documents
+```
+
+## Licence
+
+[![License: GNU GPL v3.0](https://img.shields.io/badge/License-GNU%20GPL%20v3.0-brightgreen.svg)](https://choosealicense.com/licenses/gpl-3.0/)
+
+## Development
+
+See [Simple Invoice App Development](src/README.md)
+
+## Contact
+
+[dev@johannessenweb.com](mailto:dev@johannessenweb.com)

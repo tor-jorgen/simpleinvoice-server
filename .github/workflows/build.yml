@@ -1,0 +1,200 @@
+name: Build pipeline
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: ${{ github.repository }}
+  DISTRIBUTION: temurin
+  JAVA_VERSION: 24
+
+jobs:
+  lint-code:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Lint code with Super-Linter
+        uses: super-linter/super-linter@v8
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_KOTLIN: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_YAML: true
+
+  lint-workflow:
+    name: Lint Github Workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Actionlint
+        uses: reviewdog/action-actionlint@v1
+        with:
+          reporter: github-check
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  gradle-build-and-test:
+    name: Gradle Build and Test
+    runs-on: ubuntu-latest
+    needs: [ lint-code, lint-workflow ]
+    outputs:
+      build-artifact-name: gradle-artifacts
+      server-version: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ env.DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Make Gradle Wrapper executable
+        run: chmod +x ./gradlew
+      - name: Run Gradle check
+        run: ./gradlew check -x test
+      # Archive the build directory (reports, classes, etc.)
+      - name: Upload Gradle build artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: gradle-artifacts
+          path: build/
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(./gradlew -q printVersion)" >> "$GITHUB_OUTPUT"
+
+  sonar-analysis:
+    name: SonarCloud Analysis
+    needs: [ gradle-build-and-test ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ env.DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Download Gradle build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
+          path: build/
+      # Run Sonar analysis, skipping the build step to reuse existing artifacts
+      - name: Run SonarCloud analysis
+        run: ./gradlew sonar -x compileJava -x test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  scan-image:
+    name: Scan image
+    needs: [ sonar-analysis ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
+      - name: Scan image for vulnerabilities with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          version: latest
+          image-ref: ghcr.io/${{ env.IMAGE_NAME }}:latest
+          # Må vente til repoet er public
+          #          format: sarif
+          #          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: 1
+      # Må vente til repoet er public
+      #      - name: Upload Trivy scan results to GitHub Security tab
+      #        if: always()
+      #        uses: github/codeql-action/upload-sarif@v4
+      #        with:
+      #          sarif_file: trivy-results.sarif
+
+  # Only run this job if the previous step succeeded AND the event was a push/merge to the main branch
+  publish-image:
+    name: Publish image
+    needs: [ gradle-build-and-test, scan-image ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+      actions: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest,ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }},ghcr.io/${{ env.IMAGE_NAME }}:${{ needs.gradle-build-and-test.outputs.server-version }}
+
+  # Only run this job if the previous step succeeded AND the event was a push/merge to the main branch
+  create-release:
+    name: Create GitHub Release
+    needs: [ gradle-build-and-test, publish-image ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Set Release Tag
+        id: tag_variable
+        run: |
+          VERSION="${{ needs.gradle-build-and-test.outputs.server-version }}"
+          TAG_NAME="v$VERSION"
+          echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_OUTPUT"
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_variable.outputs.TAG_NAME }}
+          name: Release ${{ steps.tag_variable.outputs.TAG_NAME }}
+          body: "Release for version ${{ needs.gradle-build-and-test.outputs.server-version }}"
+          draft: false
+          prerelease: false

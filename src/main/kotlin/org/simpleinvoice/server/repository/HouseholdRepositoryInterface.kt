@@ -1,17 +1,20 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.statements.UpsertStatement
 import org.simpleinvoice.server.model.Household
 import java.util.UUID
 
 interface HouseholdRepositoryInterface {
-    suspend fun all(): List<Household>
+    suspend fun all(
+        activeOnly: Boolean,
+        ids: List<UUID>,
+    ): List<Household>
 
-//    suspend fun create(household: Household): Unit
+    suspend fun get(id: UUID): Household
 
-//    suspend fun update(household: Household): Unit
-
-    suspend fun upsert(household: Household): UpsertStatement<Long>
+    suspend fun upsert(
+        household: Household,
+        new: Boolean,
+    ): Household
 
     /**
      * Delete a household with id [id]. All persons in the household will also be deleted

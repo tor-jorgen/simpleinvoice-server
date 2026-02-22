@@ -1,3 +1,7 @@
+## 1.0.2 (2026-02-22)
+
+* Removed rest of CSRF
+
 ## 1.0.1 (2026-02-18)
 
 * Possible to store default tax percentage and default currency

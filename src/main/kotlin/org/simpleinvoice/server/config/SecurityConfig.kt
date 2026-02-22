@@ -4,7 +4,6 @@ class SecurityConfig(
     val clientId: String,
     val clientSecret: String,
     val allowHosts: List<String>,
-    val csrfToken: String,
 ) {
     fun allowHostsAndSchemas(): Map<String, MutableList<String>> {
         val hosts = mutableMapOf<String, MutableList<String>>()

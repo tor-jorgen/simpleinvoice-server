@@ -195,6 +195,6 @@ jobs:
         with:
           tag_name: ${{ steps.tag_variable.outputs.TAG_NAME }}
           name: Release ${{ steps.tag_variable.outputs.TAG_NAME }}
-          body: "Release for version ${{ needs.gradle-build-and-test.outputs.server-version }}"
+          body: See [RELEASE-NOTES.md](RELEASE-NOTES.md)
           draft: false
           prerelease: false

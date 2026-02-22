@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "org.simpleinvoice.server"
-version = "1.0.1"
+version = "1.0.2"
 
 application {
     mainClass = "io.ktor.server.cio.EngineMain"
@@ -43,7 +43,6 @@ dependencies {
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-server-cio")
-    implementation("io.ktor:ktor-server-csrf")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-server-sessions")
     implementation("io.ktor:ktor-server-auto-head-response")

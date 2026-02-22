@@ -11,8 +11,6 @@ import io.ktor.server.request.uri
 import io.ktor.util.toMap
 import org.koin.ktor.ext.get as getK
 
-private const val CSRF_HEADER = "X-SIMPLEINVOICE-CSRF-TOKEN"
-
 fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
     install(CORS) {
         config.allowHostsAndSchemas().forEach { (host, schemes) ->
@@ -20,7 +18,6 @@ fun Application.configureHTTP(config: SecurityConfig = getK<SecurityConfig>()) {
         }
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
-        allowHeader(CSRF_HEADER)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Put)

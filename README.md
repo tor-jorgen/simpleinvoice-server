@@ -117,7 +117,7 @@ be configured:
 | `db.password`                 | `DB_PASSWORD`               |                                          | The password for the user used to connect to the database                                                                                                                 |
 | `security.clientId`           | `GOOGLE_CLIENT_ID`          |                                          | OAuth 2 client ID (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                               |     
 | `security.clientSecret`       | `GOOGLE_CLIENT_SECRET`      |                                          | OAuth 2 client secret  (not yet in use, and it does not have to be set, but you will avoid a warning if you set it to any value)                                          |
-| `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost:8000`                  | URL for hosts allowed to call the server. These are used for both CORS and CSRF configuration                                                                             |
+| `security.allowHosts`         | `ALLOW_HOSTS`               | `http://localhost:8000`                  | URL for hosts allowed to call the server. These are used for CORS configuration                                                                                           |
 | `smtp.host`                   | `SMTP_HOST`                 | `smtp.gmail.com`                         | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               |
 | `smtp.port`                   | `SMTP_PORT`                 | `587`                                    | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       |                                                                                                                                                                                                                                                                          
 | `smtp.tls`                    | `SMTP_TLS`                  | `true`                                   | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice |                                                                                                                                                                                                                                                                          
@@ -259,7 +259,9 @@ docker volume inspect simple-invoice-documents
 
 ## Development
 
-See [Simple Invoice App Development](src/README.md)
+See [Simple Invoice Server Development](src/README.md).
+
+Developed with [IntelliJ IDEA](https://www.jetbrains.com/idea/).
 
 ## Contact
 

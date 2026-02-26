@@ -5,12 +5,12 @@
 The following software is needed to develop and debug the backend (in addition to the software needed to run the
 server):
 
-* Java 21
+* Java 25
 * IntelliJ IDEA (or any other IDE that supports Kotlin and Ktor)
 
 ## Installing Java
 
-Java 21 is the latest LTS version supported by Kotlin.
+Java 25 is the latest LTS version supported by Kotlin.
 
 ### Linux
 
@@ -20,8 +20,8 @@ Run the following commands to install Java with SdkMan:
 sudo apt install zip
 sudo apt install unzip
 curl -s "https://get.sdkman.io" | bash
-# Use latest 21 version
-sdk install java 21.0.9-amzn
+# Use latest 25 version, e.g.:
+sdk install java 25.0.2-amzn
 ````
 
 SdkMan makes it easy to maintain more than one version of Java.
@@ -57,13 +57,16 @@ IntelliJ:
    docker compose -f compose-postgres.yaml up
     ```
 
-2. Create either (under Services in IntelliJ):
-    1. A Ktor run configuration for `EngineMain`
-    2. or a Ktor debug configuration with Main class `org.simpleinvoice.server.ApplicationKt`
-    3. Set "Environment variables:" to point to the `.env` file i the root directory of the project
-    4. You should also set `INVOICE_INVOICE_DIRECTORY` to e.g. `./.documents`, since the default values points to a
-       directory within the Docker image.
-    5. Run or debug the configuration
+2. Create the following run configuration (under Services in IntelliJ):
+    1. Ktor with Main class `org.simpleinvoice.server.ApplicationKt`
+    2. Set the following environment variables:
+       ```
+       ALLOW_HOSTS=http://localhost:5173
+       INVOICE_DIRECTORY=./.documents
+       CONFIG_DIRECTORY=./.config
+       ``` 
+       `INVOICE_DIRECTORY` and `CONFIG_DIRECTORY` can be set to any directory accessible by Ktor
+3. Run or debug the configuration
 
 ## Running backend in Docker
 
@@ -141,6 +144,30 @@ Sometimes, metadata is missing, and artifacts must be added to the `<trusted-art
 
 Ideally checksums should be updated manually, but if you do it automatically, as above, be sure you validate the updated
 `verification-metadata.xml` before you commit it.
+
+If you get a problem with the verification, you can try to delete `gradle/verification-*.*`, and generate again, but
+you should then add the following lines to `verification-metadata.xml` below `<verify-signatures>`:
+
+```xml
+
+<verification-metadata>
+    <!-- ... -->
+    <verify-signatures>true</verify-signatures>
+    <keyring-format>armored</keyring-format>
+    <key-servers enabled="false"/>
+    <trusted-artifacts>
+        <trust file=".*-sources[.]jar" regex="true"/>
+        <trust file="gradle-[0-9.]+-src.zip" regex="true"/>
+    </trusted-artifacts>
+    <!-- ... -->
+</verification-metadata>
+```
+
+| Setting                                    | Description                                                                                                     |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `<keyring-format>armored</keyring-format>` | Write keys to plain text (`.keys`) - ASCII-armored format                                                       |
+| `<key-servers enabled="false"/>`           | Only use the local key file (`.keys`)                                                                           |
+| `<trusted-artifacts>`                      | Artifacts to trust. In this case Gradle itself and downloded sources. IntelliJ will fail unless these are added |
 
 ## Lint Github workflows
 

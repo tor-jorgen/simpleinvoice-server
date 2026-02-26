@@ -11,19 +11,28 @@ services:
       POSTGRES_USER: ${DB_USER:-db}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
+    stop_grace_period: 30s
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-db} -d ${DB_NAME:-simple_invoice}" ]
       interval: 1s
       timeout: 5s
       retries: 5
 
+  server-init:
+    image: alpine
+    volumes:
+      - documents:/documents
+    command: chown -R 1000:1000 /documents
+    depends_on:
+      - postgres-server
+
   server:
-    image: ghcr.io/tor-jorgen/simpleinvoice-server:1.0.2
+    image: ghcr.io/tor-jorgen/simpleinvoice-server:1.1.0
     restart: no
     ports:
       - ${SERVER_PORT:-8080}:${SERVER_PORT:-8080}
     volumes:
-      - ${CFG_PATH:-./.config}:/config
+      - ${LOCAL_CONFIG_DIRECTORY:-./.config}:/config
       - documents:/documents
     environment:
       SERVER_PORT: ${SERVER_PORT:-8080}
@@ -41,17 +50,19 @@ services:
       SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL}
       SMTP_SENDER_NAME: ${SMTP_SENDER_NAME}
     depends_on:
+      server-init:
+        condition: service_completed_successfully
       postgres-server:
         condition: service_healthy
 
   app:
-    image: ghcr.io/tor-jorgen/simpleinvoice-app:1.0.1
+    image: ghcr.io/tor-jorgen/simpleinvoice-app:1.1.0
     restart: no
     ports:
       - ${APP_PORT:-8000}:${APP_PORT:-8000}
     depends_on:
-      postgres-server:
-        condition: service_healthy
+      server:
+        condition: service_completed_successfully
 
 volumes:
   db-data:

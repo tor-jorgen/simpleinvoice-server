@@ -5,17 +5,16 @@ plugins {
     kotlin("jvm")
     id("io.ktor.plugin")
     kotlin("plugin.serialization")
-    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
-    id("de.undercouch.download") version "5.6.0"
-    // The latest version (7.2.2.6593) fails dependency validation
-    id("org.sonarqube") version "7.1.0.6387"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    id("de.undercouch.download") version "5.7.0"
+    id("org.sonarqube") version "7.2.3.7755"
 }
 
 group = "org.simpleinvoice.server"
-version = "1.0.2"
+version = "1.1.0"
 
 application {
-    mainClass = "io.ktor.server.cio.EngineMain"
+    mainClass = "org.simpleinvoice.server.ApplicationKt"
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -29,12 +28,10 @@ val odt2pdfVersion = "1.0.0"
 val odt2pdfJar = "./.libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
-
     constraints {
         implementation("commons-beanutils:commons-beanutils:1.11.0") {
             because("CVE-2025-48734")
         }
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     }
 
     implementation("io.ktor:ktor-client-core")
@@ -56,9 +53,10 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging")
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-//    implementation("io.ktor:ktor-serialization-jackson")
+    implementation("io.ktor:ktor-server-routing-openapi")
+    implementation("io.ktor:ktor-server-openapi")
 
-    val exposedVersion = "0.61.0"
+    val exposedVersion = "1.2.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -66,23 +64,22 @@ dependencies {
     val h2Version = "2.4.240"
     implementation("com.h2database:h2:$h2Version")
 
-    val koinVersion = "4.1.1"
+    val koinVersion = "4.2.1"
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
     val slf4jVersion = "2.0.17"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.25"
+    val logbackVersion = "1.5.32"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.9"
+    val postgresVersion = "42.7.10"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val ktorOpenApiVersion = "5.4.0"
-    implementation("io.github.smiley4:ktor-openapi:$ktorOpenApiVersion")
-
-    val jacksonVersion = "3.0.3"
+    val jacksonAnnotationsVersion = "2.21"
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
+    val jacksonVersion = "3.1.2"
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -98,19 +95,28 @@ dependencies {
     implementation(files(layout.projectDirectory.file(odt2pdfJar)))
 
     // Email
-    val javaxMailVersion = "2.0.2"
-    implementation("com.sun.mail:jakarta.mail:$javaxMailVersion")
+    val jakartaMailVersion = "2.1.5"
+    implementation("jakarta.mail:jakarta.mail-api:$jakartaMailVersion")
 
-    // > 11.12.0 does not work in a fatjar
-    val flywayVersion = "11.12.0"
+    val angusMailVersion = "2.0.5"
+    implementation("org.eclipse.angus:angus-mail:$angusMailVersion")
+
+    val flywayVersion = "12.3.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+
+    // Test
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
     val assertjVersion = "3.27.7"
     testImplementation("org.assertj:assertj-core:$assertjVersion")
+
+    val mockitoVersion = "5.23.0"
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    val mockitoKotlinVersion = "6.3.0"
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 }
 
 kotlin {
@@ -123,10 +129,17 @@ ktor {
     docker {
         localImageName.set("simpleinvoice-server")
     }
+    openApi {
+        enabled = true
+        codeInferenceEnabled = true
+        onlyCommented = false
+    }
 }
 
 // Download library from GitHub
 tasks.register<de.undercouch.gradle.tasks.download.Download>("downloadOdt2pdf") {
+    group = "build"
+    description = "Downloads the odt2pdf library from GitHub releases."
     src("https://github.com/tor-jorgen/odt2pdf/releases/download/v$odt2pdfVersion/odt2pdf-$odt2pdfVersion-all.jar")
     dest(layout.projectDirectory.file(odt2pdfJar))
     overwrite(false)
@@ -143,6 +156,15 @@ tasks.register("printVersion") {
 
 tasks.named("compileKotlin") {
     dependsOn("downloadOdt2pdf")
+}
+
+tasks.shadowJar {
+    isZip64 = true
+    mergeServiceFiles()
+    filesMatching("META-INF/services/**") {
+        // Needed by Flyway, otherwise the files will overwrite each other
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }
 
 sonar {

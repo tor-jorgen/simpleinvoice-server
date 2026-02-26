@@ -1,7 +1,6 @@
 package org.simpleinvoice.server.repository
 
-import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.core.Transaction
+import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T = newSuspendedTransaction(Dispatchers.IO, statement = block)
+suspend fun <T> executeInTransaction(block: Transaction.() -> T): T = suspendTransaction { block() }

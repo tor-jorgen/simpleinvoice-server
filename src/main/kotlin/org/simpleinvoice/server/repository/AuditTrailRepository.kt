@@ -6,12 +6,12 @@ import java.util.UUID
 
 class AuditTrailRepository : AuditTrailRepositoryInterface {
     override suspend fun all(id: UUID): List<AuditTrail> =
-        suspendTransaction {
+        executeInTransaction {
             AuditTrailDAO.all().map { it.toAuditTrail() }
         }
 
     override suspend fun add(auditTrail: AuditTrail): Unit =
-        suspendTransaction {
+        executeInTransaction {
             AuditTrailDAO.new {
                 timestamp = auditTrail.timestamp.toString()
                 itemId = auditTrail.itemId.toString()

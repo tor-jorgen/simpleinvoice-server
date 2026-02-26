@@ -1,3 +1,13 @@
+## 1.1.0 (2026-05-14)
+
+* Calculate tax and totals on the server
+* Added restore functionality (`restore.sh`)
+* Updated backup (use tar instead of zip)
+* Added graceful shutdown of containers
+* Fixed database migration script
+* Upgraded to Java 25, and latest Kotlin, Gradle, and libraries
+* Updated configuration parameters
+
 ## 1.0.2 (2026-02-22)
 
 * Removed rest of CSRF
@@ -7,11 +17,13 @@
 * Possible to store default tax percentage and default currency
 * Calculate on server instead of using calculations from frontend
 * Possible to run locally with images from GitHub or built locally
-* Access Flyway files by filesystem instead of by classpath, as by classpath did not work in a fatjar for Flyway versions > 11.12.0
+* Access Flyway files by filesystem instead of by classpath, as by classpath did not work in a fatjar for Flyway
+  versions > 11.12.0
 * Updated database with length of VARCHARs
 * Created separate response classes for API
 * Use a common response format
-* Removed CSRF protection as it is not in use now and will probably not be needed in the future (as we probably wil go for token based authentication)
+* Removed CSRF protection as it is not in use now and will probably not be needed in the future (as we probably wil go
+  for token based authentication)
 * Added scripts for the HTTP Client
 * Upgraded libraries and frameworks
 * Added more tests

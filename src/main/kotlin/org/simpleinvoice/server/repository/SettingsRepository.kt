@@ -8,7 +8,7 @@ class SettingsRepository(
     val eventPublisher: EventPublisher,
 ) : SettingsRepositoryInterface {
     override suspend fun get(): Settings =
-        suspendTransaction {
+        executeInTransaction {
             getWithoutTransaction()
         }
 
@@ -16,7 +16,7 @@ class SettingsRepository(
 
     override suspend fun update(settings: Settings): Settings {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 SettingsDAO
                     .findByIdAndUpdate(id = settings.id) {
                         it.defaultDueDays = settings.defaultDueDays

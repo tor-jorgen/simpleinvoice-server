@@ -2,7 +2,7 @@ package org.simpleinvoice.server.resources.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
+import org.simpleinvoice.server.model.Invoice
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -15,9 +15,9 @@ data class GenerateInvoicesResponse
     ) {
         companion object {
             @OptIn(ExperimentalUuidApi::class)
-            fun fromUUIDs(ids: List<UUID>): GenerateInvoicesResponse =
+            fun fromInvoices(invoices: List<Invoice>): GenerateInvoicesResponse =
                 GenerateInvoicesResponse(
-                    invoiceIds = ids.map { Uuid.parse(it.toString()) },
+                    invoiceIds = invoices.map { Uuid.parse(it.id.toString()) },
                 )
         }
     }

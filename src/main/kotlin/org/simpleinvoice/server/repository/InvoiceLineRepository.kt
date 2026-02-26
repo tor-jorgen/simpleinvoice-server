@@ -1,9 +1,9 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
 import org.simpleinvoice.server.repository.model.InvoiceLineDAO
@@ -12,7 +12,7 @@ import java.util.UUID
 
 class InvoiceLineRepository : InvoiceLineRepositoryInterface {
     override suspend fun all(): List<InvoiceLine> =
-        suspendTransaction {
+        executeInTransaction {
             InvoiceLineDAO.all().map { it.toInvoiceLine() }
         }
 
@@ -32,7 +32,7 @@ class InvoiceLineRepository : InvoiceLineRepositoryInterface {
         }
 
     override suspend fun delete(id: UUID): Boolean =
-        suspendTransaction {
+        executeInTransaction {
             val rowsDeleted =
                 InvoiceLineTable.deleteWhere {
                     InvoiceLineTable.id eq id

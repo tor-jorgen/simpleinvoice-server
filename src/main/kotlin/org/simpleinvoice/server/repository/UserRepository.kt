@@ -1,9 +1,9 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.LoginProvider
 import org.simpleinvoice.server.model.User
@@ -15,7 +15,7 @@ class UserRepository(
     val eventPublisher: EventPublisher,
 ) : UserRepositoryInterface {
     override suspend fun all(): List<User> =
-        suspendTransaction {
+        executeInTransaction {
             UserDAO.all().map { it.toUser() }
         }
 
@@ -24,7 +24,7 @@ class UserRepository(
         new: Boolean,
     ): User {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 toUser(
                     UserTable.upsert {
                         it[id] = user.id
@@ -48,7 +48,7 @@ class UserRepository(
 
     override suspend fun delete(id: UUID): Boolean {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 val rowsDeleted =
                     UserTable.deleteWhere {
                         UserTable.id eq id

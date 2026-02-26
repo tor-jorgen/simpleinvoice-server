@@ -1,5 +1,5 @@
 # Stage 1: Build server
-FROM gradle:9.2.1-jdk21-corretto AS builder
+FROM gradle:9.4.1-jdk25-corretto AS builder
 WORKDIR /server
 COPY build.gradle.kts gradle.properties settings.gradle.kts gradlew ./
 COPY gradle ./gradle
@@ -7,7 +7,7 @@ COPY src ./src
 RUN ./gradlew clean build -x test --no-daemon
 
 # Stage 2: Runtime
-FROM amazoncorretto:21
+FROM amazoncorretto:25
 ARG USER=service
 ARG GROUP=service
 
@@ -23,7 +23,7 @@ RUN \
     yum clean all
 
 USER $USER
-COPY --from=builder --chown=$USER:$GROUP /server/build/libs/*-all.jar service.jar
-COPY --chown=$USER:$GROUP src/main/resources/db/migration /migrations
+COPY --from=builder --chmod=755 /server/build/libs/*-all.jar service.jar
+COPY --chmod=755 src/main/resources/db/migration /migrations
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "service.jar"]

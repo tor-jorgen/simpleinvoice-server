@@ -1,8 +1,9 @@
 package org.simpleinvoice.server.invoice
 
 data class InvoiceConfig(
-    val invoiceDirectory: String,
-    val configDirectory: String,
+//    val documentsDirectory: String,
+    val invoiceBucketName: String,
+    val configBucketName: String,
     val invoiceTemplateName: String,
     val invoiceName: String,
 )

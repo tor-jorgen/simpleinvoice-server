@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mode -e
+set -e
 
 echo "Gracefully shutting down Simple Invoice..."
 

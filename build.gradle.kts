@@ -1,5 +1,6 @@
 val kotlinVersion: String by project
 val javaLanguageVersion: String by project
+val ktorVersion: String by project
 
 plugins {
     kotlin("jvm")
@@ -7,7 +8,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("de.undercouch.download") version "5.7.0"
-    id("org.sonarqube") version "7.2.3.7755"
+    id("org.sonarqube") version "7.3.0.8198"
 }
 
 group = "org.simpleinvoice.server"
@@ -22,9 +23,10 @@ application {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
-val odt2pdfVersion = "1.0.0"
+val odt2pdfVersion = "1.1.0"
 val odt2pdfJar = "./.libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
@@ -56,7 +58,7 @@ dependencies {
     implementation("io.ktor:ktor-server-routing-openapi")
     implementation("io.ktor:ktor-server-openapi")
 
-    val exposedVersion = "1.2.0"
+    val exposedVersion = "1.3.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -68,24 +70,28 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
-    val slf4jVersion = "2.0.17"
+    val slf4jVersion = "2.0.18"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
     val logbackVersion = "1.5.32"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.10"
+    val postgresVersion = "42.7.11"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
     val jacksonAnnotationsVersion = "2.21"
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
-    val jacksonVersion = "3.1.2"
+
+    val jacksonVersion = "3.1.3"
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
+    val s3Version = "1.6.81"
+    implementation("aws.sdk.kotlin:s3:$s3Version")
+
     // Document conversion
-    // `odfdom-java` has vulnerabilities, but this is the last version
+    // `odfdom-java` has vulnerabilities, but this is the latest version
     val odfDomVersion = "0.12.0"
     implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
 
@@ -101,13 +107,13 @@ dependencies {
     val angusMailVersion = "2.0.5"
     implementation("org.eclipse.angus:angus-mail:$angusMailVersion")
 
-    val flywayVersion = "12.3.0"
+    val flywayVersion = "12.6.2"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     // Test
 
-    testImplementation("io.ktor:ktor-server-test-host")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
     val assertjVersion = "3.27.7"
@@ -115,6 +121,7 @@ dependencies {
 
     val mockitoVersion = "5.23.0"
     testImplementation("org.mockito:mockito-core:$mockitoVersion")
+
     val mockitoKotlinVersion = "6.3.0"
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 }

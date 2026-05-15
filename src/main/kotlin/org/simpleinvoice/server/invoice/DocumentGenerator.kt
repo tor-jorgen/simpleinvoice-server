@@ -3,11 +3,12 @@ package org.simpleinvoice.server.invoice
 import org.odftoolkit.simple.TextDocument
 import org.odt2pdf.PDFConverter
 import org.simpleinvoice.server.model.Invoice
+import org.simpleinvoice.server.util.s3.StorageClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Node
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 private const val INVOICE_NO = "_NO_"
 private const val INVOICE_DATE = "_DATE_"
@@ -27,23 +28,22 @@ private const val TOTAL_PRICE = "_TOTAL_"
 class DocumentGenerator(
     private val config: InvoiceConfig,
     private val pdfConverter: PDFConverter,
+    private val storageClient: StorageClient,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    fun createDocuments(invoice: Invoice): Triple<String, String, String> {
-        File(config.invoiceDirectory).mkdirs()
-        val template = "${config.configDirectory}/${config.invoiceTemplateName}"
-        TextDocument.loadDocument(File(template)).use { document ->
+    suspend fun createDocuments(invoice: Invoice): Pair<String, String> {
+        val bytes = storageClient.download(bucketName = config.configBucketName, keyName = config.invoiceTemplateName)
+        TextDocument.loadDocument(ByteArrayInputStream(bytes)).use { document ->
             val recipients = RecipientList.fromHouseHold(invoice.household)
             traverse(node = document.contentRoot, invoice = invoice, recipients = recipients)
             traverse(node = document.header.odfElement, invoice = invoice, recipients = recipients)
             traverse(node = document.footer.odfElement, invoice = invoice, recipients = recipients)
             val invoiceName = getInvoiceName(invoice = invoice, recipients = recipients)
-            val odtPath = "${config.invoiceDirectory}/$invoiceName.odt"
-            val pdfPath = odtPath.replace("odt", "pdf")
+            val pdfPath = "$invoiceName.pdf"
             generatePdf(document, pdfPath)
             logger.info("Invoice {} generated for {}", pdfPath, recipients[0].addressLine1)
-            return Triple(invoiceName, odtPath, pdfPath)
+            return Pair(invoiceName, pdfPath)
         }
     }
 
@@ -70,13 +70,18 @@ class DocumentGenerator(
         return invoiceName.replace(" ", "")
     }
 
-    private fun generatePdf(
+    private suspend fun generatePdf(
         document: TextDocument,
         outPath: String,
     ) {
-        val out = ByteArrayOutputStream()
-        document.save(out)
-        pdfConverter.fromOdf(out.toByteArray(), outPath)
+        val odfStream = ByteArrayOutputStream()
+        document.save(odfStream)
+        val pdfStream = pdfConverter.fromOdf(odfStream.toByteArray())
+        storageClient.upload(
+            bucketName = config.invoiceBucketName,
+            keyName = outPath,
+            fileBytes = pdfStream.toByteArray(),
+        )
     }
 
     private fun traverse(

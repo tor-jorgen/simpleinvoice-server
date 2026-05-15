@@ -83,7 +83,7 @@ class SmtpClient(
             return true
         } catch (e: MessagingException) {
             val emails = listOfNotNull(toEmail1, toEmail2).joinToString(separator = ", ")
-            logger.error("Could not send e-mail to $emails", e)
+            logger.error("Could not send e-mail to {}", emails, e)
             return false
         }
     }

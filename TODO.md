@@ -13,8 +13,8 @@
 9. ~~Use localized dates on the invoice document~~
 10. ~~Possible to configure CORS og CSRF~~
 11. ~~Add a build stage to Dockerfile~~
-12. Check that an invoice is editable before updating it
+12. ~~Check that an invoice is editable before updating it~~
 13. How to handle rounding of monetary values? We only show two digits per invoice line, but we should not round off
     before the total
-14. Store files in an emulated S3 bucket
+14. ~~Store files in an emulated S3 bucket~~
 15. 

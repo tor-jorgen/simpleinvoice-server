@@ -1,3 +1,10 @@
+## 1.2.0 (2026-06-02)
+
+* Documents are stored in S3-compatible storage
+* Upgraded to latest Kotlin, Gradle, and libraries
+* Updated start/stop and backup/restore scripts
+* Added util for handling S3-file (`s3.sh`)
+
 ## 1.1.0 (2026-05-14)
 
 * Calculate tax and totals on the server

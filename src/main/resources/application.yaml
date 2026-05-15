@@ -12,6 +12,12 @@ db:
   user: "$DB_USER:db"
   password: "$DB_PASSWORD"
 
+s3:
+  connectionPrefix: "$S3_CONNECTION_PRE:http://localhost"
+  port: "$S3_PORT:9000"
+  accessKeyId: "$S3_ACCESS_KEY_ID:doc"
+  secretAccessKey: "$S3_SECRET_ACCESS_KEY"
+
 security:
   clientId: "$GOOGLE_CLIENT_ID"
   clientSecret: "$GOOGLE_CLIENT_SECRET"
@@ -27,7 +33,7 @@ smtp:
   senderName: "$SMTP_SENDER_NAME"
 
 invoice:
-  invoiceDirectory: "$INVOICE_DIRECTORY:/documents"
-  configDirectory: "$CONFIG_DIRECTORY:/config"
+  configBucketName: "$INVOICE_CONFIG_BUCKET_NAME:simple-invoice-config"
+  invoiceBucketName: "$INVOICE_BUCKET_NAME:simple-invoice-invoices"
   invoiceTemplateName: "$INVOICE_TEMPLATE_NAME:invoice.odt"
   invoiceName: "$INVOICE_NAME:_NO_-_HOUSEHOLD_"

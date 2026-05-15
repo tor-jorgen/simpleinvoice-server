@@ -8,7 +8,6 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.odt2pdf.PDFConverter
-import org.simpleinvoice.repository.PersonRepository
 import org.simpleinvoice.server.invoice.DocumentGenerator
 import org.simpleinvoice.server.invoice.EmailGenerator
 import org.simpleinvoice.server.invoice.EventPublisher
@@ -20,6 +19,7 @@ import org.simpleinvoice.server.repository.AuditTrailRepository
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceLineRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
+import org.simpleinvoice.server.repository.PersonRepository
 import org.simpleinvoice.server.repository.ProductRepository
 import org.simpleinvoice.server.repository.SettingsRepository
 import org.simpleinvoice.server.repository.TagRepository
@@ -46,7 +46,8 @@ fun Application.configureDependencyInjection() {
                 single {
                     InvoiceConfig(
                         invoiceDirectory = property("invoice.invoiceDirectory"),
-                        template = property("invoice.template"),
+                        configDirectory = property("invoice.configDirectory"),
+                        invoiceTemplateName = property("invoice.invoiceTemplateName"),
                         invoiceName = property("invoice.invoiceName"),
                     )
                 }

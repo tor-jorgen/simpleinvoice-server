@@ -27,6 +27,7 @@ smtp:
   senderName: "$SMTP_SENDER_NAME"
 
 invoice:
-  invoiceDirectory: "$INVOICE_INVOICE_DIRECTORY:/documents"
-  template: "$INVOICE_INVOICE_TEMPLATE:./config/invoice.odt"
-  invoiceName: "$INVOICE_INVOICE_NAME:_NO_-_HOUSEHOLD_"
+  invoiceDirectory: "$INVOICE_DIRECTORY:/documents"
+  configDirectory: "$CONFIG_DIRECTORY:/config"
+  invoiceTemplateName: "$INVOICE_TEMPLATE_NAME:invoice.odt"
+  invoiceName: "$INVOICE_NAME:_NO_-_HOUSEHOLD_"

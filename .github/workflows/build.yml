@@ -1,15 +1,29 @@
 name: Build pipeline
 
 permissions:
-  contents: read
-  security-events: write
   actions: read
 
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'example-requests/*'
+      - 'example-templates/*'
+      - 'http/*'
+      - 'images/*'
+      - '**/*.md'
+      - '**/*.sh'
+      - 'compose*.yaml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'example-requests/*'
+      - 'example-templates/*'
+      - 'http/*'
+      - 'images/*'
+      - '**/*.md'
+      - '**/*.sh'
+      - 'compose*.yaml'
 
 env:
   IMAGE_NAME: ${{ github.repository }}
@@ -20,13 +34,16 @@ jobs:
   lint-code:
     name: Lint Code Base
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Lint code with Super-Linter
-        uses: super-linter/super-linter@v8
+        # super-linter v8.6.0
+        uses: super-linter/super-linter@9e863354e3ff62e0727d37183162c4a88873df41
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,11 +55,14 @@ jobs:
   lint-workflow:
     name: Lint Github Workflows
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Actionlint
-        uses: reviewdog/action-actionlint@v1
+        # reviewdog/action-actionlint v.1.72.0
+        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d
         with:
           reporter: github-check
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +70,8 @@ jobs:
   gradle-build-and-test:
     name: Gradle Build and Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: [ lint-code, lint-workflow ]
     outputs:
       build-artifact-name: gradle-artifacts
@@ -118,19 +140,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        # docker/login-action v4.1.0
+        uses: docker/login-action@9f4a8ea54ed9055d5f86c993e1f2ffa674f98344
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
-        uses: docker/build-push-action@v6
+        # docker/build-push-action v7.1.0
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
           push: false
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
       - name: Scan image for vulnerabilities with Trivy
-        uses: aquasecurity/trivy-action@master
+        # aquasecurity/trivy-action v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           version: latest
           image-ref: ghcr.io/${{ env.IMAGE_NAME }}:latest
@@ -161,13 +186,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        # docker/login-action v4.1.0
+        uses: docker/login-action@9f4a8ea54ed9055d5f86c993e1f2ffa674f98344
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        # docker/build-push-action v7.1.0
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
           push: true
@@ -189,7 +216,8 @@ jobs:
           TAG_NAME="v$VERSION"
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_OUTPUT"
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        # softprops/action-gh-release v3.0.0
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

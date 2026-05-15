@@ -7,8 +7,8 @@ ALTER TABLE application_user ALTER COLUMN scopes         TYPE VARCHAR(512);
 
 ALTER TABLE settings ADD COLUMN default_tax_percentage DECIMAL NOT NULL DEFAULT 0;
 ALTER TABLE settings ALTER COLUMN default_currency      TYPE VARCHAR(8);
-ALTER TABLE settings ALTER COLUMN default_email_subject TYPE VARCHAR(128);
-ALTER TABLE settings ALTER COLUMN default_email_text    TYPE VARCHAR(1024);
+ALTER TABLE settings ALTER COLUMN default_email_subject TYPE VARCHAR(512);
+ALTER TABLE settings ALTER COLUMN default_email_text    TYPE VARCHAR(4096);
 
 ALTER TABLE household ALTER COLUMN name     TYPE VARCHAR(128);
 ALTER TABLE household ALTER COLUMN address  TYPE VARCHAR(128);
@@ -40,6 +40,6 @@ ALTER TABLE tag ALTER COLUMN name TYPE VARCHAR(128);
 
 ALTER TABLE audit_trail ALTER COLUMN timestamp TYPE VARCHAR(64);
 ALTER TABLE audit_trail ALTER COLUMN item_id   TYPE VARCHAR(64);
-ALTER TABLE audit_trail ALTER COLUMN item      TYPE VARCHAR(1024);
-ALTER TABLE audit_trail ALTER COLUMN message   TYPE VARCHAR(128);
+ALTER TABLE audit_trail ALTER COLUMN item      TYPE VARCHAR(2048);
+ALTER TABLE audit_trail ALTER COLUMN message   TYPE VARCHAR(512);
 ALTER TABLE audit_trail ALTER COLUMN user_id   TYPE VARCHAR(64);

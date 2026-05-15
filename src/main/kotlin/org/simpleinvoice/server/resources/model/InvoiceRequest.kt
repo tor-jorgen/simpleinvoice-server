@@ -24,41 +24,34 @@ data class InvoiceRequest(
     val currency: Currency,
     val tags: List<TagRequestResponse> = emptyList(),
 ) {
+    // Create an invoice with only necessary properties set. The others will be set/calculated later
     fun toInvoice(
         id: UUID,
         invoiceNumber: Int,
-        household: Household,
-        products: Map<UUID, Product>,
-    ): Invoice {
-        val mappedInvoiceLines = invoiceLines.map { it.toInvoiceLine(products) }
-        val totals = calculateTotals(mappedInvoiceLines)
-        return Invoice(
+    ): Invoice =
+        Invoice(
             id = id,
             invoiceNumber = invoiceNumber,
             status = status,
             generatedDate = generatedDate,
             dueDate = dueDate,
             finalizedDate = finalizedDate,
-            household = household,
-            invoiceLines = mappedInvoiceLines,
-            price = totals.price,
-            tax = totals.tax,
-            totalPrice = totals.total,
+            household =
+                Household(
+                    id = householdId,
+                    address = "",
+                    zipCode = "",
+                    city = "",
+                    persons = emptyList(),
+                ),
+            invoiceLines = invoiceLines.map { it.toInvoiceLine() },
+            price = 0.0,
+            tax = 0.0,
+            totalPrice = 0.0,
             currency = currency,
             tags = tags.map { it.toTag() },
             invoiceFilePath = null,
         )
-    }
-
-    private fun calculateTotals(lines: Collection<InvoiceLine>): Totals {
-        var price = 0.0
-        var tax = 0.0
-        lines.forEach { item ->
-            price += item.price
-            tax += item.tax
-        }
-        return Totals(price = price, tax = tax, total = price + tax)
-    }
 }
 
 @Serializable
@@ -69,31 +62,28 @@ data class InvoiceLineRequest(
     val quantity: Int,
     val currency: Currency,
 ) {
-    fun toInvoiceLine(products: Map<UUID, Product>): InvoiceLine {
-        val product = products[productId] ?: throw RuntimeException("Product not found")
-        val totals = calculateTotals(product)
-        return InvoiceLine(
+    // Create an invoiceLine with only necessary properties set. The others will be set/calculated later
+    fun toInvoiceLine(): InvoiceLine =
+        InvoiceLine(
             // Create an ID if this is a new invoice line
             id = id ?: UUID.randomUUID(),
             lineNumber = lineNumber,
-            product = product,
+            product =
+                Product(
+                    id = productId,
+                    quantity = 0,
+                    code = "",
+                    name = "",
+                    price = 0.0,
+                    currency = Currency.NONE,
+                    taxPercentage = 0.0,
+                    tax = 0.0,
+                    totalPrice = 0.0,
+                ),
             quantity = quantity,
-            price = totals.price,
-            tax = totals.tax,
-            totalPrice = totals.total,
+            price = 0.0,
+            tax = 0.0,
+            totalPrice = 0.0,
             currency = currency,
         )
-    }
-
-    private fun calculateTotals(product: Product): Totals {
-        val price = product.price * quantity
-        val tax = ((product.taxPercentage * product.price) / 100) * quantity
-        return Totals(price = price, tax = tax, total = price + tax)
-    }
 }
-
-private data class Totals(
-    val price: Double,
-    val tax: Double,
-    val total: Double,
-)

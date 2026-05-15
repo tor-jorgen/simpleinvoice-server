@@ -1,14 +1,12 @@
 package org.simpleinvoice.server.invoice
 
+import org.simpleinvoice.server.model.Email
 import org.simpleinvoice.server.model.Invoice
 import org.simpleinvoice.server.model.InvoiceLine
 import org.simpleinvoice.server.model.InvoiceStatus
-import org.simpleinvoice.server.model.Product
 import org.simpleinvoice.server.repository.HouseholdRepository
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
-import org.simpleinvoice.server.resources.model.EmailRequest
-import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import java.time.Instant
 import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
@@ -21,88 +19,88 @@ class InvoiceGenerator(
     val emailGenerator: EmailGenerator,
 ) {
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun generate(request: GenerateInvoicesRequest): List<UUID> {
-        val productIds = request.invoiceLines.map { UUID.fromString(it.productId.toString()) }.toList()
-        val products = productRepository.byIds(productIds).associateBy { it.id }
-        return request.householdIds
+    suspend fun generate(
+        invoice: Invoice,
+        householdIds: List<UUID>,
+        email: Email?,
+        new: Boolean,
+    ): List<Invoice> =
+        householdIds
             .map { householdId ->
-                generateInvoice(
-                    householdId = UUID.fromString(householdId.toString()),
-                    request = request,
-                    products = products,
-                ).id
+                val calculated =
+                    calculateInvoice(invoice = invoice, householdId = householdId, keepIds = householdIds.size == 1)
+                generate(invoice = calculated, email = email, new = new)
             }.toList()
-    }
 
-    private suspend fun generateInvoice(
+    private suspend fun calculateInvoice(
+        invoice: Invoice,
         householdId: UUID,
-        request: GenerateInvoicesRequest,
-        products: Map<UUID, Product>,
-    ): Invoice =
-        Invoice(
-            id = UUID.randomUUID(),
-            // New invoice number will be generated
+        keepIds: Boolean = false,
+    ): Invoice {
+        val productIds = invoice.invoiceLines.map { it.product.id }.toList()
+        val products = productRepository.byIds(productIds).associateBy { it.id }
+        val invoiceLines =
+            invoice.invoiceLines.map {
+                // We know that `products` contains all the products in `invoiceLines`
+                val product = products[it.product.id]!! // NOSONAR
+                InvoiceLine(
+                    id = if (keepIds) it.id else UUID.randomUUID(),
+                    lineNumber = it.lineNumber,
+                    quantity = it.quantity,
+                    price = product.price * it.quantity,
+                    tax = product.tax * it.quantity,
+                    totalPrice = (product.price + product.tax) * it.quantity,
+                    currency = it.currency,
+                    product = product,
+                )
+            }
+        var price = 0.0
+        var tax = 0.0
+        var totalPrice = 0.0
+        invoiceLines.forEach {
+            price += it.price
+            tax += it.tax
+            totalPrice += it.totalPrice
+        }
+        return Invoice(
+            id = if (keepIds) invoice.id else UUID.randomUUID(),
+            // New invoice number will be generated/existing will be fetched
             invoiceNumber = 0,
             status = InvoiceStatus.CREATED,
             generatedDate = Instant.now(),
-            dueDate = request.dueDate,
+            dueDate = invoice.dueDate,
             finalizedDate = null,
-            price = request.price,
-            tax = request.tax,
-            totalPrice = request.totalPrice,
-            currency = request.currency,
-            household = householdRepository.get(householdId),
+            price = price,
+            tax = tax,
+            totalPrice = totalPrice,
+            currency = invoice.currency,
+            household = householdRepository.get(UUID.fromString(householdId.toString())),
             invoiceFilePath = null,
-            tags = request.tags.map { it.toTag() },
-            invoiceLines =
-                request.invoiceLines.map {
-                    // We know that `products` contains all the products in `invoiceLines`
-                    val product = products[it.productId]!! // NOSONAR
-                    InvoiceLine(
-                        id = UUID.randomUUID(),
-                        lineNumber = it.lineNumber,
-                        quantity = it.quantity,
-                        price = it.price,
-                        tax = it.tax,
-                        totalPrice = it.totalPrice,
-                        currency = it.currency,
-                        product =
-                            Product(
-                                id = product.id,
-                                code = product.code,
-                                name = product.name,
-                                quantity = product.quantity,
-                                price = product.price,
-                                taxPercentage = product.taxPercentage,
-                                tax = product.tax,
-                                totalPrice = product.totalPrice,
-                                currency = product.currency,
-                                tags = product.tags,
-                            ),
-                    )
-                },
-        ).let { invoice -> generate(invoice = invoice, email = request.email, new = true) }
+            tags = invoice.tags,
+            invoiceLines = invoiceLines,
+        )
+    }
 
-    suspend fun generate(
+    private suspend fun generate(
         invoice: Invoice,
         new: Boolean,
-        email: EmailRequest? = null,
+        email: Email?,
     ): Invoice {
         var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new)
         val (invoiceName, _, pdfPath) = documentGenerator.createDocuments(invoiceDb)
         if (email != null) {
             emailGenerator
                 .sendEmail(
-                    invoice = invoice,
+                    invoice = invoiceDb,
                     invoiceName = invoiceName,
                     pdfPath = pdfPath,
                     email = email,
                 ).let { emailSent ->
-                    val status = if (emailSent) InvoiceStatus.DELIVERED else invoice.status
-                    invoiceDb = updateInvoice(invoice = invoice, invoiceFilePath = pdfPath, status = status)
+                    val status = if (emailSent) InvoiceStatus.DELIVERED else invoiceDb.status
+                    invoiceDb = updateInvoice(invoice = invoiceDb, invoiceFilePath = pdfPath, status = status)
                 }
         } else {
-            invoiceDb = updateInvoice(invoice = invoice, invoiceFilePath = pdfPath)
+            invoiceDb = updateInvoice(invoice = invoiceDb, invoiceFilePath = pdfPath)
         }
         return invoiceDb
     }

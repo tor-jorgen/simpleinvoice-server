@@ -1,25 +1,23 @@
-package org.simpleinvoice.repository
+package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
-import org.simpleinvoice.server.repository.PersonRepositoryInterface
 import org.simpleinvoice.server.repository.model.PersonDAO
 import org.simpleinvoice.server.repository.model.PersonTable
-import org.simpleinvoice.server.repository.suspendTransaction
 import java.util.UUID
 
 class PersonRepository : PersonRepositoryInterface {
     override suspend fun all(): List<Person> =
-        suspendTransaction {
+        executeInTransaction {
             PersonDAO.all().map { it.toPerson() }
         }
 
     override suspend fun add(person: Person): Unit =
-        suspendTransaction {
+        executeInTransaction {
             PersonDAO.new {
                 firstName = person.firstName
                 lastName = person.lastName
@@ -29,7 +27,7 @@ class PersonRepository : PersonRepositoryInterface {
         }
 
     override suspend fun update(person: Person): Unit =
-        suspendTransaction {
+        executeInTransaction {
             PersonDAO.findByIdAndUpdate(id = person.id) {
                 it.firstName = person.firstName
                 it.lastName = person.lastName
@@ -54,7 +52,7 @@ class PersonRepository : PersonRepositoryInterface {
         )
 
     override suspend fun delete(id: UUID): Boolean =
-        suspendTransaction {
+        executeInTransaction {
             val rowsDeleted =
                 PersonTable.deleteWhere {
                     PersonTable.id eq id

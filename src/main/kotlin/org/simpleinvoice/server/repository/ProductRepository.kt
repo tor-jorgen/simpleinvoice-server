@@ -1,10 +1,11 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.batchUpsert
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.batchUpsert
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Product
@@ -18,7 +19,7 @@ class ProductRepository(
     val eventPublisher: EventPublisher,
 ) : ProductRepositoryInterface {
     override suspend fun all(activeOnly: Boolean): List<Product> =
-        suspendTransaction {
+        executeInTransaction {
             if (activeOnly) {
                 ProductDAO.find { ProductTable.inactive eq false }.map { it.toProduct() }
             } else {
@@ -27,7 +28,7 @@ class ProductRepository(
         }
 
     override suspend fun byIds(ids: List<UUID>): List<Product> =
-        suspendTransaction {
+        executeInTransaction {
             ProductDAO.find { ProductTable.id inList ids }.map { it.toProduct() }
         }
 
@@ -36,7 +37,7 @@ class ProductRepository(
         new: Boolean,
     ): Product {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 // Delete all tags for the invoice, since we don't know if any have been removed
                 ProductTagsTable.deleteWhere { productId eq product.id }
                 val upsert =
@@ -74,7 +75,7 @@ class ProductRepository(
 
     override suspend fun delete(id: UUID): Boolean {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 ProductTagsTable.deleteWhere { productId eq id }
                 val rowsDeleted =
                     ProductTable.deleteWhere {

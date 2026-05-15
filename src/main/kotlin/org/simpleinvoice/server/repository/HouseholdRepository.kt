@@ -1,11 +1,11 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.batchUpsert
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
-import org.simpleinvoice.repository.PersonRepository
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.batchUpsert
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Household
 import org.simpleinvoice.server.model.Person
@@ -18,14 +18,13 @@ import java.util.UUID
 
 class HouseholdRepository(
     private val personRepository: PersonRepository,
-    private val tagRepository: TagRepository,
     private val eventPublisher: EventPublisher,
 ) : HouseholdRepositoryInterface {
     override suspend fun all(
         activeOnly: Boolean,
         ids: List<UUID>,
     ): List<Household> =
-        suspendTransaction {
+        executeInTransaction {
             if (activeOnly) {
                 HouseholdDAO.find { HouseholdTable.inactive eq false }.map { it.toHousehold() }
             } else if (ids.isNotEmpty()) {
@@ -35,7 +34,7 @@ class HouseholdRepository(
             }
         }
 
-    override suspend fun get(id: UUID): Household = suspendTransaction { HouseholdDAO[id].toHousehold() }
+    override suspend fun get(id: UUID): Household = executeInTransaction { HouseholdDAO[id].toHousehold() }
 
     override suspend fun upsert(
         household: Household,
@@ -43,7 +42,7 @@ class HouseholdRepository(
     ): Household {
         val persons = mutableListOf<Person>()
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 // Delete all persons and tags for the household, since we don't know if any have been removed
                 PersonTable.deleteWhere { householdId eq household.id }
                 HouseholdTagsTable.deleteWhere { householdId eq household.id }
@@ -80,7 +79,7 @@ class HouseholdRepository(
 
     override suspend fun delete(id: UUID): Boolean {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 PersonTable.deleteWhere { householdId eq id }
                 HouseholdTagsTable.deleteWhere { householdId eq id }
                 val rowsDeleted = HouseholdTable.deleteWhere { HouseholdTable.id eq id }

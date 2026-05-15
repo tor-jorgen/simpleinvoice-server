@@ -1,10 +1,11 @@
 package org.simpleinvoice.server.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.batchUpsert
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.statements.UpsertStatement
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.statements.UpsertStatement
+import org.jetbrains.exposed.v1.jdbc.batchUpsert
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.model.Currency
 import org.simpleinvoice.server.model.Household
@@ -28,7 +29,7 @@ class InvoiceRepository(
         openOnly: Boolean,
         ids: List<UUID>,
     ): List<Invoice> =
-        suspendTransaction {
+        executeInTransaction {
             if (openOnly) {
                 InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
             } else if (ids.isNotEmpty()) {
@@ -39,16 +40,19 @@ class InvoiceRepository(
         }
 
     override suspend fun get(id: UUID): Invoice =
-        suspendTransaction {
-            InvoiceDAO.findById(id)?.toInvoice() ?: throw Exception("Invoice with id: $id not found")
+        executeInTransaction {
+            getWithoutTransaction(id)
         }
+
+    private fun getWithoutTransaction(id: UUID): Invoice =
+        InvoiceDAO.findById(id)?.toInvoice() ?: throw Exception("Invoice with id: $id not found")
 
     override suspend fun upsert(
         invoice: Invoice,
         new: Boolean,
     ): Invoice {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 // Delete all invoice lines and tags for the invoice, since we don't know if any have been removed
                 InvoiceLineTable.deleteWhere { invoiceId eq invoice.id }
                 InvoiceTagsTable.deleteWhere { invoiceId eq invoice.id }
@@ -61,7 +65,19 @@ class InvoiceRepository(
                                     ?: (settingsRepository.getWithoutTransaction().lastInvoiceNumber + 1),
                         )
                     } else {
-                        invoice
+                        getWithoutTransaction(invoice.id).copy(
+                            status = invoice.status,
+                            dueDate = invoice.dueDate,
+                            finalizedDate = invoice.finalizedDate,
+                            price = invoice.price,
+                            tax = invoice.tax,
+                            totalPrice = invoice.totalPrice,
+                            currency = invoice.currency,
+                            household = invoice.household,
+                            invoiceFilePath = invoice.invoiceFilePath,
+                            invoiceLines = invoice.invoiceLines,
+                            tags = invoice.tags,
+                        )
                     }
                 val upsert = upsertWithoutTransaction(dbInvoice)
                 invoice.invoiceLines.forEach { invoiceLine ->
@@ -76,17 +92,19 @@ class InvoiceRepository(
                 )
                 upsert
             }
+        val responseInvoice =
+            toInvoice(
+                statement = response,
+                household = invoice.household,
+                invoiceLines = invoice.invoiceLines,
+                tags = invoice.tags,
+            )
         eventPublisher.publishEvent(
-            id = invoice.id,
-            item = invoice,
+            id = responseInvoice.id,
+            item = responseInvoice,
             message = if (new) "Invoice created" else "Invoice updated",
         )
-        return toInvoice(
-            statement = response,
-            household = invoice.household,
-            invoiceLines = invoice.invoiceLines,
-            tags = invoice.tags,
-        )
+        return responseInvoice
     }
 
     private fun upsertWithoutTransaction(invoice: Invoice): UpsertStatement<Long> =
@@ -107,7 +125,7 @@ class InvoiceRepository(
 
     override suspend fun delete(id: UUID): Boolean {
         val response =
-            suspendTransaction {
+            executeInTransaction {
                 InvoiceLineTable.deleteWhere { invoiceId eq id }
                 InvoiceTagsTable.deleteWhere { invoiceId eq id }
                 val rowsDeleted = InvoiceTable.deleteWhere { InvoiceTable.id eq id }

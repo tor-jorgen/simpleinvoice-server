@@ -1,14 +1,20 @@
 #!/bin/bash
 
+mode -e
+
 help() {
-  echo "start.sh [--no-daemon] [--local-images] [--skip-build]"
+  echo "start.sh [OPTIONS]"
+  echo
   echo "Start Simple Invoice"
-  echo "--no-daemon: Do not run containers as daemons. This makes the logs visible in the console"
-  echo "--local-images: This will build the images for server and app locally instead of using the prebuilt images from GitHub"
-  echo "--skip-build: Do not build the application. This will make Simple Invoice start up faster if you are using local images and have already built them"
+  echo
+  echo "Options:"
+  echo "-d, --no-daemon:    Do not run containers as daemons. This makes the logs visible in the console"
+  echo "-l, --local-images: This will build the images for server and app locally instead of downloading images from GitHub"
+  echo "-b, --no-build:     Do not build the application. This will make Simple Invoice start up faster if you are using local images and have already built the images"
+  echo "-c, --cache:        Use Docker cache, default is to disable cache to ensure everything is rebuilt"
   echo
   echo "If the startup fails, it might be because you have to little memory on your computer. Try to close other programs while you start up. Please not that building Simple Invoice locally consumes quite some resources"
-  echo "Run './stop.sh' to stop the backend. If you started it with --no-daemon, you need to push Ctrl+C before you run './stop.sh'"
+  echo "Run './stop.sh' to stop Simple Invoice. If you started it with --no-daemon, you need to push Ctrl+C before you run './stop.sh'"
 }
 
 show_info() {
@@ -18,7 +24,7 @@ show_info() {
 
 # Create the default config directory if it does not exist
 create_config_dir() {
-  CFG_PATH=$(grep "^CFG_PATH=" ".env" | cut -d '=' -f 2)
+  CFG_PATH=$(grep "^CONFIG_DIRECTORY=" ".env" | cut -d '=' -f 2)
   if [ "$CFG_PATH" == "" ]; then
     CFG_PATH=".config"
   fi
@@ -31,38 +37,65 @@ create_config_dir() {
   fi
 }
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  help
-  exit 0
-fi
+DAEMON=-d
+COMPOSE_FILE=compose.yaml
+NO_BUILD=False
+LOCAL_IMAGES=False
+NO_CACHE="--no-cache"
+
+while [[ "$1" == "--"* || "$1" == "-"* ]]; do
+  case $1 in
+    --no-daemon|-d)
+      DAEMON=
+      show_info
+      shift 1
+      ;;
+    --local-images|-l)
+      LOCAL_IMAGES=True
+      COMPOSE_FILE=compose-build.yaml
+      shift 1
+      ;;
+    --no-build|-b)
+      NO_BUILD=True
+      shift 1
+      ;;
+    --cache|-c)
+      NO_CACHE=""
+      shift 1
+      ;;
+    --help|-h)
+      help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo
+      help
+      exit 1
+      ;;
+  esac
+done
 
 if [[ ! -f .env ]]; then
     echo "ERROR: You must create .env first, see README.md."
     exit 1
 fi
 
+echo "Starting Simple Invoice"
+
 create_config_dir
 
-if [[ "$1" == "--no-daemon" || "$2" == "--no-daemon" || "$3" == "--no-daemon" ]]; then
-  DAEMON=
-  show_info
+if [[ "$NO_BUILD" == "True" ]]; then
+  echo "Skipping build..."
+elif [[ "$LOCAL_IMAGES" == "True" ]]; then
+  docker compose -f compose-build.yaml build "$NO_CACHE" --progress plain
+fi
+
+if [ -n "$DAEMON" ]; then
+  docker compose -f "$COMPOSE_FILE"  --progress plain up "$DAEMON"
 else
-  DAEMON=-d
+  docker compose -f "$COMPOSE_FILE" --progress plain up
 fi
-
-if [[ "$1" == "--skip-build" || "$2" == "--skip-build" || "$3" == "--skip-build" ]]; then
-  echo "Skipping build"
-elif [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  docker compose -f compose-build.yaml build --no-cache
-fi
-
-if [[ "$1" == "--local-images" || "$2" == "--local-images" || "$3" == "--local-images" ]]; then
-  COMPOSE_FILE=compose-build.yaml
-else
-  COMPOSE_FILE=compose.yaml
-fi
-
-docker compose -f "$COMPOSE_FILE" up $DAEMON
 
 if [ "$DAEMON" == "-d" ]; then
   echo

@@ -1,11 +1,10 @@
 package org.simpleinvoice.server.invoice
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import kotlinx.coroutines.channels.Channel
 import org.simpleinvoice.server.model.AuditTrail
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.ObjectMapper
 import java.time.Instant
 import java.util.UUID
 
@@ -13,11 +12,7 @@ class EventPublisher(
     private val channel: Channel<AuditTrail>,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
-    private val mapper =
-        ObjectMapper().apply {
-            // Use ISO-8601 format
-            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        }
+    private val mapper = ObjectMapper()
 
     suspend fun publishEvent(
         id: UUID,

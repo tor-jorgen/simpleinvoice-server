@@ -32,7 +32,8 @@ class DocumentGenerator(
 
     fun createDocuments(invoice: Invoice): Triple<String, String, String> {
         File(config.invoiceDirectory).mkdirs()
-        TextDocument.loadDocument(File(config.template)).use { document ->
+        val template = "${config.configDirectory}/${config.invoiceTemplateName}"
+        TextDocument.loadDocument(File(template)).use { document ->
             val recipients = RecipientList.fromHouseHold(invoice.household)
             traverse(node = document.contentRoot, invoice = invoice, recipients = recipients)
             traverse(node = document.header.odfElement, invoice = invoice, recipients = recipients)
@@ -98,40 +99,61 @@ class DocumentGenerator(
         recipients: List<Recipient>,
     ) {
         when (node.textContent) {
-            INVOICE_DATE -> node.textContent = invoice.generatedDateAsString()
-            DUE_DATE -> node.textContent = invoice.dueDateAsString()
-            INVOICE_NO -> node.textContent = invoice.invoiceNumber.toString()
-            NAME_1 -> node.textContent = if (recipients.isNotEmpty()) recipients[0].name else ""
-            NAME_2 -> node.textContent = if (recipients.size > 1) recipients[1].name else ""
-            ADDRESS_LINE_1 ->
+            INVOICE_DATE -> {
+                node.textContent = invoice.generatedDateAsString()
+            }
+
+            DUE_DATE -> {
+                node.textContent = invoice.dueDateAsString()
+            }
+
+            INVOICE_NO -> {
+                node.textContent = invoice.invoiceNumber.toString()
+            }
+
+            NAME_1 -> {
+                node.textContent = if (recipients.isNotEmpty()) recipients[0].name else ""
+            }
+
+            NAME_2 -> {
+                node.textContent = if (recipients.size > 1) recipients[1].name else ""
+            }
+
+            ADDRESS_LINE_1 -> {
                 node.textContent =
                     if (recipients.isNotEmpty()) recipients[0].addressLine1 else ""
+            }
 
-            ADDRESS_LINE_2 ->
+            ADDRESS_LINE_2 -> {
                 node.textContent =
                     if (recipients.isNotEmpty()) recipients[0].addressLine2 else ""
+            }
 
-            ZIP_CITY ->
+            ZIP_CITY -> {
                 node.textContent =
                     if (recipients.isNotEmpty()) recipients[0].zipCity else ""
+            }
 
-            COUNTRY ->
+            COUNTRY -> {
                 node.textContent =
                     if (recipients.isNotEmpty()) recipients[0].country else ""
+            }
 
             // TODO: Add support for multiple items
-            PRODUCT ->
+            PRODUCT -> {
                 node.textContent =
                     invoice.invoiceLines
                         .first()
                         .product.name
+            }
 
-            ITEM_PRICE, TOTAL_PRICE ->
+            ITEM_PRICE, TOTAL_PRICE -> {
                 node.textContent =
                     invoice.invoiceLines
                         .first()
                         .product.price
                         .toString()
+            }
         }
     }
 }

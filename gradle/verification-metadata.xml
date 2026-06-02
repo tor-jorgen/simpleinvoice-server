@@ -11,12 +11,14 @@
       </trusted-artifacts>
       <ignored-keys>
          <ignored-key id="0CC0B712FEE75827" reason="Key couldn't be downloaded from any key server"/>
+         <ignored-key id="2F45F85CDF082E68" reason="Key couldn't be downloaded from any key server"/>
          <ignored-key id="AECDB81D38EA9C89" reason="Key couldn't be downloaded from any key server"/>
          <ignored-key id="BA9255C2CA445309" reason="Key couldn't be downloaded from any key server"/>
          <ignored-key id="CF776DADF519DEE3" reason="Key couldn't be downloaded from any key server"/>
       </ignored-keys>
       <trusted-keys>
          <trusted-key id="015479E1055341431B4545AB72475FD306B9CAB7" group="org.roaringbitmap" name="RoaringBitmap" version="1.0.0"/>
+         <trusted-key id="0181A4828FA27B6BE6F1F5A68611CD28F472E006" group="org.fusesource.jansi" name="jansi" version="2.4.3"/>
          <trusted-key id="03C123038C20AAE9E286C857479D601F3A7B5C1A" group="com.github.ajalt.clikt"/>
          <trusted-key id="05BE82F3F005BA84597D7F25EAFBA1450EFFB0A1" group="org.odftoolkit"/>
          <trusted-key id="061CDB85C08734C99056F3CC45ABE382CC1B7074" group="net.rootdev"/>
@@ -38,8 +40,12 @@
          </trusted-key>
          <trusted-key id="147B691A19097624902F4EA9689CBE64F4BC997F" group="^org[.]mockito($|([.].*))" regex="true"/>
          <trusted-key id="19BEAB2D799C020F17C69126B16698A4ADF4D638" group="org.checkerframework" name="checker-qual"/>
-         <trusted-key id="1D217F8475EEE9F19AB8DD6B793FD5751A0F0780" group="com.squareup.okio"/>
+         <trusted-key id="1D217F8475EEE9F19AB8DD6B793FD5751A0F0780">
+            <trusting group="com.squareup.okhttp3"/>
+            <trusting group="com.squareup.okio"/>
+         </trusted-key>
          <trusted-key id="1F6774B9D58C5EA6BF84D534704514F6556102E5" group="io.swagger"/>
+         <trusted-key id="206DF7C48E3D6CB145DDA835FF844A3256C7FB01" group="de.siegmar" name="fastcsv" version="3.7.0"/>
          <trusted-key id="217BFC8CA98788CB33198A8E7FAC222BF1FC0C12" group="net.thauvin.erik.urlencoder"/>
          <trusted-key id="28118C070CB22A0175A2E8D43D12CA2AC19F3181">
             <trusting group="org.codehaus.woodstox"/>
@@ -64,6 +70,7 @@
          <trusted-key id="2FC53E6B1F681184F4CCD637F5C81DE10A0B8ECC">
             <trusting group="org.snakeyaml" name="snakeyaml-engine" version="3.0.1"/>
             <trusting group="org.yaml" name="snakeyaml" version="2.4"/>
+            <trusting group="org.yaml" name="snakeyaml" version="2.6"/>
          </trusted-key>
          <trusted-key id="32118CF76C9EC5D918E54967CA80D1F0EB6CA4BA" group="org.codehaus.plexus" name="plexus-xml" version="4.1.0"/>
          <trusted-key id="33FD4BFD33554634053D73C0C2148900BCD3C2AF" group="org.jetbrains" name="annotations" version="23.0.0"/>
@@ -109,11 +116,19 @@
          <trusted-key id="7B121B76A7ED6CE6E60AD51784E913A8E3A748C0">
             <trusting group="org.bouncycastle" name="bcprov-jdk18on" version="1.78.1"/>
             <trusting group="org.bouncycastle" name="bcprov-jdk18on" version="1.83"/>
+            <trusting group="org.bouncycastle" name="bcprov-jdk18on" version="1.84"/>
          </trusted-key>
          <trusted-key id="8247F88933C2D56F830AF73436AB7ACFFF2027B1" group="it.krzeminski"/>
          <trusted-key id="84789D24DF77A32433CE1F079EB80E92EB2135B1" group="org.apache"/>
          <trusted-key id="8569C95CADC508B09FE90F3002216ED811210DAA" group="io.github.detekt.sarif4k"/>
-         <trusted-key id="86C0144909739E0EE3D1B545305F296EAC47556B" group="org.postgresql" name="postgresql" version="42.7.10"/>
+         <trusted-key id="85C5A3AE04EDB3D44073B7B9910AF6A93072A7BE">
+            <trusting group="aws.sdk.kotlin"/>
+            <trusting group="aws.smithy.kotlin"/>
+         </trusted-key>
+         <trusted-key id="86C0144909739E0EE3D1B545305F296EAC47556B">
+            <trusting group="org.postgresql" name="postgresql" version="42.7.10"/>
+            <trusting group="org.postgresql" name="postgresql" version="42.7.11"/>
+         </trusted-key>
          <trusted-key id="8756C4F765C9AC3CB6B85D62379CE192D401AB61" group="org.jetbrains.intellij.deps" name="trove4j" version="1.0.20200330"/>
          <trusted-key id="8E3A02905A1AE67E7B0F9ACD3967D4EDA591B991">
             <trusting group="org.jetbrains.kotlinx"/>
@@ -148,7 +163,10 @@
          </trusted-key>
          <trusted-key id="D99038A1731B8B31B71549EF04C95136D236A58F" group="org.apache.jena"/>
          <trusted-key id="DBD744ACE7ADE6AA50DD591F66B50994442D2D40" group="^com[.]squareup($|([.].*))" regex="true"/>
-         <trusted-key id="DFD60A08EC2B0CECED24A01F36A22209606109DC" group="com.typesafe" name="config" version="1.4.5"/>
+         <trusted-key id="DFD60A08EC2B0CECED24A01F36A22209606109DC">
+            <trusting group="com.typesafe" name="config" version="1.4.5"/>
+            <trusting group="com.typesafe" name="config" version="1.4.8"/>
+         </trusted-key>
          <trusted-key id="E01ED293981AE484403B65D7DA70BCBA6D76AD03" group="com.charleskorn.kaml"/>
          <trusted-key id="E5138A8E9F2E7E42D38B14D99AEE152CDCCEBFCB" group="io.github.hakky54"/>
          <trusted-key id="E7DC75FC24FB3C8DFE8086AD3D5839A2262CBBFB" group="org.jetbrains.kotlinx"/>
@@ -156,6 +174,7 @@
          <trusted-key id="EA0B70B5050192C98CFA7E4F3F36885C24DF4B75" group="org.mozilla" name="rhino" version="1.7.7.2"/>
          <trusted-key id="EB1B3DE71713C9EC2E87CC26EE92349AD86DE446" group="com.google.j2objc" name="j2objc-annotations" version="2.8"/>
          <trusted-key id="EE0CA873074092F806F59B65D364ABAA39A47320" group="com.google.errorprone"/>
+         <trusted-key id="F4DD59C90148BDC52BEB90A4530AA5F25C25011F" group="commons-io"/>
          <trusted-key id="F79157DB93697AA32CD4C46CC485C5A843FADB15" group="org.flywaydb"/>
          <trusted-key id="FA77DCFEF2EE6EB2DEBEDD2C012579464D01C06A" group="org.apache" name="apache"/>
          <trusted-key id="FA7929F83AD44C4590F6CC6815C71C0A4E0B8EDD" group="net.java.dev.jna"/>
@@ -1676,6 +1695,11 @@
             <sha256 value="e705eb56d027995c708a21417118cabef2774e700c64d232d6058b5c6678afe2" origin="Generated by Gradle" reason="Artifact is not signed"/>
          </artifact>
       </component>
+      <component group="io.ktor.plugin" name="io.ktor.plugin.gradle.plugin" version="3.5.0">
+         <artifact name="io.ktor.plugin.gradle.plugin-3.5.0.pom">
+            <sha256 value="ff87743a6b04db0f321b33568a9b6b2602c2fe8a68848dcb74557cc99dac6e65" origin="Generated by Gradle" reason="Artifact is not signed"/>
+         </artifact>
+      </component>
       <component group="io.ktor.plugin" name="plugin" version="3.4.1">
          <artifact name="plugin-3.4.1.jar">
             <sha256 value="a6bfe6601ae93d0e852be8c9c8f71bfa769b811df1ca36abc214373728b7a8a6" origin="Generated by Gradle"/>
@@ -1686,6 +1710,11 @@
       </component>
       <component group="io.netty" name="netty-bom" version="4.2.12.Final">
          <artifact name="netty-bom-4.2.12.Final.pom">
+            <pgp value="0D35D3F60078655126908E8AF3D1600878E85A3D"/>
+         </artifact>
+      </component>
+      <component group="io.netty" name="netty-bom" version="4.2.13.Final">
+         <artifact name="netty-bom-4.2.13.Final.pom">
             <pgp value="0D35D3F60078655126908E8AF3D1600878E85A3D"/>
          </artifact>
       </component>
@@ -2070,6 +2099,11 @@
       <component group="org.apache.commons" name="commons-parent" version="92">
          <artifact name="commons-parent-92.pom">
             <sha256 value="94f6c027b15f6402995dd1b2c7ea35bfe1ebc88b6832b3134368b41998721953" origin="Generated by Gradle"/>
+         </artifact>
+      </component>
+      <component group="org.apache.commons" name="commons-parent" version="98">
+         <artifact name="commons-parent-98.pom">
+            <pgp value="F4DD59C90148BDC52BEB90A4530AA5F25C25011F"/>
          </artifact>
       </component>
       <component group="org.apache.groovy" name="groovy-bom" version="4.0.27">
@@ -2918,6 +2952,11 @@
             <sha256 value="39518cfaeb7f731ba9f83d94a4293047f53a4e1fb52a917570575d7d8cd6b34e" origin="Generated by Gradle" reason="Artifact is not signed"/>
          </artifact>
       </component>
+      <component group="org.jetbrains.kotlin.jvm" name="org.jetbrains.kotlin.jvm.gradle.plugin" version="2.3.21">
+         <artifact name="org.jetbrains.kotlin.jvm.gradle.plugin-2.3.21.pom">
+            <sha256 value="2e866ef85881195943d04e0f2082357b484c8eb2051f2c21972d00d9a0685dd0" origin="Generated by Gradle" reason="Artifact is not signed"/>
+         </artifact>
+      </component>
       <component group="org.jetbrains.kotlin.plugin.serialization" name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin" version="2.1.20">
          <artifact name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin-2.1.20.pom">
             <sha256 value="6235de3d000162375c8f722f08eda153f090e11a035b4a9b8be7eac4ef145fe6" origin="Generated by Gradle" reason="Artifact is not signed"/>
@@ -2931,6 +2970,11 @@
       <component group="org.jetbrains.kotlin.plugin.serialization" name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin" version="2.3.20">
          <artifact name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin-2.3.20.pom">
             <sha256 value="379037f25c2de78ca3038481e4037601d697c86b175accaca764a9812230f170" origin="Generated by Gradle" reason="Artifact is not signed"/>
+         </artifact>
+      </component>
+      <component group="org.jetbrains.kotlin.plugin.serialization" name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin" version="2.3.21">
+         <artifact name="org.jetbrains.kotlin.plugin.serialization.gradle.plugin-2.3.21.pom">
+            <sha256 value="d1e12aeedc9fab44409b6c08b2a45384a4bb851fe4e90391efade14d347c48d7" origin="Generated by Gradle" reason="Artifact is not signed"/>
          </artifact>
       </component>
       <component group="org.jetbrains.kotlinx" name="kotlinx-coroutines-bom" version="1.10.1">
@@ -3313,6 +3357,14 @@
             <sha256 value="d8531a746c988f7f68ed5f188cdea945006aea993ec5df9e524e0d27d61491da" origin="Generated by Gradle"/>
          </artifact>
       </component>
+      <component group="org.mozilla" name="rhino" version="1.7.15.1">
+         <artifact name="rhino-1.7.15.1.jar">
+            <sha256 value="f3520a0e2e22d550f1216a456be233eb5385bf08e3219407dece7a16369eb38f" origin="Generated by Gradle" reason="A key couldn't be downloaded"/>
+         </artifact>
+         <artifact name="rhino-1.7.15.1.pom">
+            <sha256 value="b40decfa0e24c80bfd957ba3adfac7f6e3eed7730a06b551c01493faa2e76883" origin="Generated by Gradle" reason="A key couldn't be downloaded"/>
+         </artifact>
+      </component>
       <component group="org.odftoolkit" name="odfdom-java" version="0.12.0">
          <artifact name="odfdom-java-0.12.0.jar">
             <sha256 value="4ab83b2bab84c133111f3a2bb4cab669115c11c8fc91e757206ef147ee5d23c0" origin="Generated by Gradle"/>
@@ -3463,6 +3515,11 @@
       <component group="org.sonarqube" name="org.sonarqube.gradle.plugin" version="7.2.3.7755">
          <artifact name="org.sonarqube.gradle.plugin-7.2.3.7755.pom">
             <sha256 value="7b9a2bfb6b7929f789dd2c729569ba7cba5fc8572bd8e9a72c64279da299f0e8" origin="Generated by Gradle" reason="Artifact is not signed"/>
+         </artifact>
+      </component>
+      <component group="org.sonarqube" name="org.sonarqube.gradle.plugin" version="7.3.0.8198">
+         <artifact name="org.sonarqube.gradle.plugin-7.3.0.8198.pom">
+            <sha256 value="268f335d7106a3c055b83df8d952f7659e098ae3b8ace66c33ea8383997fe5f5" origin="Generated by Gradle" reason="Artifact is not signed"/>
          </artifact>
       </component>
       <component group="org.sonarsource.parent" name="parent" version="83.0.0.2369">

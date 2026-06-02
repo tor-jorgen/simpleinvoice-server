@@ -28,7 +28,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
   DISTRIBUTION: temurin
-  JAVA_VERSION: 24
+  JAVA_VERSION: 25
 
 jobs:
   lint-code:
@@ -164,6 +164,7 @@ jobs:
           #          output: trivy-results.sarif
           severity: HIGH,CRITICAL
           vuln-type: os,library
+          scanners: vuln,secret,misconfig
           exit-code: 1
       # Må vente til repoet er public
       #      - name: Upload Trivy scan results to GitHub Security tab

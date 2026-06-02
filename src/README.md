@@ -54,7 +54,7 @@ IntelliJ:
 
 1. Start the Postgres database in Docker:
     ```shell
-   docker compose -f compose-postgres.yaml up
+   docker compose -f compose-postgres-s3.yaml up
     ```
 
 2. Create the following run configuration (under Services in IntelliJ):
@@ -62,19 +62,18 @@ IntelliJ:
     2. Set the following environment variables:
        ```
        ALLOW_HOSTS=http://localhost:5173
-       INVOICE_DIRECTORY=./.documents
-       CONFIG_DIRECTORY=./.config
        ``` 
-       `INVOICE_DIRECTORY` and `CONFIG_DIRECTORY` can be set to any directory accessible by Ktor
+       The content of the `.env` file will also be read when the server starts
 3. Run or debug the configuration
 
 ## Running backend in Docker
 
 This is helpful when you develop the Simple Invoice App.
 
-Run the following command to run backend (server and database) in Docker:
+Run the following commands to run backend (server and database) in Docker:
 
 ```shell
+docker compose -f compose-backend.yaml build [--no-cache]
 docker compose -f compose-backend.yaml up
 ```
 
@@ -82,10 +81,17 @@ docker compose -f compose-backend.yaml up
 
 This will build both backend and frontend before running.
 
-Run the following command to run the complete system in Docker:
+Run the following commands to run the complete system in Docker:
 
 ```shell
-docker compose -f compose-build.yaml up
+docker compose build [--no-cache]
+docker compose up
+```
+
+You can also run the following script:
+
+```shell
+./start.sh -h
 ```
 
 ## Database maintenance
@@ -117,7 +123,7 @@ docker volume rm simple-invoice-db-data
 Run the following to delete the documents:
 
 ```shell
-docker volume rm simple-invoice-documents
+docker volume rm simple-invoice-s3-data
 ``` 
 
 ## Dependency verification
@@ -134,7 +140,7 @@ update the verification metadata and/or verification keyring. Run the following 
 metadata and verification keyring:
 
 ```shell
-./gradlew --write-verification-metadata pgp,sha256 --export-keys [--refresh-dependencies]
+./gradlew --write-verification-metadata pgp,sha256 --export-keys --refresh-dependencies
 ```
 
 You should build the project after creating the metadata to verify that the metadata is correct.
@@ -184,3 +190,5 @@ Run the following script to check the image for vulnerabilities:
 ```shell
 ./trivy.sh
 ```
+
+Note that it will download the complete vulnerability database on the first run

@@ -2,14 +2,12 @@
 
 IMAGE=simpleinvoice-server-trivy:latest
 
-docker build -t $IMAGE --no-cache .
+docker build -t "$IMAGE" --no-cache .
 
-#trivy clean -a
-
-# Scan image
-trivy image --severity HIGH,CRITICAL $IMAGE
-
-# Check Dockerfile
-trivy --severity HIGH,CRITICAL config .
-
-#trivy image -f json simpleinvoice-server-trivy:latest | grep -C 5 "3.0.3"
+docker run \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v .:/mount -w /mount  \
+  -v trivy-cache:/root/.cache/ \
+  --entrypoint sh aquasec/trivy \
+  -c "trivy --severity HIGH,CRITICAL image $IMAGE && \
+    trivy --severity HIGH,CRITICAL config ."

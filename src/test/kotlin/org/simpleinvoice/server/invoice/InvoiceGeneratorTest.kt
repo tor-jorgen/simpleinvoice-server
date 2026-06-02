@@ -146,9 +146,8 @@ class InvoiceGeneratorTest {
             whenever(productRepository.byIds(any())).thenReturn(listOf(product))
             whenever(invoiceRepository.upsert(any(), any())).thenReturn(invoice)
             whenever(documentGenerator.createDocuments(any())).thenReturn(
-                Triple(
+                Pair(
                     "test-invoice",
-                    "/tmp/test.odt",
                     "/tmp/test.pdf",
                 ),
             )

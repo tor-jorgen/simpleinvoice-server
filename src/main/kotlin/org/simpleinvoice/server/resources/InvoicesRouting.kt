@@ -1,5 +1,6 @@
 package org.simpleinvoice.server.resources
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.server.application.Application
@@ -9,11 +10,12 @@ import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondFile
+import io.ktor.server.response.respondBytes
 import io.ktor.server.routing.routing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
+import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
 import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
@@ -21,6 +23,7 @@ import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
 import org.simpleinvoice.server.resources.model.InvoiceResponse
 import org.simpleinvoice.server.resources.model.ListResponse
+import org.simpleinvoice.server.util.s3.StorageClient
 import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
 import org.koin.ktor.ext.get as getK
@@ -53,6 +56,8 @@ class Invoices(
 fun Application.configureInvoicesRouting(
     repository: InvoiceRepository = getK<InvoiceRepository>(),
     invoiceGenerator: InvoiceGenerator = getK<InvoiceGenerator>(),
+    invoiceConfig: InvoiceConfig = getK<InvoiceConfig>(),
+    storageClient: StorageClient = getK<StorageClient>(),
 ) {
     routing {
 //        authenticate(AUTH_SESSION) {
@@ -80,10 +85,12 @@ fun Application.configureInvoicesRouting(
             // Get the invoice document
             repository.get(invoice.parent.id).let { invoice ->
                 if (invoice.invoiceFilePath != null) {
-                    val pdfFile = java.io.File(invoice.invoiceFilePath)
-                    if (pdfFile.exists()) {
-                        call.respondFile(pdfFile)
-                    }
+                    val bytes = storageClient.download(invoiceConfig.invoiceBucketName, invoice.invoiceFilePath)
+                    call.respondBytes(
+                        bytes = bytes,
+                        contentType = ContentType.Application.Pdf,
+                        status = HttpStatusCode.OK,
+                    )
                 }
             }
             call.respond(

@@ -17,4 +17,4 @@
 13. How to handle rounding of monetary values? We only show two digits per invoice line, but we should not round off
     before the total
 14. ~~Store files in an emulated S3 bucket~~
-15. 
+15. Use Detekt instead of Super-Linter

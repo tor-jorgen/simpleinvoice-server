@@ -1,8 +1,6 @@
 package org.simpleinvoice.server.util.smtp
 
 import jakarta.activation.DataHandler
-import jakarta.activation.DataSource
-import jakarta.activation.FileDataSource
 import jakarta.mail.Authenticator
 import jakarta.mail.BodyPart
 import jakarta.mail.Message
@@ -15,6 +13,7 @@ import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeBodyPart
 import jakarta.mail.internet.MimeMessage
 import jakarta.mail.internet.MimeMultipart
+import jakarta.mail.util.ByteArrayDataSource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.Date
@@ -52,7 +51,7 @@ class SmtpClient(
         toEmail1: String,
         toEmail2: String?,
         invoicePath: String,
-        invoiceName: String,
+        invoiceBytes: ByteArray,
     ): Boolean {
         try {
             val msg = MimeMessage(session)
@@ -67,16 +66,16 @@ class SmtpClient(
                 msg.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail2, false))
             }
 
-            var messageBodyPart: BodyPart = MimeBodyPart()
+            val messageBodyPart: BodyPart = MimeBodyPart()
             messageBodyPart.setText(text)
             val multipart: Multipart = MimeMultipart()
             multipart.addBodyPart(messageBodyPart)
 
-            messageBodyPart = MimeBodyPart()
-            val source: DataSource = FileDataSource(invoicePath)
-            messageBodyPart.dataHandler = DataHandler(source)
-            messageBodyPart.fileName = invoiceName
-            multipart.addBodyPart(messageBodyPart)
+            val attachmentPart = MimeBodyPart()
+            val source = ByteArrayDataSource(invoiceBytes, "application/pdf")
+            attachmentPart.dataHandler = DataHandler(source)
+            attachmentPart.fileName = invoicePath
+            multipart.addBodyPart(attachmentPart)
 
             msg.setContent(multipart)
             Transport.send(msg)
@@ -94,6 +93,14 @@ class SmtpClient(
         toEmail1: String,
         toEmail2: String?,
         invoicePath: String,
-        invoiceName: String,
-    ): Boolean = (if (session == null) open() else this).send(subject, text, toEmail1, toEmail2, invoicePath, invoiceName)
+        invoiceBytes: ByteArray,
+    ): Boolean =
+        (if (session == null) open() else this).send(
+            subject = subject,
+            text = text,
+            toEmail1 = toEmail1,
+            toEmail2 = toEmail2,
+            invoicePath = invoicePath,
+            invoiceBytes = invoiceBytes,
+        )
 }

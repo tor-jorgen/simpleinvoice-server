@@ -87,12 +87,11 @@ class InvoiceGenerator(
         email: Email?,
     ): Invoice {
         var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new)
-        val (invoiceName, pdfPath) = documentGenerator.createDocuments(invoiceDb)
+        val (_, pdfPath) = documentGenerator.createDocuments(invoiceDb)
         if (email != null) {
             emailGenerator
                 .sendEmail(
                     invoice = invoiceDb,
-                    invoiceName = invoiceName,
                     pdfPath = pdfPath,
                     email = email,
                 ).let { emailSent ->

@@ -22,8 +22,8 @@ private const val NAME_1 = "_NAME1_"
 private const val NAME_2 = "_NAME2_"
 private const val PRODUCT = "_PRODUCT_"
 private const val PRODUCT_1 = "_PRODUCT1_"
-private const val ITEM_PRICE = "_PRICE_"
-private const val TOTAL_PRICE = "_TOTAL_"
+private const val LINE_TOTAL_PRICE = "_LI_T_P_"
+private const val INVOICE_TOTAL_PRICE = "_IN_T_P_"
 
 class DocumentGenerator(
     private val config: InvoiceConfig,
@@ -152,11 +152,12 @@ class DocumentGenerator(
                         .product.name
             }
 
-            ITEM_PRICE, TOTAL_PRICE -> {
+            LINE_TOTAL_PRICE, INVOICE_TOTAL_PRICE -> {
+                // TODO: This must be fixed if support for multiple lines is added
                 node.textContent =
                     invoice.invoiceLines
                         .first()
-                        .product.price
+                        .totalPrice
                         .toString()
             }
         }

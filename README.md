@@ -194,8 +194,8 @@ The following table shows the name of the placeholders that can be used in an in
 | `_NAME1_`        | First name and lastname of the first person in the household  |
 | `_NAME2_`        | First name and lastname of the second person in the household |
 | `_PRODUCT_`      | Name of the product in the invoice line                       |
-| `_PRICE_`        | Price of the product in the invoice line                      |
-| `_TOTAL_`        | Total price for the invoice                                   |
+| `_LI_T_P_`       | Total price of the invoice line                               |
+| `_IN_T_P_`       | Total price of the invoice                                    |
 
 ### Invoice name configuration
 
@@ -229,8 +229,7 @@ Go to the command shell and run Simple Invoice with the following command:
 ./start.sh
 ```
 
-**Note!** It will take some to start it up the first time, since Simple Invoice must be built first. Add `--help` to
-the script to see all the options, and what you can do to speed up the startup the next time.
+Add `--help` to the script to see all the options.
 
 The Simple Invoice App can be reached at http://localhost:8000.
 

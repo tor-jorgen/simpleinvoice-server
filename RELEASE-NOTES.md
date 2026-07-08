@@ -1,3 +1,11 @@
+## 1.2.1 (2026-07-08)
+
+* Renamed and updated placeholders (`_LINE_TOTAL_PRICE_` and `_INVOICE_TOTAL_PRICE_`) to support total prices
+* Fixed loading of e-mail attachments from S3 bucket
+* Fixed `s3.sh` so that it handles relative paths
+* Possible to delete all documents before restoring with `restore.sh`
+* Upgraded to latest Gradle, and libraries
+
 ## 1.2.0 (2026-06-02)
 
 * Documents are stored in S3-compatible storage

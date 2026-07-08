@@ -7,20 +7,17 @@ COPY src ./src
 RUN ./gradlew clean build -x test --no-daemon
 
 # Stage 2: Runtime
-FROM amazoncorretto:25
+FROM amazoncorretto:25-alpine
 ARG USER=service
 ARG GROUP=service
 
 RUN \
     mkdir /migrations && \
-    yum update -y -q --security && \
-    yum install shadow-utils -y -q && \
+    apk add --no-cache shadow && \
     groupadd -r "$GROUP" -g 1000 && \
     useradd -rm -s /sbin/nologin -g 1000 -u 1000 "$USER" && \
     chmod 755 "/home/$USER" && \
-    yum remove shadow-utils -y -q && \
-    yum autoremove -y -q && \
-    yum clean all
+    apk del shadow
 
 USER $USER
 COPY --from=builder --chmod=755 /server/build/libs/*-all.jar service.jar

@@ -6,16 +6,31 @@ help() {
   echo "Restore Simple Invoice data from FILE (a 'tar.gz' file created by 'backup.sh')"
   echo
   echo "OPTIONS:"
+  echo " -d, --delete: Delete old documents before restoring"
   echo " -h, --help: Show help"
   echo
   echo "Note! Stop the application before running the backup by executing './stop.sh'"
   echo "Note! This script might not work if the backup was created on a different computer."
 }
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  help
-  exit 0
-fi
+while [[ "$1" == "--"* || "$1" == "-"* ]]; do
+  case $1 in
+    --delete|-d)
+      DELETE=true
+      shift 1
+      ;;
+    --help|-h)
+      help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo
+      help
+      exit 1
+      ;;
+  esac
+done
 
 if ! docker volume inspect simple-invoice-db-data >/dev/null 2>&1 || ! docker volume inspect simple-invoice-s3-data >/dev/null 2>&1; then
   echo "Missing volumes. You must run the application at least once before restoring data!"
@@ -34,7 +49,11 @@ fi
 echo
 echo "NOTE! This will restore data from $BACKUP_FILE and replace/add the following data:"
 echo "- Database:    Replace database"
-echo "- Other files: Replace existing/add new/keep files not in the backup"
+if [[ -n "$DELETE" ]]; then
+  echo "- Other files: Delete old files and add files from backup"
+else
+  echo "- Other files: Replace existing/add new/keep files not in the backup"
+fi
 echo
 echo "Also ensure that the application has been stopped (by running './stop.sh')!"
 echo
@@ -54,11 +73,15 @@ echo "Restoring data from $BACKUP_FILE"
 (docker run \
   --rm \
   --entrypoint /bin/sh \
+  -e DELETE="$DELETE" \
   -v simple-invoice-db-data:/db-data \
   -v simple-invoice-s3-data:/s3-data \
   -v "$RESTORE_DIR":/input \
   alpine \
   -c "
+  if [ -n \"$DELETE\" ]; then \
+    find /s3-data -mindepth 1 -delete; \
+  fi && \
   find /db-data -mindepth 1 -delete && \
   tar -xz -f /input/$RESTORE_FILE -C /db-data --strip-components=1 db-data/. && \
   tar -xz -f /input/$RESTORE_FILE -C /s3-data --strip-components=1 s3-data/.") || ERROR=1

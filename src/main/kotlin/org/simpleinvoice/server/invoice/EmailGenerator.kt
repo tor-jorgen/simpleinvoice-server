@@ -2,11 +2,14 @@ package org.simpleinvoice.server.invoice
 
 import org.simpleinvoice.server.model.Email
 import org.simpleinvoice.server.model.Invoice
+import org.simpleinvoice.server.util.s3.S3StorageClient
 import org.simpleinvoice.server.util.smtp.SmtpClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class EmailGenerator(
+    private val config: InvoiceConfig,
+    private val storageClient: S3StorageClient,
     private val smtpClient: SmtpClient,
     private val eventPublisher: EventPublisher,
 ) {
@@ -14,7 +17,6 @@ class EmailGenerator(
 
     suspend fun sendEmail(
         invoice: Invoice,
-        invoiceName: String,
         pdfPath: String,
         email: Email,
     ): Boolean {
@@ -29,7 +31,7 @@ class EmailGenerator(
             return false
         }
 
-        val invoiceFileName = "$invoiceName.pdf"
+        val bytes = storageClient.download(bucketName = config.invoiceBucketName, keyName = pdfPath)
         val emailSent =
             smtpClient.openAndSend(
                 subject = email.subject,
@@ -37,7 +39,7 @@ class EmailGenerator(
                 toEmail1 = recipientEmails.first(),
                 toEmail2 = if (recipientEmails.size > 1) recipientEmails[1] else null,
                 invoicePath = pdfPath,
-                invoiceName = invoiceFileName,
+                invoiceBytes = bytes,
             )
         val emails = recipientEmails.joinToString(", ")
         if (emailSent) {

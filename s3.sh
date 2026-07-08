@@ -9,13 +9,16 @@ help() {
   echo
   echo "<command>:  The command to perform"
   echo "  -cp, --copy <from> <to bucket name> [to]: Copy file to bucket"
-  echo "    <from>: Relative path to file to copy from"
+  echo "    <from>: Relative path from current directory to file to copy from"
   echo "    <to bucket name>: Name of the bucket to copy to:"
   echo "      -  config:   the configuration bucket"
   echo "      -  invoices: the invoices bucket"
-  echo "    [to]:   Path to copy to (optional). If not given, the file will be copied to the root of the config directory"
-  echo "  -m, --mirror <from> <to bucket name>: Mirror files to bucket. This will mirror the source directory into the bucket. Updated files will be overwritten."
-  echo "    <from>: Relative path to directory to copy from"
+  echo "    [to]:   [directory name/]<file name> to copy to (optional). 'directory' is optional, and must only"
+  echo "            contain the name (possibly hierarchical, but no . or ..). If 'to' is not given, the file will"
+  echo "            be copied to the root of the config directory"
+  echo "  -m, --mirror <from> <to bucket name>: Mirror files to bucket. This will mirror the source directory into"
+  echo "               the bucket. Updated files will be overwritten."
+  echo "    <from>: Relative path from current directory to directory to copy from"
   echo "    <to bucket name>: Name of the bucket to copy to:"
   echo "      -  config:   the configuration bucket"
   echo "      -  invoices: the invoices bucket"
@@ -71,28 +74,38 @@ while [[ "$1" == "--"* || "$1" == "-"* ]]; do
         exit 1
       fi
 
+      FROM_DIR=$(dirname "$FROM_PATH")/
+      FROM_FILE_NAME=$(basename "$FROM_PATH")
+
       if [ -z "$TO_PATH" ]; then
         TO_DIR=""
         TO_FILE_NAME=$(basename "$FROM_PATH")
       else
         TO_DIR=$(dirname "$TO_PATH")/
-        TO_FILE_NAME=$(basename "$TO_PATH")
+        if [ "$TO_DIR" == "./" ]; then
+          TO_DIR=$(basename "$TO_PATH")/
+          TO_FILE_NAME=$(basename "$FROM_PATH")
+        else
+          TO_FILE_NAME=$(basename "$TO_PATH")
+        fi
       fi
-      CMD="mc mb --ignore-existing local/${TO_BUCKET} >/dev/null 2>&1 && mc cp /data/$FROM_PATH local/${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME} >/dev/null 2>&1"
+
+      CMD="mc mb --ignore-existing local/${TO_BUCKET} && mc cp /data/$FROM_FILE_NAME local/${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}"
+      echo "CMD: $CMD"
       MSG="'$FROM_PATH' has been uploaded to bucket '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
       echo "Uploading '$FROM_PATH' to bucket '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
       shift 1
       ;;
     --mirror|-m)
-      FROM_PATH="$2"
+      FROM_DIR="$2"
       TO_BUCKET="simple-invoice-$3"
-      if [ -z "$FROM_PATH" ]; then
+      if [ -z "$FROM_DIR" ]; then
         help
         exit 1
       fi
 
-      if [ ! -d "$FROM_PATH" ]; then
-        echo "ERROR: Directory '$FROM_PATH' does not exist."
+      if [ ! -d "$FROM_DIR" ]; then
+        echo "ERROR: Directory '$FROM_DIR' does not exist."
         exit 1
       fi
 
@@ -101,10 +114,9 @@ while [[ "$1" == "--"* || "$1" == "-"* ]]; do
         exit 1
       fi
 
-      CMD="mc mb --ignore-existing local/${TO_BUCKET} >/dev/null 2>&1 && mc --debug mirror --overwrite /data/$FROM_PATH local/${TO_BUCKET}"
-      echo "$CMD"
-      MSG="'$FROM_PATH' has been uploaded to bucket '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
-      echo "Uploading '$FROM_PATH' to bucket '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
+      CMD="mc mb --ignore-existing local/${TO_BUCKET} >/dev/null 2>&1 && mc mirror --overwrite /data local/${TO_BUCKET}"
+      MSG="'$FROM_DIR' has been uploaded to: '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
+      echo "Uploading '$FROM_DIR' to: '${TO_BUCKET}/${TO_DIR}${TO_FILE_NAME}'"
       shift 1
       ;;
     --list|-ls)
@@ -130,7 +142,7 @@ done
 if docker run --rm \
   --env-file .env \
   -e S3_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID:-doc}" \
-  -v "$(pwd)":/data \
+  -v "$(pwd)/$FROM_DIR":/data \
   --network host \
   --entrypoint /bin/sh \
   minio/mc \

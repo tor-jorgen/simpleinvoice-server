@@ -1,3 +1,4 @@
+val simpleInvoiceVersion: String by project
 val kotlinVersion: String by project
 val javaLanguageVersion: String by project
 val ktorVersion: String by project
@@ -8,11 +9,11 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("de.undercouch.download") version "5.7.0"
-    id("org.sonarqube") version "7.3.0.8198"
+    id("org.sonarqube") version "7.3.1.8318"
 }
 
 group = "org.simpleinvoice.server"
-version = "1.2.0"
+version = simpleInvoiceVersion
 
 application {
     mainClass = "org.simpleinvoice.server.ApplicationKt"
@@ -55,10 +56,10 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging")
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-server-routing-openapi")
-    implementation("io.ktor:ktor-server-openapi")
+//    implementation("io.ktor:ktor-server-routing-openapi")
+//    implementation("io.ktor:ktor-server-openapi")
 
-    val exposedVersion = "1.3.0"
+    val exposedVersion = "1.3.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -66,33 +67,32 @@ dependencies {
     val h2Version = "2.4.240"
     implementation("com.h2database:h2:$h2Version")
 
-    val koinVersion = "4.2.1"
+    val koinVersion = "4.2.2"
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
     val slf4jVersion = "2.0.18"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.32"
+    val logbackVersion = "1.5.37"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.11"
+    val postgresVersion = "42.7.12"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
-    val jacksonAnnotationsVersion = "2.21"
+    val jacksonAnnotationsVersion = "2.22"
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
 
-    val jacksonVersion = "3.1.3"
+    val jacksonVersion = "3.2.0"
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
-    val s3Version = "1.6.81"
+    val s3Version = "1.6.106"
     implementation("aws.sdk.kotlin:s3:$s3Version")
 
     // Document conversion
-    // `odfdom-java` has vulnerabilities, but this is the latest version
-    val odfDomVersion = "0.12.0"
+    val odfDomVersion = "0.13.0"
     implementation("org.odftoolkit:odfdom-java:$odfDomVersion")
 
     val simpleOdfVersion = "0.9.0"
@@ -107,7 +107,7 @@ dependencies {
     val angusMailVersion = "2.0.5"
     implementation("org.eclipse.angus:angus-mail:$angusMailVersion")
 
-    val flywayVersion = "12.6.2"
+    val flywayVersion = "12.10.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 

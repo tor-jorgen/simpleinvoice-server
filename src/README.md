@@ -38,14 +38,54 @@ scoop install java/corretto21-jdk
 
 ## Configuration
 
-Se [Configuration](../README.md#configuration) for information on how to configure the backend.
+Se [Configuration](../README.md#configure-simple-invoice) for general information on how to configure the backend.
 
-In addition to the typical configuration, you need to add the following environment variable to the `.env` file to allow
-traffic from the Simple Invoice App running in React development mode:
+In addition, you need to add the following environment variable to the `.env` file to allow traffic from the Simple
+Invoice App running in React development mode:
 
-```shell
+```properties
 ALLOW_HOSTS=http://localhost:5173
 ```
+
+### Optional server configuration
+
+The following table shows server properties with default a value. They can be changed, but that is normally not
+necessary:
+
+| Environment variable          | Default value                 | Description                                                                                                                                                               | Property (`application.yaml`) |
+|-------------------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| `SERVER_PORT`                 | `8080`                        | The port the server runs at                                                                                                                                               | `ktor.deployment.port`        |     
+| `DB_CONNECTION_PRE`           | `jdbc:postgresql://localhost` | The prefix for the database connection string. This includes the string up to (but not including) the colon before the port                                               | `db.connectionPrefix`         |     
+| `DB_PORT`                     | `5432`                        | The port the database server runs at                                                                                                                                      | `db.port`                     |     
+| `DB_NAME`                     | `simple_invoice`              | The name of the database                                                                                                                                                  | `db.name`                     |
+| `DB_USER`                     | `db`                          | The name of the user used to connect to the database                                                                                                                      | `db.user`                     |     
+| `S3_CONNECTION_PRE`           | `http://localhost`            | The prefix for the S3 connection string. This includes the string up to (but not including) the colon before the port                                                     | `s3.connectionPrefix`         |     
+| `S3_PORT`                     | `9000`                        | The port the S3 server runs at                                                                                                                                            | `s3.port`                     |     
+| `S3_ADM_PORT`                 | `9001`                        | The port the S3 admin UI runs at                                                                                                                                          |                               |
+| `S3_ACCESS_KEY_ID`            | `doc`                         | The access key ID (user ID) for the S3 storage                                                                                                                            | `s3.accessKeyId`              |
+| `$INVOICE_CONFIG_BUCKET_NAME` | `simple-invoice-config`       | The name of the S3 bucket that stores configuration files                                                                                                                 | `invoice.configBucketName`    |
+| `INVOICE_BUCKET_NAME`         | `simple-invoice-invoices`     | The name of the S3 bucket that stores invoice files                                                                                                                       | `invoice.invoiceBucketName`   |
+| `ALLOW_HOSTS`                 | `http://localhost:8000`       | URL for hosts allowed to call the server. These are used for CORS configuration                                                                                           | `security.allowHosts`         |
+| `SMTP_HOST`                   | `smtp.gmail.com`              | The SMTP server host URL. Needed if it should be possible to send an email with the invoice                                                                               | `smtp.host`                   |
+| `SMTP_PORT`                   | `587`                         | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       | `smtp.port`                   |                                                                                                                                                                                                                                                                          
+| `SMTP_TLS`                    | `true`                        | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice | `smtp.tls`                    |
+
+To update the properties, add environment variables to the `.env`.
+
+### Optional app configuration
+
+The app can also be configured together with the server. This is because the app is
+
+The following table shows app properties with default a value. They can be changed, but that is normally not necessary:
+
+| Environment variable   | Default value           | Description                                                                          |
+|------------------------|-------------------------|--------------------------------------------------------------------------------------|
+| `API_BASE_URL`         | `http://localhost:8080` | The URL to the Simple Invoice server API                                             |
+| `APP_BUILD_CONTEXT`    | `../simpleinvoice-app`  | The path to the simple invoice App, relative to Simple Invoice Server root directory |
+| `APP_BUILD_DOCKERFILE` | `Dockerfile`            | The name of the Dockerfile used to build the Simple Invoice App Docker image         |
+| `APP_PORT`             | `8000`                  | The port that the app will be available at                                           |
+
+To update the properties, add environment variables to the `.env` file.
 
 ## Running/debugging server from IDE
 

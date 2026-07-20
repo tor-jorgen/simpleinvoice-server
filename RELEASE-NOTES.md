@@ -1,3 +1,8 @@
+## 1.2.2 (2026-07-20)
+
+* No need to set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+* Updated README files
+
 ## 1.2.1 (2026-07-08)
 
 * Renamed and updated placeholders (`_LINE_TOTAL_PRICE_` and `_INVOICE_TOTAL_PRICE_`) to support total prices

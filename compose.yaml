@@ -38,7 +38,7 @@ services:
       retries: 5
   server:
     build: .
-    image: ghcr.io/tor-jorgen/simpleinvoice-server:1.2.2
+    image: ghcr.io/tor-jorgen/simpleinvoice-server:1.2.3
     restart: no
     ports:
       - ${SERVER_PORT:-8080}:${SERVER_PORT:-8080}
@@ -58,7 +58,7 @@ services:
       FLYWAY_LOCATIONS: filesystem:/migrations
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-xxx}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-yyy}
-      ALLOW_HOSTS: ${ALLOW_HOSTS:-http://localhost:8000}
+      ALLOW_HOSTS: ${ALLOW_HOSTS:-http://localhost:${APP_PORT:-8000}}
       SMTP_USER_NAME: ${SMTP_USER_NAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL}
@@ -78,7 +78,7 @@ services:
     image: ghcr.io/tor-jorgen/simpleinvoice-app:1.1.1
     restart: no
     ports:
-      - ${APP_PORT:-8000}:${APP_PORT:-8000}
+      - ${APP_PORT:-8000}:8000
     depends_on:
       - server
 

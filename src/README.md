@@ -49,9 +49,6 @@ ALLOW_HOSTS=http://localhost:5173
 
 ### Optional server configuration
 
-The following table shows server properties with default a value. They can be changed, but that is normally not
-necessary:
-
 | Environment variable          | Default value                 | Description                                                                                                                                                               | Property (`application.yaml`) |
 |-------------------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
 | `SERVER_PORT`                 | `8080`                        | The port the server runs at                                                                                                                                               | `ktor.deployment.port`        |     
@@ -70,22 +67,18 @@ necessary:
 | `SMTP_PORT`                   | `587`                         | The port the SMTP server runs at. Needed if it should be possible to send an email with the invoice                                                                       | `smtp.port`                   |                                                                                                                                                                                                                                                                          
 | `SMTP_TLS`                    | `true`                        | `true` if communication with the SMTP server should use TLS (secure communication). Highly recommended. Needed if it should be possible to send an email with the invoice | `smtp.tls`                    |
 
-To update the properties, add environment variables to the `.env`.
-
 ### Optional app configuration
 
-The app can also be configured together with the server. This is because the app is
-
-The following table shows app properties with default a value. They can be changed, but that is normally not necessary:
+The app can also be configured. This is because the app is started together with the server.
 
 | Environment variable   | Default value           | Description                                                                          |
 |------------------------|-------------------------|--------------------------------------------------------------------------------------|
 | `API_BASE_URL`         | `http://localhost:8080` | The URL to the Simple Invoice server API                                             |
 | `APP_BUILD_CONTEXT`    | `../simpleinvoice-app`  | The path to the simple invoice App, relative to Simple Invoice Server root directory |
 | `APP_BUILD_DOCKERFILE` | `Dockerfile`            | The name of the Dockerfile used to build the Simple Invoice App Docker image         |
-| `APP_PORT`             | `8000`                  | The port that the app will be available at                                           |
 
-To update the properties, add environment variables to the `.env` file.
+**Note!** Changing these properties requires that you rebuild the app Docker image, since the properties are replaced in
+the web application.
 
 ## Running/debugging server from IDE
 
@@ -191,8 +184,8 @@ Sometimes, metadata is missing, and artifacts must be added to the `<trusted-art
 Ideally checksums should be updated manually, but if you do it automatically, as above, be sure you validate the updated
 `verification-metadata.xml` before you commit it.
 
-If you get a problem with the verification, you can try to delete `gradle/verification-*.*`, and generate again, but
-you should then add the following lines to `verification-metadata.xml` below `<verify-signatures>`:
+If you get a problem with the verification, you can try to delete `gradle/verification-*.*`, and generate again, but you
+should then add the following lines to `verification-metadata.xml` below `<verify-signatures>`:
 
 ```xml
 

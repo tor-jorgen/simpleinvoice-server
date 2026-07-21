@@ -59,9 +59,9 @@ adjustments.
 * WSL (Windows subsystem for Linux)
 * Docker Desktop
 
-**Note!** For Windows, you need to install Docker Desktop, which again requires Windows Subsystem for Linux (WSL) with
-a Linux distribution. Depending on Windows version, you can use virtualization or Hyper-V instead, but WSL should work
-for all versions.
+**Note!** For Windows, you need to install Docker Desktop, which again requires Windows Subsystem for Linux (WSL) with a
+Linux distribution. Depending on Windows version, you can use virtualization or Hyper-V instead, but WSL should work for
+all versions.
 
 If you have the required software installed, you can jump to the [Configure Simple Invoice](#configure-simple-invoice)
 section.
@@ -123,23 +123,7 @@ Follow instruction on https://docs.docker.com/desktop/setup/install/windows-inst
 Before you run Simple Invoice the first time, you need to do some initial configuration. Other configuration can be done
 from the app.
 
-Create an empty file with name `.env` in the project root directory, and add environment variables to it:
-
-| Environment variable   | Description                                               | Property (`application.yaml`) |
-|------------------------|-----------------------------------------------------------|-------------------------------|
-| `DB_PASSWORD`          | The password for the user used to connect to the database | `db.password`                 |
-| `S3_SECRET_ACCESS_KEY` | The secret access key (password) for the S3 storage       | `s3.secretAccessKey`          |     
-| `SMTP_USER_NAME`       | The user name to use when logging on to the SMTP server   | `smtp.usernName`              |
-| `SMTP_PASSWORD`        | The password to use when logging on to the SMTP server    | `smtp.password`               |
-| `SMTP_SENDER_EMAIL`    | The email address to use as the sender of the emails      | `smtp.senderEmail`            |
-| `SMTP_SENDER_NAME`     | The name to use as the sender of the emails               | `smtp.senderName`             |
-
-The following table shows additional environment variables that can be set:
-
-| Environment variable    | Default value      | Description                                                                                                                                                 | Property (`application.yaml`) |
-|-------------------------|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
-| `INVOICE_TEMPLATE_NAME` | `invoice.odt`      | The name of the invoice template                                                                                                                            | `invoice.invoiceTemplateName` |
-| `INVOICE_NAME`          | `_NO_-_HOUSEHOLD_` | The name of the generated invoice files. The default will give `<invoice number>-<household name>.pdf`, e.g. `313-Duck.pdf`. See below for more information | `invoice.invoiceName`         |
+Create an empty file with the name `.env` in the project root directory, and add environment variables to it.
 
 Below is an example of a `.env` file:
 
@@ -152,9 +136,33 @@ SMTP_SENDER_EMAIL=harry.kure@gmail.com
 SMTP_SENDER_NAME=Harry Kure
 `````
 
-This file is used when running the system in Docker.
+**Note!** The `Property` column in the tables below are only used when developing Simple Invoice.
 
-**Note!** The `Property` names from the tables above are only used when developing Simple Invoice.
+### Mandatory server configuration
+
+| Environment variable   | Description                                                                | Property (`application.yaml`) |
+|------------------------|----------------------------------------------------------------------------|-------------------------------|
+| `DB_PASSWORD`          | The password (of your own choice) to use when connecting to the database   | `db.password`                 |
+| `S3_SECRET_ACCESS_KEY` | The password (of your own choice) to use when connecting to the S3 storage | `s3.secretAccessKey`          |     
+| `SMTP_USER_NAME`       | The user name to use when logging on to the SMTP server                    | `smtp.usernName`              |
+| `SMTP_PASSWORD`        | The password to use when logging on to the SMTP server                     | `smtp.password`               |
+| `SMTP_SENDER_EMAIL`    | The email address to use as the sender of the emails                       | `smtp.senderEmail`            |
+| `SMTP_SENDER_NAME`     | The name to use as the sender of the emails                                | `smtp.senderName`             |
+
+### Optional server configuration
+
+| Environment variable    | Default value      | Description                                                                                                                                                 | Property (`application.yaml`) |
+|-------------------------|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| `INVOICE_TEMPLATE_NAME` | `invoice.odt`      | The name of the invoice template                                                                                                                            | `invoice.invoiceTemplateName` |
+| `INVOICE_NAME`          | `_NO_-_HOUSEHOLD_` | The name of the generated invoice files. The default will give `<invoice number>-<household name>.pdf`, e.g. `313-Duck.pdf`. See below for more information | `invoice.invoiceName`         |
+
+### Optional app configuration
+
+The app can also be configured. This is because the app is started together with the server.
+
+| Environment variable | Default value | Description                                                                                   |
+|----------------------|---------------|-----------------------------------------------------------------------------------------------|
+| `APP_PORT`           | `8000`        | The port that the app will be available at. Change this if the default port is already in use |
 
 ### Configure invoice template
 
@@ -190,9 +198,9 @@ The following table shows the name of the placeholders that can be used in an in
 | `_LI_T_P_`       | Total price of the invoice line                               |
 | `_IN_T_P_`       | Total price of the invoice                                    |
 
-### Invoice name configuration
+### Invoice file name configuration
 
-The following list shows the placeholders that can be used to create the invoice name:
+The following list shows the placeholders that can be used to create the invoice file name:
 
 | Placeholder name | Description                                                  |
 |------------------|--------------------------------------------------------------|
@@ -236,8 +244,8 @@ Go to the command shell and run the following command to stop Simple invoice:
 
 ## Maintain Simple Invoice
 
-Storages for the database and files will be created by the server the first time Simple Invoice is run. The position
-of the storages is determined by Docker.
+Storages for the database and files will be created by the server the first time Simple Invoice is run. The position of
+the storages is determined by Docker.
 
 ### Manage files
 

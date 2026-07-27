@@ -2,6 +2,7 @@ package org.simpleinvoice.server.repository
 
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.core.statements.UpsertStatement
 import org.jetbrains.exposed.v1.jdbc.batchUpsert
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
@@ -26,12 +27,14 @@ class InvoiceRepository(
     private val eventPublisher: EventPublisher,
 ) : InvoiceRepositoryInterface {
     override suspend fun all(
-        openOnly: Boolean,
+        activeOnly: Boolean,
         ids: List<UUID>,
     ): List<Invoice> =
         executeInTransaction {
-            if (openOnly) {
-                InvoiceDAO.find { InvoiceTable.status eq InvoiceStatus.DELIVERED.name }.map { it.toInvoice() }
+            if (activeOnly) {
+                InvoiceDAO
+                    .find(InvoiceTable.status eq InvoiceStatus.CREATED.name or (InvoiceTable.status eq InvoiceStatus.DELIVERED.name))
+                    .map { it.toInvoice() }
             } else if (ids.isNotEmpty()) {
                 InvoiceDAO.find { InvoiceTable.id inList ids }.map { it.toInvoice() }
             } else {
@@ -50,6 +53,7 @@ class InvoiceRepository(
     override suspend fun upsert(
         invoice: Invoice,
         new: Boolean,
+        message: String?,
     ): Invoice {
         val response =
             executeInTransaction {
@@ -103,6 +107,7 @@ class InvoiceRepository(
             id = responseInvoice.id,
             item = responseInvoice,
             message = if (new) "Invoice created" else "Invoice updated",
+            userMessage = message,
         )
         return responseInvoice
     }

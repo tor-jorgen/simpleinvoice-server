@@ -19,3 +19,4 @@
 14. ~~Store files in an emulated S3 bucket~~
 15. Use Detekt instead of Super-Linter
 16. ~~Possible to delete old documents when restoring~~ 
+17. Add the same checks server-side as client-side

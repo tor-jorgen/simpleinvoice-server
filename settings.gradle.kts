@@ -1,6 +1,6 @@
 pluginManagement {
-    val kotlinVersion: String by settings
-    val ktorVersion: String by settings
+    val kotlinVersion: String = providers.gradleProperty("kotlinVersion").get()
+    val ktorVersion: String = providers.gradleProperty("ktorVersion").get()
 
     plugins {
         kotlin("jvm") version kotlinVersion

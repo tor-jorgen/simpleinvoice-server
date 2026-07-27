@@ -14,5 +14,6 @@ data class AuditTrail(
     @SerialName("item_id") @Serializable(with = UUIDSerializer::class) val itemId: UUID,
     val item: String? = null,
     val message: String? = null,
+    val userMessage: String? = null,
     @SerialName("user_id") @Serializable(with = UUIDSerializer::class) val userId: UUID? = null,
 )

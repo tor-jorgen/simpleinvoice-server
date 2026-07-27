@@ -9,7 +9,6 @@ import org.simpleinvoice.server.repository.InvoiceRepository
 import org.simpleinvoice.server.repository.ProductRepository
 import java.time.Instant
 import java.util.UUID
-import kotlin.uuid.ExperimentalUuidApi
 
 class InvoiceGenerator(
     val productRepository: ProductRepository,
@@ -18,7 +17,6 @@ class InvoiceGenerator(
     val documentGenerator: DocumentGenerator,
     val emailGenerator: EmailGenerator,
 ) {
-    @OptIn(ExperimentalUuidApi::class)
     suspend fun generate(
         invoice: Invoice,
         householdIds: List<UUID>,
@@ -64,10 +62,11 @@ class InvoiceGenerator(
         }
         return Invoice(
             id = if (keepIds) invoice.id else UUID.randomUUID(),
-            // New invoice number will be generated/existing will be fetched
+            // Set a dummy. New invoice number will be generated/existing will be fetched
             invoiceNumber = 0,
-            status = InvoiceStatus.CREATED,
+            // Set a dummy. Generated data will be generated/existing will be fetched
             generatedDate = Instant.now(),
+            status = invoice.status,
             dueDate = invoice.dueDate,
             finalizedDate = null,
             price = price,
@@ -76,8 +75,8 @@ class InvoiceGenerator(
             currency = invoice.currency,
             household = householdRepository.get(UUID.fromString(householdId.toString())),
             invoiceFilePath = null,
-            tags = invoice.tags,
             invoiceLines = invoiceLines,
+            tags = invoice.tags,
         )
     }
 
@@ -86,7 +85,7 @@ class InvoiceGenerator(
         new: Boolean,
         email: Email?,
     ): Invoice {
-        var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new)
+        var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new, message = null)
         val (_, pdfPath) = documentGenerator.createDocuments(invoiceDb)
         if (email != null) {
             emailGenerator

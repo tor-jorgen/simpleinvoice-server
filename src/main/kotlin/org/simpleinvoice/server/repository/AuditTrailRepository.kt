@@ -17,6 +17,7 @@ class AuditTrailRepository : AuditTrailRepositoryInterface {
                 itemId = auditTrail.itemId.toString()
                 item = auditTrail.item
                 message = auditTrail.message
+                userMessage = auditTrail.userMessage
                 userId = auditTrail.userId.toString()
             }
         }

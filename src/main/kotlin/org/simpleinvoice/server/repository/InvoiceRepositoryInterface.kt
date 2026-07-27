@@ -5,20 +5,22 @@ import java.util.UUID
 
 interface InvoiceRepositoryInterface {
     suspend fun all(
-        openOnly: Boolean,
+        activeOnly: Boolean,
         ids: List<UUID>,
     ): List<Invoice>
 
     suspend fun get(id: UUID): Invoice
 
     /**
-     * Insert or update an invoice [invoice]. Set [new] to true if this is a new invoice.
+     * Insert or update an [invoice]. Set [new] to true if this is a new invoice. If set, [message] will be sent to the
+     * audit trail
      *
      * Return the invoice number of the inserted or updated invoice.
      */
     suspend fun upsert(
         invoice: Invoice,
         new: Boolean,
+        message: String? = null,
     ): Invoice
 
     /**

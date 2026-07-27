@@ -18,9 +18,11 @@ class EventPublisher(
         id: UUID,
         item: Any,
         message: String,
+        userMessage: String? = null,
     ) {
         try {
-            val auditTrail = create(id = id, item = mapper.writeValueAsString(item), message = message)
+            val auditTrail =
+                create(id = id, item = mapper.writeValueAsString(item), message = message, userMessage = userMessage)
             channel.send(auditTrail)
         } catch (e: Exception) {
             logger.error("Failed to publish event", e)
@@ -43,6 +45,7 @@ class EventPublisher(
         id: UUID,
         item: String?,
         message: String? = null,
+        userMessage: String? = null,
     ): AuditTrail =
         AuditTrail(
             id = UUID.randomUUID(),
@@ -50,5 +53,6 @@ class EventPublisher(
             itemId = id,
             item = item,
             message = message,
+            userMessage = userMessage,
         )
 }

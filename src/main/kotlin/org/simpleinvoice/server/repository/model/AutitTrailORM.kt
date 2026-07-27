@@ -13,6 +13,7 @@ object AuditTrailTable : UUIDTable("audit_trail") {
     val itemId = varchar("item_id", 36)
     val item = varchar("item", 2048).nullable()
     val message = varchar("message", 255).nullable()
+    val userMessage = varchar("user_message", 2048).nullable()
     val userId = varchar("user_id", 36).nullable()
 }
 
@@ -25,6 +26,7 @@ class AuditTrailDAO(
     var itemId by AuditTrailTable.itemId
     var item by AuditTrailTable.item
     var message by AuditTrailTable.message
+    var userMessage by AuditTrailTable.userMessage
     var userId by AuditTrailTable.userId
 
     fun toAuditTrail(): AuditTrail =
@@ -34,6 +36,7 @@ class AuditTrailDAO(
             itemId = UUID.fromString(itemId),
             item = item,
             message = message,
+            userMessage = userMessage,
             userId = userId?.let { UUID.fromString(it) },
         )
 }

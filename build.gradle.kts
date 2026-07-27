@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("de.undercouch.download") version "5.7.0"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
 }
 
 group = "org.simpleinvoice.server"
@@ -31,11 +31,11 @@ val odt2pdfVersion = "1.1.0"
 val odt2pdfJar = "./.libs/odt2pdf-$odt2pdfVersion-all.jar"
 
 dependencies {
-    constraints {
-        implementation("commons-beanutils:commons-beanutils:1.11.0") {
-            because("CVE-2025-48734")
-        }
-    }
+//    constraints {
+//        implementation("commons-beanutils:commons-beanutils:1.11.0") {
+//            because("CVE-2025-48734")
+//        }
+//    }
 
     implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-client-cio")
@@ -59,7 +59,7 @@ dependencies {
 //    implementation("io.ktor:ktor-server-routing-openapi")
 //    implementation("io.ktor:ktor-server-openapi")
 
-    val exposedVersion = "1.3.1"
+    val exposedVersion = "1.4.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -74,21 +74,21 @@ dependencies {
     val slf4jVersion = "2.0.18"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    val logbackVersion = "1.5.37"
+    val logbackVersion = "1.6.3"
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    val postgresVersion = "42.7.12"
+    val postgresVersion = "42.7.13"
     implementation("org.postgresql:postgresql:$postgresVersion")
 
     val jacksonAnnotationsVersion = "2.22"
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
 
-    val jacksonVersion = "3.2.0"
+    val jacksonVersion = "3.2.2"
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("tools.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
-    val s3Version = "1.6.106"
+    val s3Version = "1.8.35"
     implementation("aws.sdk.kotlin:s3:$s3Version")
 
     // Document conversion
@@ -107,7 +107,7 @@ dependencies {
     val angusMailVersion = "2.0.5"
     implementation("org.eclipse.angus:angus-mail:$angusMailVersion")
 
-    val flywayVersion = "12.10.0"
+    val flywayVersion = "13.3.0"
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 

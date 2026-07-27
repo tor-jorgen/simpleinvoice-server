@@ -161,7 +161,7 @@ docker volume rm simple-invoice-s3-data
 
 ## Dependency verification
 
-Dependency verification is enabled. The following are verified:
+Dependency verification is enabled. The following is verified:
 
 * Artifact checksums
 * Artifact signatures (if available)

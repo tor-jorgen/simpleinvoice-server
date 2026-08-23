@@ -1,3 +1,14 @@
+# 1.3.0 (2026-08-23)
+
+* Added bulk update for invoices. Only update of status is supported
+* Possible to add a user message to the audit trail
+* `-c` now works in `start.sh`
+* `start.sh` shows the correct port for the app
+
+# 1.2.3 (2026-07-21)
+
+* Setting the `APP_PORT` environment variable to run the app on a different port now works
+
 ## 1.2.2 (2026-07-20)
 
 * No need to set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`

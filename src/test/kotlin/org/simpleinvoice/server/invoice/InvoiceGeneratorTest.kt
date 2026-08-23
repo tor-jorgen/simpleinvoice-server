@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -144,7 +145,7 @@ class InvoiceGeneratorTest {
 
             whenever(householdRepository.get(householdId)).thenReturn(household)
             whenever(productRepository.byIds(any())).thenReturn(listOf(product))
-            whenever(invoiceRepository.upsert(any(), any())).thenReturn(invoice)
+            whenever(invoiceRepository.upsert(any(), any(), anyOrNull())).thenReturn(invoice)
             whenever(documentGenerator.createDocuments(any())).thenReturn(
                 Pair(
                     "test-invoice",
@@ -165,7 +166,7 @@ class InvoiceGeneratorTest {
             verify(productRepository).byIds(listOf(productId, productId))
 
             val invoiceCaptor = argumentCaptor<Invoice>()
-            verify(invoiceRepository).upsert(invoiceCaptor.capture(), eq(true))
+            verify(invoiceRepository).upsert(invoiceCaptor.capture(), eq(true), anyOrNull())
 
             assertThat(result).isNotNull
             val capturedInvoice = invoiceCaptor.firstValue

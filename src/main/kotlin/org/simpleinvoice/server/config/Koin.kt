@@ -17,6 +17,7 @@ import org.simpleinvoice.server.invoice.DocumentGenerator
 import org.simpleinvoice.server.invoice.EmailGenerator
 import org.simpleinvoice.server.invoice.EventPublisher
 import org.simpleinvoice.server.invoice.HouseholdImporter
+import org.simpleinvoice.server.invoice.InvoiceBulkUpdater
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
 import org.simpleinvoice.server.model.AuditTrail
@@ -140,6 +141,7 @@ fun Application.configureDependencyInjection() {
                 singleOf(::DocumentGenerator)
                 singleOf(::EmailGenerator)
                 singleOf(::HouseholdImporter)
+                singleOf(::InvoiceBulkUpdater)
             },
         )
     }

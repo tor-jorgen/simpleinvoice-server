@@ -15,9 +15,12 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.simpleinvoice.server.common.UUIDSerializer
+import org.simpleinvoice.server.invoice.InvoiceBulkUpdater
 import org.simpleinvoice.server.invoice.InvoiceConfig
 import org.simpleinvoice.server.invoice.InvoiceGenerator
 import org.simpleinvoice.server.repository.InvoiceRepository
+import org.simpleinvoice.server.resources.model.BulkUpdateInvoicesRequest
+import org.simpleinvoice.server.resources.model.BulkUpdateInvoicesResponse
 import org.simpleinvoice.server.resources.model.GenerateInvoicesRequest
 import org.simpleinvoice.server.resources.model.GenerateInvoicesResponse
 import org.simpleinvoice.server.resources.model.InvoiceRequest
@@ -30,7 +33,7 @@ import org.koin.ktor.ext.get as getK
 
 @Resource("/invoices")
 class Invoices(
-    @SerialName("open_only") val openOnly: Boolean = false,
+    @SerialName("active_only") val activeOnly: Boolean = false,
 ) {
     @Resource("{id}")
     class Id(
@@ -47,6 +50,11 @@ class Invoices(
     class Generate(
         @Suppress("unused") val parent: Invoices = Invoices(),
     )
+
+    @Resource("/bulk")
+    class Bulk(
+        @Suppress("unused") val parent: Invoices = Invoices(),
+    )
 }
 
 /**
@@ -56,6 +64,7 @@ class Invoices(
 fun Application.configureInvoicesRouting(
     repository: InvoiceRepository = getK<InvoiceRepository>(),
     invoiceGenerator: InvoiceGenerator = getK<InvoiceGenerator>(),
+    invoiceBulkUpdater: InvoiceBulkUpdater = getK<InvoiceBulkUpdater>(),
     invoiceConfig: InvoiceConfig = getK<InvoiceConfig>(),
     storageClient: StorageClient = getK<StorageClient>(),
 ) {
@@ -63,7 +72,7 @@ fun Application.configureInvoicesRouting(
 //        authenticate(AUTH_SESSION) {
         get<Invoices> {
             // Get all invoices
-            val openOnly = (call.queryParameters["open_only"] ?: "false").toBoolean()
+            val activeOnly = (call.queryParameters["active_only"] ?: "false").toBoolean()
             val ids = call.queryParameters["ids"]
             val idList =
                 if (ids.isNullOrEmpty()) {
@@ -75,7 +84,7 @@ fun Application.configureInvoicesRouting(
                 ListResponse(
                     data =
                         repository
-                            .all(openOnly = openOnly, ids = idList)
+                            .all(activeOnly = activeOnly, ids = idList)
                             .map { InvoiceResponse.fromInvoice(it) },
                 )
             call.respond(status = HttpStatusCode.OK, message = response)
@@ -129,6 +138,25 @@ fun Application.configureInvoicesRouting(
                 )
             val response = GenerateInvoicesResponse.fromInvoices(invoices)
             call.respond(status = HttpStatusCode.OK, message = response)
+        }
+
+        post<Invoices.Bulk> {
+            // Bulk update invoice(s)
+            val request = call.receive<BulkUpdateInvoicesRequest>()
+            val result =
+                invoiceBulkUpdater.bulkUpdate(
+                    invoiceIds = request.invoiceIds.map { UUID.fromString(it.toString()) },
+                    status = request.status,
+                    message = request.message,
+                )
+            val response =
+                BulkUpdateInvoicesResponse.fromUpdate(
+                    updatedInvoices = result.first,
+                    failedInvoices = result.second,
+                    skippedInvoices = result.third,
+                )
+            val status = if (response.failedInvoices.isEmpty()) HttpStatusCode.OK else HttpStatusCode.PartialContent
+            call.respond(status = status, message = response)
         }
 
         put<Invoices.Id> { request ->

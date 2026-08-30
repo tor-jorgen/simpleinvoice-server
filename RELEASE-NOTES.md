@@ -2,6 +2,7 @@
 
 * Possible to add a message when creating/updating/deleting all kinds of data. Message will be stored in the audit
   trail. This breaks the API
+* Added /info endpoint for getting information about the server
 
 # 1.3.0 (2026-08-23)
 

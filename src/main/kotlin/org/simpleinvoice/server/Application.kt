@@ -12,6 +12,7 @@ import org.simpleinvoice.server.config.configureSerialization
 import org.simpleinvoice.server.config.handleEvents
 import org.simpleinvoice.server.config.runFlyway
 import org.simpleinvoice.server.resources.configureHouseholdsRouting
+import org.simpleinvoice.server.resources.configureInfoRouting
 import org.simpleinvoice.server.resources.configureInvoicesRouting
 import org.simpleinvoice.server.resources.configurePersonsRouting
 import org.simpleinvoice.server.resources.configureProductsRouting
@@ -58,5 +59,6 @@ fun Application.module() {
     configureInvoicesRouting()
     configureProductsRouting()
     configureTagsRouting()
+    configureInfoRouting()
 //    configureOpenAPIRouting()
 }

@@ -126,9 +126,34 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 }
 
+val generateVersionClass =
+    tasks.register("generateVersionClass") {
+        description = "Generate BuildConfig.kt with version info"
+        val outputDir = layout.buildDirectory.dir("generated/sources/version/kotlin")
+        inputs.property("version", simpleInvoiceVersion)
+        outputs.dir(outputDir)
+        doLast {
+            val file = outputDir.get().file("org/simpleinvoice/server/BuildConfig.kt").asFile
+            file.parentFile.mkdirs()
+            file.writeText(
+                """
+                |package org.simpleinvoice.server
+                |
+                |object BuildConfig {
+                |    const val VERSION: String = "$simpleInvoiceVersion"
+                |}
+                |
+                """.trimMargin(),
+            )
+        }
+    }
+
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(javaLanguageVersion))
+    }
+    sourceSets.named("main") {
+        kotlin.srcDir(generateVersionClass)
     }
 }
 

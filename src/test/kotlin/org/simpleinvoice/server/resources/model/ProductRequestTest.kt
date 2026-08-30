@@ -12,21 +12,25 @@ class ProductRequestTest {
     fun `ProductRequest can be converted to Product`() {
         assertThat(
             ProductRequest(
-                code = "code",
-                name = "name",
-                quantity = 100,
-                price = "567",
-                currency = Currency.NOK,
-                taxPercentage = "25.0",
-                tags =
-                    listOf(
-                        TagRequestResponse(
-                            id = UUID.fromString("c9029ae0-47a8-4df5-840f-81a5abbf8be5"),
-                            name = "Tag A",
-                            inactive = false,
-                        ),
+                product =
+                    ProductRequestObject(
+                        code = "code",
+                        name = "name",
+                        quantity = 100,
+                        price = "567",
+                        currency = Currency.NOK,
+                        taxPercentage = "25.0",
+                        tags =
+                            listOf(
+                                TagDTO(
+                                    id = UUID.fromString("c9029ae0-47a8-4df5-840f-81a5abbf8be5"),
+                                    name = "Tag A",
+                                    inactive = false,
+                                ),
+                            ),
+                        inactive = false,
                     ),
-                inactive = false,
+                message = "message",
             ).toProduct(id = UUID.fromString("737500f2-d438-4428-a739-270d901bb4f4")),
         ).isEqualTo(
             Product(

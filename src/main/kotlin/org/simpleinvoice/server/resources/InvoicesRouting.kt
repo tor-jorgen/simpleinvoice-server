@@ -39,6 +39,7 @@ class Invoices(
     class Id(
         @Suppress("unused") val parent: Invoices = Invoices(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
+        val message: String? = null,
     ) {
         @Resource("document")
         class Document(
@@ -121,6 +122,7 @@ fun Application.configureInvoicesRouting(
                             householdIds = listOf(invoice.household.id),
                             email = null,
                             new = true,
+                            message = invoiceRequest.message,
                         ).first(),
                 )
             call.respond(status = HttpStatusCode.Created, message = response)
@@ -135,6 +137,7 @@ fun Application.configureInvoicesRouting(
                     householdIds = request.householdIds.map { UUID.fromString(it.toString()) },
                     email = request.email?.toEmail(),
                     new = true,
+                    message = request.message,
                 )
             val response = GenerateInvoicesResponse.fromInvoices(invoices)
             call.respond(status = HttpStatusCode.OK, message = response)
@@ -172,6 +175,7 @@ fun Application.configureInvoicesRouting(
                             householdIds = listOf(invoice.household.id),
                             email = null,
                             new = false,
+                            message = invoiceRequest.message,
                         ).first(),
                 )
             call.respond(status = HttpStatusCode.OK, message = response)
@@ -179,7 +183,8 @@ fun Application.configureInvoicesRouting(
 
         delete<Invoices.Id> { request ->
             // Delete an invoice line
-            repository.delete(request.id)
+            val message: String? = call.queryParameters["message"]
+            repository.delete(request.id, message = message)
             call.respond(HttpStatusCode.NoContent)
         }
     }

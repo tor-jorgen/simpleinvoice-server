@@ -28,8 +28,9 @@ data class GenerateInvoicesRequest
         @SerialName("invoice_lines") val invoiceLines: List<GenerateInvoiceLineRequest>,
         // Uses kotlin.uuid.Uuid to be able to serialize a list of UUIDs
         @SerialName("household_ids") val householdIds: List<Uuid>,
-        val tags: List<TagRequestResponse>,
+        val tags: List<TagRequest>,
         val email: EmailRequest? = null,
+        val message: String? = null,
     ) {
         // Create an invoice with only necessary properties set. The others will be set/calculated later
         fun toInvoice() =

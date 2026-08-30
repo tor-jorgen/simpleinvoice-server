@@ -128,7 +128,10 @@ class InvoiceRepository(
             it[invoiceFilePath] = invoice.invoiceFilePath
         }
 
-    override suspend fun delete(id: UUID): Boolean {
+    override suspend fun delete(
+        id: UUID,
+        message: String?,
+    ): Boolean {
         val response =
             executeInTransaction {
                 InvoiceLineTable.deleteWhere { invoiceId eq id }

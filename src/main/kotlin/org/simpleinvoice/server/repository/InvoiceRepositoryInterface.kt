@@ -24,9 +24,13 @@ interface InvoiceRepositoryInterface {
     ): Invoice
 
     /**
-     * Delete an invoice with id [id]. All invoice lines will also be deleted
+     * Delete an invoice with id [id]. All invoice lines will also be deleted. If set, [message] will be sent to the
+     * audit trail
      */
-    suspend fun delete(id: UUID): Boolean
+    suspend fun delete(
+        id: UUID,
+        message: String? = null,
+    ): Boolean
 
     fun nextInvoiceNumber(): Int?
 }

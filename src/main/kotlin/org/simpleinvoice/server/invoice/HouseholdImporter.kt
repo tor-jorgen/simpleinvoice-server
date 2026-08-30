@@ -36,7 +36,7 @@ class HouseholdImporter(
                 }
             }
         }
-        households.forEach { householdRepository.upsert(household = it, new = true) }
+        households.forEach { householdRepository.upsert(household = it, new = true, message = null) }
         return households.map { it.id }
     }
 

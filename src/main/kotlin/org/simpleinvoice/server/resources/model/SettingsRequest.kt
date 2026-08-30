@@ -8,6 +8,14 @@ import java.util.UUID
 
 @Serializable
 class SettingsRequest(
+    val settings: SettingsRequestDTO,
+    val message: String? = null,
+) {
+    fun toSettings(id: UUID): Settings = settings.toSettings(id)
+}
+
+@Serializable
+class SettingsRequestDTO(
     @SerialName("default_due_days") val defaultDueDays: Int,
     @SerialName("last_invoice_number") val lastInvoiceNumber: Int,
     @SerialName("default_tax_percentage") val defaultTaxPercentage: Double,

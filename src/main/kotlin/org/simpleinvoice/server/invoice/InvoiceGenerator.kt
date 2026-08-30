@@ -22,12 +22,13 @@ class InvoiceGenerator(
         householdIds: List<UUID>,
         email: Email?,
         new: Boolean,
+        message: String?,
     ): List<Invoice> =
         householdIds
             .map { householdId ->
                 val calculated =
                     calculateInvoice(invoice = invoice, householdId = householdId, keepIds = householdIds.size == 1)
-                generate(invoice = calculated, email = email, new = new)
+                generate(invoice = calculated, email = email, new = new, message = message)
             }.toList()
 
     private suspend fun calculateInvoice(
@@ -84,8 +85,9 @@ class InvoiceGenerator(
         invoice: Invoice,
         new: Boolean,
         email: Email?,
+        message: String?,
     ): Invoice {
-        var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new, message = null)
+        var invoiceDb = invoiceRepository.upsert(invoice = invoice, new = new, message = message)
         val (_, pdfPath) = documentGenerator.createDocuments(invoiceDb)
         if (email != null) {
             emailGenerator
@@ -114,6 +116,6 @@ class InvoiceGenerator(
             } else {
                 invoice.copy(invoiceFilePath = invoiceFilePath)
             }
-        return invoiceRepository.upsert(copy, new = false)
+        return invoiceRepository.upsert(copy, new = false, message = null)
     }
 }

@@ -9,6 +9,14 @@ import java.util.UUID
 
 @Serializable
 data class UserRequest(
+    val user: UserDTO,
+    val message: String? = null,
+) {
+    fun toUser(id: UUID): User = user.toUser(id)
+}
+
+@Serializable
+data class UserDTO(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("principal_id") val principalId: String,
     @SerialName("login_provider") val loginProvider: LoginProvider,

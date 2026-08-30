@@ -14,10 +14,14 @@ interface HouseholdRepositoryInterface {
     suspend fun upsert(
         household: Household,
         new: Boolean,
+        message: String? = null,
     ): Household
 
     /**
      * Delete a household with id [id]. All persons in the household will also be deleted
      */
-    suspend fun delete(id: UUID): Boolean
+    suspend fun delete(
+        id: UUID,
+        message: String? = null,
+    ): Boolean
 }

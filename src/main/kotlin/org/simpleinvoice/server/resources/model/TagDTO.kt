@@ -9,7 +9,7 @@ import java.util.UUID
  * Request and response object for a tag that is a child of another object
  */
 @Serializable
-data class TagRequestResponse(
+data class TagDTO(
     @Serializable(with = UUIDSerializer::class) val id: UUID,
     val name: String,
     val inactive: Boolean = false,
@@ -23,7 +23,7 @@ data class TagRequestResponse(
 
     companion object {
         fun fromTag(tag: Tag) =
-            TagRequestResponse(
+            TagDTO(
                 id = tag.id,
                 name = tag.name,
                 inactive = tag.inactive,

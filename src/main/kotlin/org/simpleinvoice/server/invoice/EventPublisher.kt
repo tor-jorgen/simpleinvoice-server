@@ -32,9 +32,10 @@ class EventPublisher(
     suspend fun publishIdEvent(
         id: UUID,
         message: String,
+        userMessage: String? = null,
     ) {
         try {
-            val auditTrail = create(id = id, item = "", message = message)
+            val auditTrail = create(id = id, item = "", message = message, userMessage = userMessage)
             channel.send(auditTrail)
         } catch (e: Exception) {
             logger.error("Failed to publish ID event", e)

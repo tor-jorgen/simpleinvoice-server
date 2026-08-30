@@ -25,6 +25,7 @@ class TagRepository(
     override suspend fun upsert(
         tag: Tag,
         new: Boolean,
+        message: String?,
     ): Tag {
         val response =
             executeInTransaction {
@@ -44,7 +45,10 @@ class TagRepository(
         return response
     }
 
-    override suspend fun delete(id: UUID): Boolean {
+    override suspend fun delete(
+        id: UUID,
+        message: String?,
+    ): Boolean {
         val response =
             executeInTransaction {
                 val rowsDeleted =

@@ -31,6 +31,7 @@ class Households(
     class Id(
         @Suppress("unused") val parent: Households = Households(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
+        val message: String? = null,
     )
 
     @Resource("import")
@@ -73,7 +74,14 @@ fun Application.configureHouseholdsRouting(
             // Add a new household
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(UUID.randomUUID())
-            val response = HouseholdResponse.fromHousehold(repository.upsert(household = household, new = true))
+            val response =
+                HouseholdResponse.fromHousehold(
+                    repository.upsert(
+                        household = household,
+                        new = true,
+                        message = householdRequest.message,
+                    ),
+                )
             call.respond(status = HttpStatusCode.Created, message = response)
         }
 
@@ -81,13 +89,21 @@ fun Application.configureHouseholdsRouting(
             // Update a household with upserts on persons
             val householdRequest = call.receive<HouseholdRequest>()
             val household = householdRequest.toHousehold(request.id)
-            val response = HouseholdResponse.fromHousehold(repository.upsert(household = household, new = false))
+            val response =
+                HouseholdResponse.fromHousehold(
+                    repository.upsert(
+                        household = household,
+                        new = false,
+                        message = householdRequest.message,
+                    ),
+                )
             call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Households.Id> { request ->
             // Delete a household
-            repository.delete(request.id)
+            val message: String? = call.queryParameters["message"]
+            repository.delete(request.id, message = message)
             call.respond(HttpStatusCode.NoContent)
         }
 

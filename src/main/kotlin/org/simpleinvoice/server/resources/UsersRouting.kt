@@ -24,6 +24,7 @@ class Users {
     class Id(
         @Suppress("unused") val parent: Users = Users(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
+        val message: String? = null,
     )
 }
 
@@ -42,26 +43,23 @@ fun Application.configurePersonsRouting(repository: UserRepository = getK<UserRe
             // Add a new user
             val request = call.receive<UserRequest>()
             val user = request.toUser(UUID.randomUUID())
-            val response = UserResponse.fromUser(repository.upsert(user = user, new = true))
+            val response = UserResponse.fromUser(repository.upsert(user = user, new = true, message = request.message))
             call.respond(status = HttpStatusCode.Created, message = response)
         }
-
-//        get<Users.Id> { request ->
-//            // Show a customer with id ${customer.id}
-//            call.respondText("An article with id ${request.id} is fetched", status = HttpStatusCode.OK)
-//        }
 
         put<Users.Id> { request ->
             // Update a user
             val userRequest = call.receive<UserRequest>()
             val user = userRequest.toUser(request.id)
-            val response = UserResponse.fromUser(repository.upsert(user = user, new = false))
+            val response =
+                UserResponse.fromUser(repository.upsert(user = user, new = false, message = userRequest.message))
             call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Users.Id> { request ->
             // Delete a user
-            repository.delete(request.id)
+            val message: String? = call.queryParameters["message"]
+            repository.delete(request.id, message = message)
             call.respond(HttpStatusCode.NoContent)
         }
     }

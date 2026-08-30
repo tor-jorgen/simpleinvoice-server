@@ -35,6 +35,7 @@ class ProductRepository(
     override suspend fun upsert(
         product: Product,
         new: Boolean,
+        message: String?,
     ): Product {
         val response =
             executeInTransaction {
@@ -69,11 +70,15 @@ class ProductRepository(
             id = product.id,
             item = product,
             message = if (new) "Product created" else "Product updated",
+            userMessage = message,
         )
         return response
     }
 
-    override suspend fun delete(id: UUID): Boolean {
+    override suspend fun delete(
+        id: UUID,
+        message: String?,
+    ): Boolean {
         val response =
             executeInTransaction {
                 ProductTagsTable.deleteWhere { productId eq id }
@@ -83,7 +88,7 @@ class ProductRepository(
                     }
                 rowsDeleted == 1
             }
-        eventPublisher.publishIdEvent(id = id, message = "Product deleted")
+        eventPublisher.publishIdEvent(id = id, message = "Product deleted", userMessage = message)
         return response
     }
 

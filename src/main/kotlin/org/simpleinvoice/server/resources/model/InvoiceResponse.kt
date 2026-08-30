@@ -26,7 +26,7 @@ data class InvoiceResponse(
     val household: HouseholdResponse,
     @SerialName("invoice_file_path") val invoiceFilePath: String?,
     @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineResponse>,
-    val tags: List<TagRequestResponse>,
+    val tags: List<TagDTO>,
 ) {
     companion object {
         fun fromInvoice(invoice: Invoice) =
@@ -44,7 +44,7 @@ data class InvoiceResponse(
                 household = HouseholdResponse.fromHousehold(invoice.household),
                 invoiceFilePath = invoice.invoiceFilePath,
                 invoiceLines = invoice.invoiceLines.map { InvoiceLineResponse.fromInvoiceLine(it) },
-                tags = invoice.tags.map { TagRequestResponse.fromTag(it) },
+                tags = invoice.tags.map { TagDTO.fromTag(it) },
             )
     }
 }

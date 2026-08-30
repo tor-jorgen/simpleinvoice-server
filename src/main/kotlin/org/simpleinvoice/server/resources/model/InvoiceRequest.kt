@@ -15,14 +15,25 @@ import java.util.UUID
 
 @Serializable
 data class InvoiceRequest(
+    val invoice: InvoiceRequestDTO,
+    val message: String? = null,
+) {
+    fun toInvoice(
+        id: UUID,
+        invoiceNumber: Int,
+    ) = invoice.toInvoice(id, invoiceNumber)
+}
+
+@Serializable
+data class InvoiceRequestDTO(
     val status: InvoiceStatus,
     @SerialName("generated_date") @Serializable(with = InstantSerializer::class) val generatedDate: Instant,
     @SerialName("due_date") @Serializable(with = InstantSerializer::class) val dueDate: Instant,
     @SerialName("finalized_date") @Serializable(with = InstantSerializer::class) val finalizedDate: Instant? = null,
     @Serializable(with = UUIDSerializer::class) @SerialName("household_id") val householdId: UUID,
-    @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequest>,
+    @SerialName("invoice_lines") val invoiceLines: List<InvoiceLineRequestObject>,
     val currency: Currency,
-    val tags: List<TagRequestResponse> = emptyList(),
+    val tags: List<TagDTO> = emptyList(),
 ) {
     // Create an invoice with only necessary properties set. The others will be set/calculated later
     fun toInvoice(
@@ -55,7 +66,7 @@ data class InvoiceRequest(
 }
 
 @Serializable
-data class InvoiceLineRequest(
+data class InvoiceLineRequestObject(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("line_number") val lineNumber: Int,
     @Serializable(with = UUIDSerializer::class) @SerialName("product_id") val productId: UUID,

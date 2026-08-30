@@ -9,7 +9,11 @@ interface UserRepositoryInterface {
     suspend fun upsert(
         user: User,
         new: Boolean,
+        message: String? = null,
     ): User
 
-    suspend fun delete(id: UUID): Boolean
+    suspend fun delete(
+        id: UUID,
+        message: String? = null,
+    ): Boolean
 }

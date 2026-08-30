@@ -8,13 +8,21 @@ import java.util.UUID
 
 @Serializable
 class ProductRequest(
+    val product: ProductRequestObject,
+    val message: String? = null,
+) {
+    fun toProduct(id: UUID): Product = product.toProduct(id)
+}
+
+@Serializable
+class ProductRequestObject(
     val code: String,
     val name: String,
     val quantity: Int,
     val price: String,
     val currency: Currency,
     @SerialName("tax_percentage") val taxPercentage: String,
-    val tags: List<TagRequestResponse> = emptyList(),
+    val tags: List<TagDTO> = emptyList(),
     val inactive: Boolean,
 ) {
     fun toProduct(id: UUID): Product {

@@ -1,3 +1,8 @@
+# 2.0.0 (2026-08-30)
+
+* Possible to add a message when creating/updating/deleting all kinds of data. Message will be stored in the audit
+  trail. This breaks the API
+
 # 1.3.0 (2026-08-23)
 
 * Added bulk update for invoices. Only update of status is supported

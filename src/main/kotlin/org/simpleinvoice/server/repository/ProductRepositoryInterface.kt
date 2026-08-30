@@ -11,7 +11,11 @@ interface ProductRepositoryInterface {
     suspend fun upsert(
         product: Product,
         new: Boolean,
+        message: String? = null,
     ): Product
 
-    suspend fun delete(id: UUID): Boolean
+    suspend fun delete(
+        id: UUID,
+        message: String? = null,
+    ): Boolean
 }

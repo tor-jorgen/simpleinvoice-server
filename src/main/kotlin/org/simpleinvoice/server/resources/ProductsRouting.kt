@@ -30,6 +30,7 @@ class Products(
     class Id(
         @Suppress("unused") val parent: Products = Products(),
         @Serializable(with = UUIDSerializer::class) val id: UUID,
+        val message: String? = null,
     )
 }
 
@@ -49,9 +50,16 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
 
         post<Products> {
             // Create a new product
-            val productRequest = call.receive<ProductRequest>()
-            val product = productRequest.toProduct(UUID.randomUUID())
-            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = true))
+            val request = call.receive<ProductRequest>()
+            val product = request.toProduct(UUID.randomUUID())
+            val response =
+                ProductResponse.fromProduct(
+                    repository.upsert(
+                        product = product,
+                        new = true,
+                        message = request.message,
+                    ),
+                )
             call.respond(status = HttpStatusCode.Created, message = response)
         }
 
@@ -59,13 +67,21 @@ fun Application.configureProductsRouting(repository: ProductRepository = getK<Pr
             // Update a product
             val productRequest = call.receive<ProductRequest>()
             val product = productRequest.toProduct(request.id)
-            val response = ProductResponse.fromProduct(repository.upsert(product = product, new = false))
+            val response =
+                ProductResponse.fromProduct(
+                    repository.upsert(
+                        product = product,
+                        new = false,
+                        message = request.message,
+                    ),
+                )
             call.respond(status = HttpStatusCode.OK, message = response)
         }
 
         delete<Products.Id> { request ->
             // Delete a product
-            repository.delete(request.id)
+            val message: String? = call.queryParameters["message"]
+            repository.delete(id = request.id, message = message)
             call.respond(HttpStatusCode.NoContent)
         }
     }

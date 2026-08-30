@@ -9,7 +9,11 @@ interface TagRepositoryInterface {
     suspend fun upsert(
         tag: Tag,
         new: Boolean,
+        message: String? = null,
     ): Tag
 
-    suspend fun delete(id: UUID): Boolean
+    suspend fun delete(
+        id: UUID,
+        message: String? = null,
+    ): Boolean
 }

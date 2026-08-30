@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ImportHouseholdsRequest(
     @SerialName("lines_to_skip") val linesToSkip: Int,
-    val tags: List<TagRequestResponse>,
+    val tags: List<TagRequest>,
     val households: String,
 )

@@ -9,14 +9,22 @@ import java.util.UUID
 
 @Serializable
 data class HouseholdRequest(
+    val household: HouseholdRequestDTO,
+    val message: String? = null,
+) {
+    fun toHousehold(id: UUID): Household = household.toHousehold(id)
+}
+
+@Serializable
+data class HouseholdRequestDTO(
     val name: String? = null,
     val address: String,
     val address2: String? = null,
     @SerialName("zip_code") val zipCode: String,
     val city: String,
     val country: String? = null,
-    val persons: List<PersonRequest>,
-    val tags: List<TagRequestResponse> = emptyList(),
+    val persons: List<PersonRequestDTO>,
+    val tags: List<TagDTO> = emptyList(),
     val inactive: Boolean,
 ) {
     fun toHousehold(id: UUID): Household =
@@ -35,7 +43,7 @@ data class HouseholdRequest(
 }
 
 @Serializable
-data class PersonRequest(
+data class PersonRequestDTO(
     @Serializable(with = UUIDSerializer::class) val id: UUID? = null,
     @SerialName("first_name") val firstName: String,
     @SerialName("last_name") val lastName: String,

@@ -18,7 +18,7 @@ data class ProductResponse(
     val tax: String,
     @SerialName("total_price") val totalPrice: String,
     val currency: Currency,
-    val tags: List<TagRequestResponse> = emptyList(),
+    val tags: List<TagDTO> = emptyList(),
     val inactive: Boolean = false,
 ) {
     companion object {
@@ -33,7 +33,7 @@ data class ProductResponse(
                 tax = product.tax.toString(),
                 totalPrice = product.totalPrice.toString(),
                 currency = product.currency,
-                tags = product.tags.map { TagRequestResponse.fromTag(it) },
+                tags = product.tags.map { TagDTO.fromTag(it) },
                 inactive = product.inactive,
             )
     }

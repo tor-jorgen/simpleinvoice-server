@@ -39,6 +39,7 @@ class HouseholdRepository(
     override suspend fun upsert(
         household: Household,
         new: Boolean,
+        message: String?,
     ): Household {
         val persons = mutableListOf<Person>()
         val response =
@@ -77,7 +78,10 @@ class HouseholdRepository(
         return toHousehold(statement = response, persons = persons, tags = household.tags)
     }
 
-    override suspend fun delete(id: UUID): Boolean {
+    override suspend fun delete(
+        id: UUID,
+        message: String?,
+    ): Boolean {
         val response =
             executeInTransaction {
                 PersonTable.deleteWhere { householdId eq id }
@@ -85,7 +89,7 @@ class HouseholdRepository(
                 val rowsDeleted = HouseholdTable.deleteWhere { HouseholdTable.id eq id }
                 rowsDeleted == 1
             }
-        eventPublisher.publishIdEvent(id = id, message = "Household deleted")
+        eventPublisher.publishIdEvent(id = id, message = "Household deleted", userMessage = message)
         return response
     }
 

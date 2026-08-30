@@ -22,6 +22,7 @@ class UserRepository(
     override suspend fun upsert(
         user: User,
         new: Boolean,
+        message: String?,
     ): User {
         val response =
             executeInTransaction {
@@ -42,11 +43,15 @@ class UserRepository(
             id = user.id,
             item = user,
             message = if (new) "User created" else "User updated",
+            userMessage = message,
         )
         return response
     }
 
-    override suspend fun delete(id: UUID): Boolean {
+    override suspend fun delete(
+        id: UUID,
+        message: String?,
+    ): Boolean {
         val response =
             executeInTransaction {
                 val rowsDeleted =
@@ -55,7 +60,7 @@ class UserRepository(
                     }
                 rowsDeleted == 1
             }
-        eventPublisher.publishIdEvent(id = id, message = "User deleted")
+        eventPublisher.publishIdEvent(id = id, message = "User deleted", userMessage = message)
         return response
     }
 

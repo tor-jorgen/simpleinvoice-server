@@ -159,6 +159,7 @@ class InvoiceGeneratorTest {
                     householdIds = listOf(householdId),
                     email = null,
                     new = true,
+                    message = null,
                 )
 
             verify(householdRepository).get(householdId)

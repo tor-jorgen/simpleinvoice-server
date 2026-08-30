@@ -14,7 +14,10 @@ class SettingsRepository(
 
     override fun getWithoutTransaction(): Settings = SettingsDAO.all().map { it.toSettings() }[0]
 
-    override suspend fun update(settings: Settings): Settings {
+    override suspend fun update(
+        settings: Settings,
+        message: String?,
+    ): Settings {
         val response =
             executeInTransaction {
                 SettingsDAO
@@ -31,6 +34,7 @@ class SettingsRepository(
             id = settings.id,
             item = settings,
             message = "Settings updated",
+            userMessage = message,
         )
         return response
     }

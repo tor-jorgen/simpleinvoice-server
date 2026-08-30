@@ -43,7 +43,7 @@ fun Application.configureSettingsRouting(repository: SettingsRepository = getK<S
             // Update a product
             val settingsRequest = call.receive<SettingsRequest>()
             val config = settingsRequest.toSettings(request.id)
-            val response = SettingsResponse.fromSettings(repository.update(config))
+            val response = SettingsResponse.fromSettings(repository.update(config, message = settingsRequest.message))
             call.respond(status = HttpStatusCode.OK, message = response)
         }
     }

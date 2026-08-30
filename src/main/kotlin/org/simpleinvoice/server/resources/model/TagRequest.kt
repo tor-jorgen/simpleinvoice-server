@@ -6,10 +6,10 @@ import java.util.UUID
 
 @Serializable
 data class TagRequest(
-    val tag: TagDTO,
+    val item: TagDTO,
     val message: String? = null,
 ) {
-    fun toTag(): Tag = tag.toTag()
+    fun toTag(): Tag = item.toTag()
 }
 
 @Serializable

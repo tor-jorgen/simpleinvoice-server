@@ -9,10 +9,10 @@ import java.util.UUID
 
 @Serializable
 data class UserRequest(
-    val user: UserDTO,
+    val item: UserDTO,
     val message: String? = null,
 ) {
-    fun toUser(id: UUID): User = user.toUser(id)
+    fun toUser(id: UUID): User = item.toUser(id)
 }
 
 @Serializable

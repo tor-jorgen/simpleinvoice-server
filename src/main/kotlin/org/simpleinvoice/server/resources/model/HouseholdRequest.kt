@@ -9,10 +9,10 @@ import java.util.UUID
 
 @Serializable
 data class HouseholdRequest(
-    val household: HouseholdRequestDTO,
+    val item: HouseholdRequestDTO,
     val message: String? = null,
 ) {
-    fun toHousehold(id: UUID): Household = household.toHousehold(id)
+    fun toHousehold(id: UUID): Household = item.toHousehold(id)
 }
 
 @Serializable

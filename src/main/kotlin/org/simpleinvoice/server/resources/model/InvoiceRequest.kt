@@ -15,13 +15,13 @@ import java.util.UUID
 
 @Serializable
 data class InvoiceRequest(
-    val invoice: InvoiceRequestDTO,
+    val item: InvoiceRequestDTO,
     val message: String? = null,
 ) {
     fun toInvoice(
         id: UUID,
         invoiceNumber: Int,
-    ) = invoice.toInvoice(id, invoiceNumber)
+    ) = item.toInvoice(id, invoiceNumber)
 }
 
 @Serializable

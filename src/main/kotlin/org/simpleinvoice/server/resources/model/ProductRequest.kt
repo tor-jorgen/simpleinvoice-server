@@ -8,10 +8,10 @@ import java.util.UUID
 
 @Serializable
 class ProductRequest(
-    val product: ProductRequestObject,
+    val item: ProductRequestObject,
     val message: String? = null,
 ) {
-    fun toProduct(id: UUID): Product = product.toProduct(id)
+    fun toProduct(id: UUID): Product = item.toProduct(id)
 }
 
 @Serializable

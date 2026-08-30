@@ -8,10 +8,10 @@ import java.util.UUID
 
 @Serializable
 class SettingsRequest(
-    val settings: SettingsRequestDTO,
+    val item: SettingsRequestDTO,
     val message: String? = null,
 ) {
-    fun toSettings(id: UUID): Settings = settings.toSettings(id)
+    fun toSettings(id: UUID): Settings = item.toSettings(id)
 }
 
 @Serializable

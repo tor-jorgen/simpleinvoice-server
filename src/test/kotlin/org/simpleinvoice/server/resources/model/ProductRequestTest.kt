@@ -12,7 +12,7 @@ class ProductRequestTest {
     fun `ProductRequest can be converted to Product`() {
         assertThat(
             ProductRequest(
-                product =
+                item =
                     ProductRequestObject(
                         code = "code",
                         name = "name",

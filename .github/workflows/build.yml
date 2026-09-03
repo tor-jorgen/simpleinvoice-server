@@ -92,6 +92,8 @@ jobs:
         run: chmod +x ./gradlew
       - name: Run Gradle check
         run: ./gradlew check -x test
+      - name: Generate CycloneDX BOM
+        run: ./gradlew cyclonedxDirectBom
       # Archive the build directory (reports, classes, etc.)
       - name: Upload Gradle build artifacts
         # actions/upload-artifact@v7.0.1
@@ -220,6 +222,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Download Gradle build artifacts
+        # actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.gradle-build-and-test.outputs.build-artifact-name }}
+          path: build/
       - name: Set Release Tag
         id: tag_variable
         run: |
@@ -237,3 +245,6 @@ jobs:
           body: See [RELEASE-NOTES.md](RELEASE-NOTES.md)
           draft: false
           prerelease: false
+          files: |
+            build/reports/cyclonedx-direct/bom.json
+            build/reports/cyclonedx-direct/bom.xml

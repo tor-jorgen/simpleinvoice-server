@@ -1,7 +1,10 @@
-val simpleInvoiceVersion: String by project
-val kotlinVersion: String by project
-val javaLanguageVersion: String by project
-val ktorVersion: String by project
+import org.cyclonedx.gradle.CyclonedxDirectTask
+import org.cyclonedx.model.Component
+
+val simpleInvoiceVersion = project.findProperty("simpleInvoiceVersion") as String
+val kotlinVersion = project.findProperty("kotlinVersion") as String
+val javaLanguageVersion = project.findProperty("javaLanguageVersion") as String
+val ktorVersion = project.findProperty("ktorVersion") as String
 
 plugins {
     kotlin("jvm")
@@ -10,6 +13,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("de.undercouch.download") version "5.7.0"
     id("org.sonarqube") version "7.4.0.8496"
+    id("org.cyclonedx.bom") version "3.4.1"
 }
 
 group = "org.simpleinvoice.server"
@@ -206,4 +210,9 @@ sonar {
         property("sonar.projectName", "Simple Invoice Server")
         property("sonar.host.url", "https://sonarcloud.io")
     }
+}
+
+tasks.named<CyclonedxDirectTask>("cyclonedxDirectBom") {
+    projectType = Component.Type.APPLICATION
+    includeLicenseText = true
 }
